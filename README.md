@@ -17,6 +17,7 @@
 - **Dist Folder**: This contains both debug & release builds of the plugin, .dll, and .pyd.
 
 - **AEvolution**: The Core plugin enabling this framework and feature set. This __**should**__ be cross-platform, you may need to compile yourself for other systems outside of `windows[x64]`.
+    - No external Dependencies!
 
 - **AEvolutionCore**: The main .dll that is used to create bindings. This includes the headers you'll be using. Python bindings and template link to these specific files.
 
