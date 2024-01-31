@@ -1,0 +1,6 @@
+#include "pch.h"
+#include "include/App.h"
+#include "include/Project.h"
+#include "include/ItemManager.h"
+#include "include/MessageQueue.h"
+#include "include/UUID.hpp"
