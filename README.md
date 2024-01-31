@@ -21,7 +21,7 @@
 
 - **AEvolutionCore**: The main .dll that is used to create bindings. This includes the headers you'll be using. Python bindings and template link to these specific files.
 
-- **AEvolutionPy**: The .pyd and source code for python bindings. **NOTE** this differes from the final implementation, and not all features from **PyShiftAE** have been refactored and integrated yet.
+- **AEvolutionPy**: The .pyd and source code for python bindings. **NOTE** this differs from the final implementation, and not all features from **PyShiftAE** have been refactored and integrated yet.
 
 - **AEvolutionTemplate**: This is a template visual studio project for building your own bindings in any language. Since **AEvolutionCore** already facilitiates communication with the main plugin, your job here is writing bindings using the provided header files, for whatever language you would like. Approaches will differ, but in all cases, link to the **AEvolutionCore.lib** file, and provide the **AEvolutionCore.dll** file upon distribution for your bindings to work. (outside of actually having AEvolution installed). Find more info in this project's `source.cpp` file.
 
