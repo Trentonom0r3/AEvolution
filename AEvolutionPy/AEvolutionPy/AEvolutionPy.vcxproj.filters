@@ -24,15 +24,18 @@
     <ClInclude Include="PyCore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MessageQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PyCore.cpp">
+    <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source.cpp">
+    <ClCompile Include="PyCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

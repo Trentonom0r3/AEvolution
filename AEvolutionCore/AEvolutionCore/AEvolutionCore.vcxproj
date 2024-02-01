@@ -170,16 +170,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
-    <ClInclude Include="include\App.h" />
-    <ClInclude Include="include\ItemManager.h" />
+    <ClInclude Include="include\Core.h" />
     <ClInclude Include="include\MessageQueue.h" />
-    <ClInclude Include="include\Project.h" />
+    <ClInclude Include="include\Utility.h" />
     <ClInclude Include="include\UUID.hpp" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="App.cpp" />
-    <ClCompile Include="ItemManager.cpp" />
+    <ClCompile Include="Core.cpp" />
     <ClCompile Include="MessageQueue.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -187,8 +185,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Project.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

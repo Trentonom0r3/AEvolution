@@ -5,6 +5,9 @@
 #include <mutex>
 #include <queue>
 #include <future>
+#include <stdexcept>
+#include <string>
+#include <type_traits>
 
 /*
  * File: MessageQueue.h

@@ -25,10 +25,5 @@
 #include <boost/variant/get.hpp>
 #include <boost/serialization/variant.hpp>
 #include <boost/serialization/vector.hpp>
-#include "../../AEvolutionCore/AEvolutionCore/include/App.h"
-#include "../../AEvolutionCore/AEvolutionCore/include/Project.h"
-#include "../../AEvolutionCore/AEvolutionCore/include/ItemManager.h"
-#include "../../AEvolutionCore/AEvolutionCore/include/MessageQueue.h"
-#include "../../AEvolutionCore/AEvolutionCore/include/UUID.hpp"
-
+#include "MessageQueue.h"
 #endif //PCH_H

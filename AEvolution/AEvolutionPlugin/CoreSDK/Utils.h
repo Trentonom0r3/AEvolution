@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Core.h"
 #include "CollectionSuites.h"
 #include "CompSuites.h"
 #include "ProjectSuites.h"
@@ -12,3 +12,4 @@
 #include "WorldSuites.h"
 #include "EffectSuites.h"
 #include "PanelSuites.h"
+
