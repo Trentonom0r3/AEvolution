@@ -169,15 +169,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Collections.h" />
+    <ClInclude Include="Comps.h" />
+    <ClInclude Include="Effects.h" />
+    <ClInclude Include="Footage.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="include\Core.h" />
     <ClInclude Include="include\MessageQueue.h" />
     <ClInclude Include="include\Utility.h" />
     <ClInclude Include="include\UUID.hpp" />
+    <ClInclude Include="Items.h" />
+    <ClInclude Include="Layers.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Projects.h" />
+    <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Collections.cpp" />
+    <ClCompile Include="Comps.cpp" />
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="Effects.cpp" />
+    <ClCompile Include="Footage.cpp" />
+    <ClCompile Include="Items.cpp" />
+    <ClCompile Include="Layers.cpp" />
     <ClCompile Include="MessageQueue.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -185,8 +199,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Projects.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="Utility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

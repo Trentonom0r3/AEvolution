@@ -114,15 +114,19 @@ class CollectionItemH : public BaseH {
 public:
     CollectionItemH() {}
     CollectionItemH(std::string sessionID) : BaseH(sessionID) {}
-
+    std::string type = "";
+    std::string typeSessionID = "";
 private:
     friend class boost::serialization::access;
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version)
     {
         ar& boost::serialization::base_object<BaseH>(*this);
+        ar& type;
+        ar& typeSessionID;
     }
 };
+
 
 class StreamRefH : public BaseH {
 public:
@@ -163,5 +167,36 @@ friend class boost::serialization::access;
 	void serialize(Archive& ar, const unsigned int version)
 	{
 		ar& boost::serialization::base_object<BaseH>(*this);
+	}
+};
+
+struct dimensionsH {
+	int width = 0;
+	int height = 0;
+private:
+    friend class boost::serialization::access;
+	template<class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+		ar& width;
+		ar& height;
+	}
+};
+
+struct colorH {
+	float r = 0;
+	float g = 0;
+	float b = 0;
+	float a = 0;
+
+private:
+    friend class boost::serialization::access;
+	template<class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+		ar& r;
+		ar& g;
+		ar& b;
+		ar& a;
 	}
 };

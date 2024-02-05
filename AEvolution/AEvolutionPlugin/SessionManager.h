@@ -29,11 +29,11 @@ public:
     void operator=(const SessionManager&) = delete;
 
     void addSession(SessionObject session, const std::string& sessionID) {
-		sessions[sessionID] = session;
+		sessions[sessionID] = std::move(session);
 	}
 
     SessionObject getSession(const std::string& sessionID) {
-        return sessions[sessionID];
+        return std::move(sessions[sessionID]);
         }
 
     void cleanAll() {

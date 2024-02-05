@@ -1,95 +1,77 @@
-#include "Utilits.h"
+#include "../pch.h"
+#include "Utilities.h"
 
+void ReportInfo(std::string info)
+{
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "ReportInfo", CommandArgs{ info }); // Command to be sent to the server
+		mqm.sendCommand(cmd);
 
-Result<void>ReportInfo(std::string info) {
-	A_Err err = A_Err_NONE; // This is the error code that AE will return if something goes wrong
-
-	const A_char* info_stringZ = info.c_str(); // Convert the string to a const A_char* (A_char is a typedef for char16_t)
-	AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-	AEGP_PluginID* pluginIDPtr = SuiteManager::GetInstance().GetPluginID();
-
-	if (pluginIDPtr != nullptr) {
-		// Dereference the pointer to get the plugin ID
-		AEGP_PluginID  pluginID = *pluginIDPtr;
-		// Use the macro and capture any error that occurs
-		ERR(suites.UtilitySuite6()->AEGP_ReportInfo(pluginID, info_stringZ)); // Report the info to AE
-		if (err != A_Err_NONE) { // If there was an error
-			// Throw a runtime error with the error code
-			throw std::runtime_error("Error reporting info. Error code: " + std::to_string(err));
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error); // Throw an error if the response contains an error (Propogated from the server)
 		}
-		Result<void> result; // Create a result object
-		result.error = err; // Set the error code
-
-		return result; // Return the result
 	}
-	else {
-		throw std::runtime_error("Plugin ID is null");
+	catch (std::exception& e) {
+		std::cerr << "Error in ReportInfo: " << e.what() << std::endl;
+		throw std::runtime_error("Error in ReportInfo: " + std::string(e.what()));
 	}
 }
 
-
-Result<void> StartUndoGroup(std::string undo_name)
+void StartUndoGroup(std::string undo_name)
 {
-	A_Err 	err = A_Err_NONE,
-		err2 = A_Err_NONE;
-	AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "StartUndoGroup", CommandArgs{ undo_name }); // Command to be sent to the server
+		mqm.sendCommand(cmd);
 
-	const A_char* undo_nameZ = undo_name.c_str();
-
-	ERR(suites.UtilitySuite6()->AEGP_StartUndoGroup(undo_nameZ));
-
-	Result<void> result;
-	result.error = err;
-
-	return result;
-
-}
-
-Result<void> EndUndoGroup()
-{
-	A_Err 	err = A_Err_NONE,
-		err2 = A_Err_NONE;
-	AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-	ERR(suites.UtilitySuite6()->AEGP_EndUndoGroup());
-
-	Result<void> result;
-	result.error = err;
-
-	return result;
-
-}
-
-Result<std::string> getPluginPaths()
-{
-	A_Err 	err = A_Err_NONE,
-		err2 = A_Err_NONE;
-	AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-	AEGP_GetPathTypes pathType = AEGP_GetPathTypes_USER_PLUGIN;
-	AEGP_PluginID* pluginIDPtr = SuiteManager::GetInstance().GetPluginID();
-	AEGP_MemHandle unicode_pathMH = nullptr;
-	A_UTF16Char* unicode_pathP = nullptr;
-	std::string path;
-
-	if (pluginIDPtr != nullptr) {
-		// Dereference the pointer to get the plugin ID
-		AEGP_PluginID  pluginID = *pluginIDPtr;
-		// Use the macro and capture any error that occurs
-		ERR(suites.UtilitySuite6()->AEGP_GetPluginPaths(pluginID, pathType, &unicode_pathMH));
-		if (err != A_Err_NONE) { // If there was an error
-					// Throw a runtime error with the error code
-					throw std::runtime_error("Error getting plugin paths. Error code: " + std::to_string(err));
-				}
-		if (unicode_pathMH) {
-			suites.MemorySuite1()->AEGP_LockMemHandle(unicode_pathMH, (void**)&unicode_pathP);
-			path = convertUTF16ToUTF8(unicode_pathP);  // Assuming convertUTF16ToUTF8 is already implemented
-			suites.MemorySuite1()->AEGP_UnlockMemHandle(unicode_pathMH);
-			suites.MemorySuite1()->AEGP_FreeMemHandle(unicode_pathMH);
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error); // Throw an error if the response contains an error (Propogated from the server)
 		}
-		Result<std::string> result(path, err);
-		return result;
 	}
-	else {
-		throw std::runtime_error("Plugin ID is null");
+	catch (std::exception& e) {
+		std::cerr << "Error in StartUndoGroup: " << e.what() << std::endl;
+		throw std::runtime_error("Error in StartUndoGroup: " + std::string(e.what()));
 	}
+}
 
+void EndUndoGroup()
+{
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "EndUndoGroup", CommandArgs{}); // Command to be sent to the server
+		mqm.sendCommand(cmd);
+
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error); // Throw an error if the response contains an error (Propogated from the server)
+		}
+	}
+	catch (std::exception& e) {
+		std::cerr << "Error in EndUndoGroup: " << e.what() << std::endl;
+		throw std::runtime_error("Error in EndUndoGroup: " + std::string(e.what()));
+	}
+}
+
+std::string GetPluginPaths()
+{
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "GetPluginPaths", CommandArgs{}); // Command to be sent to the server
+		mqm.sendCommand(cmd);
+
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error); // Throw an error if the response contains an error (Propogated from the server)
+		}
+
+		std::string pluginPaths = boost::get<std::string>(resp.args[0]); // Extract the plugin paths from the response
+		return pluginPaths; // Return the plugin paths
+	}
+	catch (std::exception& e) {
+		std::cerr << "Error in GetPluginPaths: " << e.what() << std::endl;
+		throw std::runtime_error("Error in GetPluginPaths: " + std::string(e.what()));
+	}
 }

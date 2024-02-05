@@ -30,7 +30,8 @@
 std::string createUUID();
 
 typedef boost::variant<int, float, std::string, bool, std::vector<std::string>, boost::shared_ptr<ItemH>,
-    boost::shared_ptr<CompH>, boost::shared_ptr<LayerH>, boost::shared_ptr<ProjectH>> CommandArg;
+    boost::shared_ptr<CompH>, boost::shared_ptr<LayerH>, boost::shared_ptr<ProjectH>, boost::shared_ptr<StreamRefH>, boost::shared_ptr<FootageH>,
+                            dimensionsH, colorH> CommandArg;
 
 typedef std::vector<CommandArg> CommandArgs;
 
@@ -72,6 +73,7 @@ struct Response {
     void serialize(Archive& ar, const unsigned int version) {
         ar& sessionID;
         ar& args;
+        ar& error;
     }
 };      // Response to be sent to the client
 
@@ -107,12 +109,26 @@ public:
             std::string serializedResponse(buffer.begin(), buffer.begin() + recvd_size);
             std::stringstream ss(serializedResponse);
             boost::archive::text_iarchive ia(ss);
-            ia >> response;
+           ia >> response;
             return true;
         }
         return false;
     }
 
+    Response waitForResponse() {
+        const std::chrono::milliseconds timeoutDuration(5000); // 5 seconds timeout
+        auto start = std::chrono::steady_clock::now();
+        Response resp;
+
+        while (!tryReceiveResponse(resp)) {
+            if (std::chrono::steady_clock::now() - start > timeoutDuration) {
+                throw std::runtime_error("Timeout exceeded while waiting for response");
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        return resp;
+    }
 
 private:
     MessageQueueManager() {

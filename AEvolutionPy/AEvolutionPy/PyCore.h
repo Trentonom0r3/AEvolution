@@ -9,10 +9,29 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/functional.h>
-
+#include "Base.h"
 namespace py = pybind11;
 
-void bindItem(py::module_& m);
-void bindPrint(py::module_& m);
-void bindGetItem(py::module_& m);
-void bindgetItemType(py::module_& m);
+class UndoGroup {
+public:
+    UndoGroup(const std::string& name) : groupName(name) {
+        // Equivalent to app.beginUndoGroup(name)
+        beginUndoGroup(groupName);
+    }
+
+    void beginUndoGroup(const std::string& name);
+
+    void endUndoGroup();
+
+    UndoGroup* __enter__() {
+        // Return this object upon entering the context
+        return this;
+    }
+
+    void __exit__(const py::object& type, const py::object& value, const py::object& traceback) {
+        endUndoGroup();
+    }
+
+private:
+    std::string groupName;
+};

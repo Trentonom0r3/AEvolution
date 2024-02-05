@@ -94,57 +94,61 @@ private:
 class Collection2H : public BaseH {
 public:
     Collection2H() {}
-	Collection2H(std::string sessionID) : BaseH(sessionID) {}
+    Collection2H(std::string sessionID) : BaseH(sessionID) {}
 
 private:
-friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar& boost::serialization::base_object<BaseH>(*this);
-	}
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        ar& boost::serialization::base_object<BaseH>(*this);
+    }
 };
 
 class CollectionItemH : public BaseH {
-public: 
+public:
     CollectionItemH() {}
-	CollectionItemH(std::string sessionID) : BaseH(sessionID) {}
-
+    CollectionItemH(std::string sessionID) : BaseH(sessionID) {}
+    std::string type = "";
+    std::string typeSessionID = "";
 private:
-friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar& boost::serialization::base_object<BaseH>(*this);
-	}
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        ar& boost::serialization::base_object<BaseH>(*this);
+        ar& type;
+        ar& typeSessionID;
+    }
 };
+
 
 class StreamRefH : public BaseH {
 public:
     StreamRefH() {}
-	StreamRefH(std::string sessionID) : BaseH(sessionID) {}
+    StreamRefH(std::string sessionID) : BaseH(sessionID) {}
 
 private:
-friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar& boost::serialization::base_object<BaseH>(*this);
-	}
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        ar& boost::serialization::base_object<BaseH>(*this);
+    }
 };
 
 class EffectRefH : public BaseH {
 public:
     EffectRefH() {}
-	EffectRefH(std::string sessionID) : BaseH(sessionID) {}
+    EffectRefH(std::string sessionID) : BaseH(sessionID) {}
 
 private:
-friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar& boost::serialization::base_object<BaseH>(*this);
-	}
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        ar& boost::serialization::base_object<BaseH>(*this);
+    }
 };
 
 class FootageH : public BaseH {
@@ -158,5 +162,36 @@ private:
     void serialize(Archive& ar, const unsigned int version)
     {
         ar& boost::serialization::base_object<BaseH>(*this);
+    }
+};
+
+struct dimensionsH {
+    int width = 0;
+    int height = 0;
+private:
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        ar& width;
+        ar& height;
+    }
+};
+
+struct colorH {
+    float r = 0;
+    float g = 0;
+    float b = 0;
+    float a = 0;
+
+private:
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        ar& r;
+        ar& g;
+        ar& b;
+        ar& a;
     }
 };

@@ -16,14 +16,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <boost/interprocess/ipc/message_queue.hpp>
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/export.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/variant/variant.hpp>
-#include <boost/variant/get.hpp>
-#include <boost/serialization/variant.hpp>
-#include <boost/serialization/vector.hpp>
-#include "MessageQueue.h"
+
 #endif //PCH_H
+

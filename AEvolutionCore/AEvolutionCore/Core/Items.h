@@ -1,30 +1,31 @@
 #pragma once
 #include "../include/Core.h"
+#include "../include/MessageQueue.h"
 
-ItemH getActiveItem();
+AEvolution_API ItemH getActiveItem();
 
-std::string getItemType(ItemH item);
+AEvolution_API std::string getItemType(ItemH item);
 
-std::string getItemName(ItemH item);
+AEvolution_API std::string getItemName(ItemH item);
 
-void setItemName(ItemH item, const std::string& name);
+AEvolution_API void setItemName(ItemH item, const std::string& name);
 
-float getItemDuration(ItemH item);
+AEvolution_API float getItemDuration(ItemH item);
 
-float getItemCurrentTime(ItemH item);
+AEvolution_API float getItemCurrentTime(ItemH item);
 
 using dimensions = std::tuple<float, float>;
 using colors = std::tuple<float, float, float, float>;
 
-dimensions getItemDimensions(ItemH item);
+AEvolution_API dimensions getItemDimensions(ItemH item);
 
-float getItemPixelAspectRatio(ItemH item);
+AEvolution_API float getItemPixelAspectRatio(ItemH item);
 
-void deleteItem(ItemH item);
+AEvolution_API void deleteItem(ItemH item);
 
-std::string getItemComment(ItemH item);
+AEvolution_API std::string getItemComment(ItemH item);
 
-void setItemComment(ItemH item, const std::string& comment);
+AEvolution_API void setItemComment(ItemH item, const std::string& comment);
 
 //AEGP_LabelID getItemLabel(ItemH item);
 
@@ -32,31 +33,31 @@ void setItemComment(ItemH item, const std::string& comment);
 
 //AEGP_ItemViewP getItemMRUView(ItemH item);
 
-float getUniqueItemID(ItemH item);
+AEvolution_API float getUniqueItemID(ItemH item);
 
-ItemH createFolderItem(const std::string& name, ItemH parentFolder);
+AEvolution_API ItemH createFolderItem(const std::string& name, ItemH parentFolder);
 
-ItemH getFirstProjItem(ProjectH project);
+AEvolution_API ItemH getFirstProjItem(ProjectH project);
 
-ItemH getNextProjItem(ProjectH project, ItemH currentItem);
+AEvolution_API ItemH getNextProjItem(ProjectH project, ItemH currentItem);
 
-bool isItemSelected(ItemH item);
+AEvolution_API bool isItemSelected(ItemH item);
 
-void selectItem(ItemH item, bool select, bool deselectOthers);
+AEvolution_API void selectItem(ItemH item, bool select, bool deselectOthers);
 
-float getItemFlags(ItemH item);
+AEvolution_API float getItemFlags(ItemH item);
 
-float getCompItemCurrentTime(ItemH item, float frameRate);
+AEvolution_API float getCompItemCurrentTime(ItemH item, float frameRate);
 
-void setCompItemCurrentTime(ItemH item, float time, float frameRate);
+AEvolution_API void setCompItemCurrentTime(ItemH item, float time, float frameRate);
 
-void setItemUseProxy(ItemH item, bool useProxy);
+AEvolution_API void setItemUseProxy(ItemH item, bool useProxy);
 
-ItemH getItemParentFolder(ItemH item);
+AEvolution_API ItemH getItemParentFolder(ItemH item);
 
-void setItemParentFolder(ItemH item, ItemH parentFolder);
+AEvolution_API void setItemParentFolder(ItemH item, ItemH parentFolder);
 
-ItemH createFolderItem(const std::string& name, ItemH parentFolder);
+AEvolution_API ItemH createFolderItem(const std::string& name, ItemH parentFolder);
 
 
 

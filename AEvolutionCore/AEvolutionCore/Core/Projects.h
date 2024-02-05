@@ -1,37 +1,31 @@
 #pragma once
 #include "../include/Core.h"
+#include "../include/MessageQueue.h"
 
-Result<AEGP_ProjectH> getProject();
+AEvolution_API ProjectH getProject();
 
-Result<void> ExecuteCommand(int commandId);
+AEvolution_API void ExecuteCommand(int commandId);
 
-Result<std::string> GetProjectName(Result<AEGP_ProjectH> projH);
+AEvolution_API std::string GetProjectName( ProjectH projH);
 
-Result<std::string> GetProjectPath(Result<AEGP_ProjectH> projH);
+AEvolution_API std::string GetProjectPath( ProjectH projH);
 
-Result<void> SaveProjectToPath(Result<AEGP_ProjectH> projH, const std::string& path);
+AEvolution_API void SaveProjectToPath( ProjectH projH, const std::string& path);
 
-Result<AEGP_TimeDisplay3> GetProjectTimeDisplay(Result<AEGP_ProjectH> projH);
+//Result<AEGP_TimeDisplay3> GetProjectTimeDisplay(AEvolution_API ProjectH projH);
 
-Result<void> SetProjectTimeDisplay2(Result<AEGP_ProjectH> projH,
-	const std::string& displayType = "TIMECODE",
-	int timebase = 30,
-	bool nonDropFrame = false,
-	int framesPerFoot = 16,
-	int startingFrame = 0,
-	bool autoTimecodeBase = false);
+//AEvolution_API void SetProjectTimeDisplay2(ProjectH projH);
 
+AEvolution_API bool IsProjectDirty( ProjectH projH);
 
-Result<bool> IsProjectDirty(Result<AEGP_ProjectH> projH);
+AEvolution_API void SaveProjectAs( ProjectH projH, const std::string& path);
 
-Result<void> SaveProjectAs(Result<AEGP_ProjectH> projH, const std::string& path);
+AEvolution_API ProjectH NewProject();
 
-Result<AEGP_ProjectH> NewProject();
+AEvolution_API ProjectH OpenProjectFromPath(const std::string& path);
 
-Result<AEGP_ProjectH> OpenProjectFromPath(const std::string& path);
+AEvolution_API std::string GetProjectBitDepth( ProjectH projH);
 
-Result<std::string> GetProjectBitDepth(Result<AEGP_ProjectH> projH);
+AEvolution_API void SetProjectBitDepth( ProjectH projH, std::string bit_depth);
 
-Result<void> SetProjectBitDepth(Result<AEGP_ProjectH> projH, std::string bit_depth);
-
-Result<AEGP_ItemH> getProjectRootFolder();
+ItemH getProjectRootFolder();

@@ -1,12 +1,13 @@
 #pragma once
 #include "../include/Core.h"
+#include "../include/MessageQueue.h"
 /*
 CompH compH= RAIIResult<AEGP_CompH>;
 Result<AEGP_CompH> comp = compH->getResult()
 */
 //define AEvolution_API for everything
 
-AEvolution_API CompH addComp(const std::string& name, std::pair<int, int> dimensions, float frameRate, float duration, float pixelAspectRatio, ItemH parentFolder);
+AEvolution_API CompH addComp(const std::string& name, dimensionsH dimensions, float frameRate, float duration, float pixelAspectRatio, ItemH parentFolder);
 
 AEvolution_API CompH GetCompFromItem(ItemH itemH);
 
@@ -16,9 +17,9 @@ AEvolution_API std::pair<int, int> GetCompDownsampleFactor(CompH compH);
 
 AEvolution_API void SetCompDownsampleFactor(CompH compH, std::pair<int, int> factor);
 
-AEvolution_API std::tuple<float, float, float, float> GetCompBGColor(CompH compH);
+AEvolution_API colorH GetCompBGColor(CompH compH);
 
-AEvolution_API void SetCompBGColor(CompH compH, std::tuple<float, float, float, float> color);
+AEvolution_API void SetCompBGColor(CompH compH, colorH color);
 
 AEvolution_API float getCompFlags(CompH compH);
 
@@ -50,9 +51,9 @@ AEvolution_API LayerH createCameraInComp(const std::string& name, std::pair<floa
 
 AEvolution_API LayerH createLightInComp(const std::string& name, std::pair<float, float> position, CompH parentCompH);
 
-AEvolution_API std::vector<LayerH> getNewCollectionFromCompSelection(CompH compH);
+//AEvolution_API std::vector<LayerH> getNewCollectionFromCompSelection(CompH compH);
 
-AEvolution_API void setSelection(CompH compH, Collection2H collectionH);
+//AEvolution_API void setSelection(CompH compH, Collection2H collectionH);
 
 AEvolution_API float getCompDisplayStartTime(CompH compH);
 

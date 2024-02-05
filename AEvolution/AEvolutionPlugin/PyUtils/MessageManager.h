@@ -23,7 +23,7 @@
 std::string createUUID();
 
 typedef boost::variant<int, float, std::string, bool, std::vector<std::string>, boost::shared_ptr<ItemH>,
-    boost::shared_ptr<CompH>, boost::shared_ptr<LayerH>, boost::shared_ptr<ProjectH>> CommandArg;
+    boost::shared_ptr<CompH>, boost::shared_ptr<LayerH>, boost::shared_ptr<ProjectH>, boost::shared_ptr<StreamRefH>, dimensionsH, colorH> CommandArg;
 
 typedef std::vector<CommandArg> CommandArgs;
 
@@ -65,6 +65,7 @@ struct Response {
     void serialize(Archive& ar, const unsigned int version) {
         ar& sessionID;
         ar& args;
+        ar& error;
     }
 };      // Response to be sent to the client
 

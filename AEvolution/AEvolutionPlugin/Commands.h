@@ -1567,11 +1567,11 @@ public:
     };
     void execute() override;
 };
-class ExecuteCommandCommand : public CommandBase {
+class executecmdCommand : public CommandBase {
 public:
-    ExecuteCommandCommand() = default;
+    executecmdCommand() = default;
 
-    ExecuteCommandCommand(Command cmd) : CommandBase(cmd) {
+    executecmdCommand(Command cmd) : CommandBase(cmd) {
 
     };
     void execute() override;
@@ -1804,6 +1804,16 @@ public:
 	void execute() override;
 };
 
+class getItemNameCommand : public CommandBase {
+public:
+	getItemNameCommand() = default;
+
+	getItemNameCommand(Command cmd) : CommandBase(cmd) {
+
+	};
+	void execute() override;
+};
+
 class CommandFactory {
 public:
     CommandFactory() {
@@ -1815,13 +1825,14 @@ public:
         commands["CollectionPushBack"] = [](const Command& cmd) { return std::make_unique<CollectionPushBackCommand>(cmd); };
         commands["CollectionErase"] = [](const Command& cmd) { return std::make_unique<CollectionEraseCommand>(cmd); };
         commands["Addcomp"] = [](const Command& cmd) { return std::make_unique<AddcompCommand>(cmd); };
-        commands["getCompFromItem"] = [](const Command& cmd) { return std::make_unique<getCompFromItemCommand>(cmd); };
+        commands["GetCompFromItem"] = [](const Command& cmd) { return std::make_unique<getCompFromItemCommand>(cmd); };
         commands["GetItemFromComp"] = [](const Command& cmd) { return std::make_unique<GetItemFromCompCommand>(cmd); };
         commands["GetCompDownsampleFactor"] = [](const Command& cmd) { return std::make_unique<GetCompDownsampleFactorCommand>(cmd); };
         commands["SetCompDownsampleFactor"] = [](const Command& cmd) { return std::make_unique<SetCompDownsampleFactorCommand>(cmd); };
         commands["GetCompBGColor"] = [](const Command& cmd) { return std::make_unique<GetCompBGColorCommand>(cmd); };
         commands["SetCompBGColor"] = [](const Command& cmd) { return std::make_unique<SetCompBGColorCommand>(cmd); };
         commands["GetCompFlags"] = [](const Command& cmd) { return std::make_unique<GetCompFlagsCommand>(cmd); };
+        commands["getItemName"] = [](const Command& cmd) { return std::make_unique<getItemNameCommand>(cmd); };
         commands["GetShowLayerNameOrSourceName"] = [](const Command& cmd) { return std::make_unique<GetShowLayerNameOrSourceNameCommand>(cmd); };
         commands["SetShowLayerNameOrSourceName"] = [](const Command& cmd) { return std::make_unique<SetShowLayerNameOrSourceNameCommand>(cmd); };
         commands["GetShowBlendModes"] = [](const Command& cmd) { return std::make_unique<GetShowBlendModesCommand>(cmd); };
@@ -1981,7 +1992,7 @@ public:
         commands["togglePanelVisibility"] = [](const Command& cmd) { return std::make_unique<togglePanelVisibilityCommand>(cmd); };
         commands["isPanelShown"] = [](const Command& cmd) { return std::make_unique<isPanelShownCommand>(cmd); };
         commands["getProject"] = [](const Command& cmd) { return std::make_unique<getProjectCommand>(cmd); };
-        commands["ExecuteCommand"] = [](const Command& cmd) { return std::make_unique<ExecuteCommandCommand>(cmd); };
+        commands["executeCommand"] = [](const Command& cmd) { return std::make_unique<executecmdCommand>(cmd); };
         commands["GetProjectName"] = [](const Command& cmd) { return std::make_unique<GetProjectNameCommand>(cmd); };
         commands["GetProjectPath"] = [](const Command& cmd) { return std::make_unique<GetProjectPathCommand>(cmd); };
         commands["SaveProjectToPath"] = [](const Command& cmd) { return std::make_unique<SaveProjectToPathCommand>(cmd); };
@@ -2006,7 +2017,7 @@ public:
         commands["getPluginPaths"] = [](const Command& cmd) { return std::make_unique<getPluginPathsCommand>(cmd); };
         commands["getBaseAddr8"] = [](const Command& cmd) { return std::make_unique<getBaseAddr8Command>(cmd); };
         commands["getSize"] = [](const Command& cmd) { return std::make_unique<getSizeCommand>(cmd); };
-        commands["reportInfo"] = [](const Command& cmd) { return std::make_unique<ReportInfoCommand>(cmd); };
+        commands["ReportInfo"] = [](const Command& cmd) { return std::make_unique<ReportInfoCommand>(cmd); };
         //
     }
 

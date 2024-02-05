@@ -1,109 +1,110 @@
 #pragma once
 #include "../include/Core.h"
+#include "../include/MessageQueue.h"
 
 
-Result<int> getNumLayers(Result<AEGP_CompH> compH);
+AEvolution_API int getNumLayers(CompH  compH);
 
-Result<int> getLayerIndex(Result<AEGP_LayerH> layerH);
+AEvolution_API int getLayerIndex(LayerH layerH);
 
-Result<std::string> getLayerName(Result<AEGP_LayerH> layerH);
+AEvolution_API std::string getLayerName(LayerH layerH);
 
-Result<std::string> getLayerSourceName(Result<AEGP_LayerH> layerH);
+AEvolution_API std::string getLayerSourceName(LayerH layerH);
 
-Result<void> setLayerName(Result<AEGP_LayerH> layerH, const std::string& name);
+AEvolution_API void setLayerName(LayerH layerH, const std::string& name);
 
-Result<AEGP_LayerH> ActiveLayer();
+AEvolution_API LayerH ActiveLayer();
 
-Result<AEGP_LayerH> getLayerFromComp(Result<AEGP_CompH> compH, int index);
+AEvolution_API LayerH getLayerFromComp(CompH  compH, int index);
 
-Result<void> changeLayerIndex(Result<AEGP_LayerH> layerH, int index);
+AEvolution_API void changeLayerIndex(LayerH layerH, int index);
 
-Result<bool> isAddLayerValid(Result<AEGP_ItemH> itemH, Result<AEGP_CompH> compH);
+AEvolution_API bool isAddLayerValid(AEvolution_API ItemH itemH, CompH  compH);
 
-Result<AEGP_LayerH> AddLayer(Result<AEGP_ItemH> itemH, Result<AEGP_CompH> compH);
+AEvolution_API LayerH AddLayer(AEvolution_API ItemH itemH, CompH  compH);
 
-Result<AEGP_ItemH> getLayerSourceItem(Result<AEGP_LayerH> layerH);
+AEvolution_API ItemH getLayerSourceItem(LayerH layerH);
 
-Result<int> GetLayerSourceItemID(Result<AEGP_LayerH> layerH);
+AEvolution_API int GetLayerSourceItemID(LayerH layerH);
 
-Result<AEGP_CompH> GetLayerParentComp(Result<AEGP_LayerH> layerH);
+AEvolution_API CompH GetLayerParentComp(LayerH layerH);
 
-Result<std::string> GetLayerQuality(Result<AEGP_LayerH> layerH);
+AEvolution_API std::string GetLayerQuality(LayerH layerH);
 
-Result<void> SetLayerQuality(Result<AEGP_LayerH> layerH, int qualityint);
+AEvolution_API void SetLayerQuality(LayerH layerH, int qualityint);
 
 //gets flags for layer, any flags that are true are returned
-Result<AEGP_LayerFlags> GetLayerFlags(Result<AEGP_LayerH> layerH); //DEAL WITH THIS LATER
+//Result<AEGP_LayerFlags> GetLayerFlags(LayerH layerH); //DEAL WITH THIS LATER
 
 // sets flag false or true given user input
-Result<void> SetLayerFlag(Result<AEGP_LayerH> layerH, LayerFlag flag, A_Boolean value);  //DEAL WITH THIS LATER
+//AEvolution_API void SetLayerFlag(LayerH layerH, LayerFlag flag, A_Boolean value);  //DEAL WITH THIS LATER
 
-Result<bool> IsLayerVideoReallyOn(Result<AEGP_LayerH> layerH);
+AEvolution_API bool IsLayerVideoReallyOn(LayerH layerH);
 
-Result<bool> IsLayerAudioReallyOn(Result<AEGP_LayerH> layerH);
+AEvolution_API bool IsLayerAudioReallyOn(LayerH layerH);
 
-Result<float> GetLayerCurrentTime(Result<AEGP_LayerH> layerH, AEGP_LTimeMode time_mode);
+//AEvolution_API float GetLayerCurrentTime(LayerH layerH, AEGP_LTimeMode time_mode);
 
-Result<float> GetLayerInPoint(Result<AEGP_LayerH> layerH, AEGP_LTimeMode time_mode);
+//AEvolution_API float GetLayerInPoint(LayerH layerH, AEGP_LTimeMode time_mode);
 
-Result<float> GetLayerDuration(Result<AEGP_LayerH> layerH, AEGP_LTimeMode time_mode);
+//AEvolution_API float GetLayerDuration(LayerH layerH, AEGP_LTimeMode time_mode);
 
-Result<void> SetLayerInPointAndDuration(Result<AEGP_LayerH> layerH, AEGP_LTimeMode time_mode, float in_point, float duration, float frameRate);
+//AEvolution_API void SetLayerInPointAndDuration(LayerH layerH, AEGP_LTimeMode time_mode, float in_point, float duration, float frameRate);
 
-Result<float> GetLayerOffset(Result<AEGP_LayerH> layerH);
+AEvolution_API float GetLayerOffset(LayerH layerH);
 
-Result<void> SetLayerOffset(Result<AEGP_LayerH> layerH, float offsetH, float frameRate);
+AEvolution_API void SetLayerOffset(LayerH layerH, float offsetH, float frameRate);
 
-Result<float> GetLayerStretch(Result<AEGP_LayerH> layerH);
+AEvolution_API float GetLayerStretch(LayerH layerH);
 
-Result<void> SetLayerStretch(Result<AEGP_LayerH> layerH, const A_Ratio& stretch); //deal with this later
+//AEvolution_API void SetLayerStretch(LayerH layerH, const A_Ratio& stretch); //deal with this later
 
-Result<AEGP_LayerTransferMode> GetLayerTransferMode(Result<AEGP_LayerH> layerH);
+//Result<AEGP_LayerTransferMode> GetLayerTransferMode(LayerH layerH);
 
-Result<void> SetLayerTransferMode(Result<AEGP_LayerH> layerH, const AEGP_LayerTransferMode mode);
+//AEvolution_API void SetLayerTransferMode(LayerH layerH, const AEGP_LayerTransferMode mode);
 
-Result<A_FloatRect> GetLayerMaskedBounds(Result<AEGP_LayerH> layerH, float intime, AEGP_LTimeMode comp_time, float frameRate);
+//Result<A_FloatRect> GetLayerMaskedBounds(LayerH layerH, float intime, AEGP_LTimeMode comp_time, float frameRate);
 
-Result<AEGP_ObjectType> GetLayerObjectType(Result<AEGP_LayerH> layerH);
+//Result<AEGP_ObjectType> GetLayerObjectType(LayerH layerH);
 
-Result<A_Boolean> IsLayer3D(Result<AEGP_LayerH> layerH);
+AEvolution_API bool IsLayer3D(LayerH layerH);
 
-Result<A_Boolean> IsLayer2D(Result<AEGP_LayerH> layerH);
+AEvolution_API bool IsLayer2D(LayerH layerH);
 
-Result<A_Boolean> IsVideoActive(Result<AEGP_LayerH> layerH, AEGP_LTimeMode time_mode, float comp_timeH, float frameRate);
+//AEvolution_API bool IsVideoActive(LayerH layerH, AEGP_LTimeMode time_mode, float comp_timeH, float frameRate);
 
-Result<bool> IsLayerUsedAsTrackMatte(Result<AEGP_LayerH> layerH, bool fill_must_be_active);
+AEvolution_API bool IsLayerUsedAsTrackMatte(LayerH layerH, bool fill_must_be_active);
 
-Result<bool> DoesLayerHaveTrackMatte(Result<AEGP_LayerH> layerH);
+AEvolution_API bool DoesLayerHaveTrackMatte(LayerH layerH);
 
-Result<float> ConvertCompToLayerTime(Result<AEGP_LayerH> layerH, float comp_time);
+AEvolution_API float ConvertCompToLayerTime(LayerH layerH, float comp_time);
 
-Result<float> ConvertLayerToCompTime(Result<AEGP_LayerH> layerH, float layer_time, float frameRate);
+AEvolution_API float ConvertLayerToCompTime(LayerH layerH, float layer_time, float frameRate);
 
-Result<float> GetLayerDancingRandValue(Result<AEGP_LayerH> layerH, float comp_time, float frameRate);
+AEvolution_API float GetLayerDancingRandValue(LayerH layerH, float comp_time, float frameRate);
 
-Result<int> GetLayerID(Result<AEGP_LayerH> layerH);
+AEvolution_API int GetLayerID(LayerH layerH);
 
-Result<AEGP_LayerH> GetLayerFromLayerID(Result<AEGP_CompH> parent_comp, int id);
+AEvolution_API LayerH GetLayerFromLayerID(AEvolution_API CompH parent_comp, int id);
 
-Result<AEGP_LabelID> GetLayerLabel(Result<AEGP_LayerH> layerH);
+//Result<AEGP_LabelID> GetLayerLabel(LayerH layerH);
 
-Result<void> SetLayerLabel(Result<AEGP_LayerH> layerH, AEGP_LabelID label);
+//AEvolution_API void SetLayerLabel(LayerH layerH, AEGP_LabelID label);
 
-Result<AEGP_LayerSamplingQuality> GetLayerSamplingQuality(Result<AEGP_LayerH> layerH);
+//Result<AEGP_LayerSamplingQuality> GetLayerSamplingQuality(LayerH layerH);
 
-Result<void> SetLayerSamplingQuality(Result<AEGP_LayerH> layerH, AEGP_LayerSamplingQuality quality);
+//AEvolution_API void SetLayerSamplingQuality(LayerH layerH, AEGP_LayerSamplingQuality quality);
 
-Result<AEGP_LayerH> GetTrackMatteLayer(Result<AEGP_LayerH> layerH);
+AEvolution_API LayerH GetTrackMatteLayer(LayerH layerH);
 
-Result<void> SetTrackMatte(Result<AEGP_LayerH> layerH, Result<AEGP_LayerH> track_matte_layer, AEGP_TrackMatte track_matte_type);
+//AEvolution_API void SetTrackMatte(LayerH layerH, AEvolution_API LayerH track_matte_layer, AEGP_TrackMatte track_matte_type);
 
-Result<void> RemoveTrackMatte(Result<AEGP_LayerH> layerH);
+AEvolution_API void RemoveTrackMatte(LayerH layerH);
 
-Result<void> DeleteLayer(Result<AEGP_LayerH> layerH);
+AEvolution_API void DeleteLayer(LayerH layerH);
 
-Result<AEGP_LayerH> DuplicateLayer(Result<AEGP_LayerH> layerH);
+AEvolution_API LayerH DuplicateLayer(LayerH layerH);
 
-Result<AEGP_LayerH> GetLayerParent(Result<AEGP_LayerH> layerH);
+AEvolution_API LayerH GetLayerParent(LayerH layerH);
 
-Result<void> SetLayerParent(Result<AEGP_LayerH> layerH, AEGP_LayerH parent_layer);
+AEvolution_API void SetLayerParent(LayerH layerH, LayerH parent_layer);

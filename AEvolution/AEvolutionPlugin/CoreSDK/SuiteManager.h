@@ -3,6 +3,7 @@
 
 #include "AEGP_SuiteHandler.h"
 #include "AE_GeneralPlugPanels.h"
+#include "AE_GeneralPlug.h"
 #include "SuiteHelper.h"
 /*
  * File: SuiteManager.h

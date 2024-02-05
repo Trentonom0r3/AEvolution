@@ -134,12 +134,6 @@
     <ClInclude Include="..\CoreSDK\CollectionSuites.h">
       <Filter>CoreSDK</Filter>
     </ClInclude>
-    <ClInclude Include="..\CoreSDK\RenderOptionsSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\RenderSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
     <ClInclude Include="..\CoreSDK\WorldSuites.h">
       <Filter>CoreSDK</Filter>
     </ClInclude>
@@ -207,12 +201,6 @@
       <Filter>CoreSDK</Filter>
     </ClCompile>
     <ClCompile Include="..\CoreSDK\CollectionSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\RenderOptionsSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\RenderSuites.cpp">
       <Filter>CoreSDK</Filter>
     </ClCompile>
     <ClCompile Include="..\CoreSDK\WorldSuites.cpp">
