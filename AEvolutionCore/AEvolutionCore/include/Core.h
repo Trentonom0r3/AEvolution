@@ -173,6 +173,8 @@ friend class boost::serialization::access;
 struct dimensionsH {
 	int width = 0;
 	int height = 0;
+    dimensionsH(std::tuple<int, int> d) : width(std::get<0>(d)), height(std::get<1>(d)) {}
+    dimensionsH() {}
 private:
     friend class boost::serialization::access;
 	template<class Archive>
@@ -188,6 +190,8 @@ struct colorH {
 	float g = 0;
 	float b = 0;
 	float a = 0;
+    colorH(std::tuple<float, float, float, float> c) : r(std::get<0>(c)), g(std::get<1>(c)), b(std::get<2>(c)), a(std::get<3>(c)) {}
+	colorH() {}
 
 private:
     friend class boost::serialization::access;

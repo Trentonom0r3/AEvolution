@@ -59,7 +59,7 @@ std::string GetPluginPaths()
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getPluginPaths", CommandArgs{}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetPluginPaths", CommandArgs{}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();

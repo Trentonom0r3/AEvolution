@@ -19,9 +19,9 @@ AEvolution_API LayerH getLayerFromComp(CompH  compH, int index);
 
 AEvolution_API void changeLayerIndex(LayerH layerH, int index);
 
-AEvolution_API bool isAddLayerValid(AEvolution_API ItemH itemH, CompH  compH);
+AEvolution_API bool isAddLayerValid(ItemH itemH, CompH  compH);
 
-AEvolution_API LayerH AddLayer(AEvolution_API ItemH itemH, CompH  compH);
+AEvolution_API LayerH AddLayer(ItemH itemH, CompH compH);
 
 AEvolution_API ItemH getLayerSourceItem(LayerH layerH);
 
@@ -34,10 +34,10 @@ AEvolution_API std::string GetLayerQuality(LayerH layerH);
 AEvolution_API void SetLayerQuality(LayerH layerH, int qualityint);
 
 //gets flags for layer, any flags that are true are returned
-//Result<AEGP_LayerFlags> GetLayerFlags(LayerH layerH); //DEAL WITH THIS LATER
+//AEvolution_API std::vector<std::string> GetLayerFlags(LayerH layerH); //DEAL WITH THIS LATER
 
 // sets flag false or true given user input
-//AEvolution_API void SetLayerFlag(LayerH layerH, LayerFlag flag, A_Boolean value);  //DEAL WITH THIS LATER
+//lAEvolution_API void SetLayerFlag(LayerH layerH, LayerFlag flag, A_Boolean value);  //DEAL WITH THIS LATER
 
 AEvolution_API bool IsLayerVideoReallyOn(LayerH layerH);
 
@@ -55,7 +55,7 @@ AEvolution_API float GetLayerOffset(LayerH layerH);
 
 AEvolution_API void SetLayerOffset(LayerH layerH, float offsetH, float frameRate);
 
-AEvolution_API float GetLayerStretch(LayerH layerH);
+//AEvolution_API float GetLayerStretch(LayerH layerH);
 
 //AEvolution_API void SetLayerStretch(LayerH layerH, const A_Ratio& stretch); //deal with this later
 

@@ -108,4 +108,4 @@ Result<AEGP_LayerH> DuplicateLayer(Result<AEGP_LayerH> layerH);
 
 Result<AEGP_LayerH> GetLayerParent(Result<AEGP_LayerH> layerH);
 
-Result<void> SetLayerParent(Result<AEGP_LayerH> layerH, AEGP_LayerH parent_layer);
+Result<void> SetLayerParent(Result<AEGP_LayerH> layerH, Result<AEGP_LayerH> parent_layer);

@@ -8,7 +8,7 @@ class FolderItem : public Item {
 public:
 	using Item::Item;
 	virtual ~FolderItem() {}
-	ItemCollection getChildren();
+	std::shared_ptr<ItemCollection> getChildren();
 
 	static FolderItem create(std::string name, ItemH parent);
 

@@ -8,7 +8,7 @@ AEvolution_API std::string getItemType(ItemH item);
 
 AEvolution_API std::string getItemName(ItemH item);
 
-AEvolution_API void setItemName(ItemH item, const std::string& name);
+AEvolution_API void SetItemName(ItemH item, const std::string& name);
 
 AEvolution_API float getItemDuration(ItemH item);
 
@@ -52,7 +52,7 @@ AEvolution_API void setItemUseProxy(ItemH item, bool useProxy);
 
 AEvolution_API ItemH getItemParentFolder(ItemH item);
 
-AEvolution_API void setItemParentFolder(ItemH item, ItemH parentFolder);
+AEvolution_API void SetItemParentFolder(ItemH item, ItemH parentFolder);
 
 
 

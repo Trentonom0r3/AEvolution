@@ -37,7 +37,19 @@ void ReportInfoCommand::execute() {
 void getProjectCommand::execute() {
   	auto& mqm = MessageQueueManager::getInstance();
     try {
-
+		auto& message = enqueueSyncTask(getProject);
+		message->wait();
+		Result<AEGP_ProjectH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		std::string sessionID = createUUID();
+		ProjectH project(sessionID);
+		SessionManager::GetInstance().addSession(result, sessionID);
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<ProjectH>(project));
+		mqm.sendResponse(response);
 	}
     catch (const AEException& e) {
         mqm.sendErrorResponse(cmd.sessionID, e.what());
@@ -63,9 +75,7 @@ void StartUndoGroupCommand::execute() {
         if (result.error != A_Err_NONE) {
 			throw AEException(result.error);
         }
-        else {
-			mqm.sendEmptyResponse(cmd.sessionID);
-		}
+		mqm.sendEmptyResponse(cmd.sessionID);
 
 	}
     catch (const AEException& e) {
@@ -91,10 +101,8 @@ void EndUndoGroupCommand::execute() {
         if (result.error != A_Err_NONE) {
             throw AEException(result.error);
 		}
-        else {
             mqm.sendEmptyResponse(cmd.sessionID);
-        }
-
+        
 	}
     catch (const AEException& e) {
         mqm.sendErrorResponse(cmd.sessionID, e.what());
@@ -110,6 +118,9 @@ void EndUndoGroupCommand::execute() {
 	}
 }
 
+
+// ITEM COMMANDS
+// PT 1
 void getActiveItemCommand::execute() {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
@@ -145,7 +156,19 @@ void getActiveItemCommand::execute() {
 void ActiveLayerCommand::execute() {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		
+		auto& message = enqueueSyncTask(ActiveLayer);
+		message->wait();
+		Result<AEGP_LayerH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		std::string sessionID = createUUID();
+		LayerH layer(sessionID);
+		SessionManager::GetInstance().addSession(result, sessionID);
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<LayerH>(layer));
+		mqm.sendResponse(response);
 	}
 	catch (const boost::bad_get& e) {
 		mqm.sendErrorResponse(cmd.sessionID, e.what());
@@ -171,7 +194,7 @@ void getItemTypeCommand::execute() {
 		message->wait();
 		Result<AEGP_ItemType> result2 = message->getResult();
 		if (result2.error != A_Err_NONE) {
-            mqm.sendErrorResponse(cmd.sessionID, errToString(result2.error));
+			throw AEException(result2.error);
 		}
 		std::vector<std::string> types;
 		types.push_back("Folder");
@@ -232,6 +255,8 @@ void getItemTypeCommand::execute() {
 	}
 }
 
+
+// COLLECTION COMMANDS< LIKELY NOT IMPELEMENTED
 void NewCollectionCommand::execute() {
     // Implement the command logic here
 }
@@ -256,6 +281,9 @@ void CollectionEraseCommand::execute() {
     // Implement the command logic here
 }
 
+
+// COMP COMMANDS
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMP COMMANDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void AddcompCommand::execute() {
     auto& mqm = MessageQueueManager::getInstance();
     try {
@@ -459,7 +487,38 @@ void SetCompBGColorCommand::execute() {
 }
 
 void GetCompFlagsCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		CompH comp = *boost::get<boost::shared_ptr<CompH>>(cmd.args[0]);
+		auto compP = SessionManager::GetInstance().getSession(comp.getSessionID());
+		Result<AEGP_CompH> result = std::get<CompPtr>(compP);
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		auto& message = enqueueSyncTask(GetCompFlags, result);
+		message->wait();
+		Result<AEGP_CompFlags> result2 = message->getResult();
+		if (result2.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		//convert flags to int TODO
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result2.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetShowLayerNameOrSourceNameCommand::execute() {
@@ -1317,6 +1376,7 @@ auto& mqm = MessageQueueManager::getInstance();
 }
 
 //EFFECT COMMANDS
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EFFECT COMMANDS
 
 void GetLayerNumEffectsCommand::execute() {
     // Implement the command logic here
@@ -1408,6 +1468,7 @@ void SetEffectMaskCommand::execute() {
 
 
 //FOOTAGE COMMANDS
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FOOTAGE COMMANDS
 void createFootageCommand::execute() {
     // Implement the command logic here
 }
@@ -1494,28 +1555,153 @@ void GetFootageSequenceImportOptionsCommand::execute() {
 
 
 // ITEM COMMANDS
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ITEM COMMANDS
 void getUniqueItemIDCommand::execute() {
     // Implement the command logic here
 }
 
 void createFolderItemCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		std::string name = boost::get<std::string>(cmd.args[0]);
+		ItemH parentFolder = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[1]);
+		Result<AEGP_ItemH> parentFolderH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(parentFolder.getSessionID()));
+		auto& message = enqueueSyncTask(createFolderItem, name, parentFolderH);
+		message->wait();
+		Result<AEGP_ItemH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		ItemH item(createUUID());
+		SessionManager::GetInstance().addSession(result, item.getSessionID());
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<ItemH>(item));
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetFirstProjItemCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();	
+	try {
+		ProjectH proj = *boost::get<boost::shared_ptr<ProjectH>>(cmd.args[0]);
+		Result<AEGP_ProjectH> projH = std::get<ProjectPtr>(SessionManager::GetInstance().getSession(proj.getSessionID()));
+		auto& message = enqueueSyncTask(GetFirstProjItem, projH);
+		message->wait();
+		Result<AEGP_ItemH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		ItemH item(createUUID());
+		SessionManager::GetInstance().addSession(result, item.getSessionID());
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<ItemH>(item));
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
+
 void GetNextProjItemCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try{
+		ProjectH proj = *boost::get<boost::shared_ptr<ProjectH>>(cmd.args[0]);
+		ItemH currentItem = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[1]);
+		Result<AEGP_ProjectH> projH = std::get<ProjectPtr>(SessionManager::GetInstance().getSession(proj.getSessionID()));
+		Result<AEGP_ItemH> currentItemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(currentItem.getSessionID()));
+		auto& message = enqueueSyncTask(GetNextProjItem, projH, currentItemH);
+		message->wait();
+		Result<AEGP_ItemH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		ItemH item(createUUID());
+		SessionManager::GetInstance().addSession(result, item.getSessionID());
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<ItemH>(item));
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void IsItemSelectedCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(IsItemSelected, itemH);
+		message->wait();
+		Result<bool> result = message->getResult();
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void SelectItemCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		bool selectItem = boost::get<bool>(cmd.args[1]);
+		bool deselectOthers = boost::get<bool>(cmd.args[2]);
+		auto& message = enqueueSyncTask(SelectItem, itemH, selectItem, deselectOthers);
+		message->wait();
+		Result<void> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetItemFlagsCommand::execute() {
@@ -1523,145 +1709,946 @@ void GetItemFlagsCommand::execute() {
 }
 
 void GetCompItemCurrentTimeCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		float frameRate = boost::get<float>(cmd.args[1]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(GetCompItemCurrentTime, itemH, frameRate);
+		message->wait();
+		Result<float> result = message->getResult();
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
+
+
 void SetCompItemCurrentTimeCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		float time = boost::get<float>(cmd.args[1]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		//auto& message = enqueueSyncTask(SetCompItemCurrentTime, itemH, time);
+		//message->wait();
+		//Result<void> result = message->getResult();
+		//if (result.error != A_Err_NONE) {
+		//	throw AEException(result.error);
+		//}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void SetItemUseProxyCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		bool useProxy = boost::get<bool>(cmd.args[1]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(SetItemUseProxy, itemH, useProxy);
+		message->wait();
+		Result<void> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetItemParentFolderCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(GetItemParentFolder, itemH);
+		message->wait();
+		Result<AEGP_ItemH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		ItemH item2(createUUID());
+		SessionManager::GetInstance().addSession(result, item2.getSessionID());
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<ItemH>(item2));
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void SetItemParentFolderCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		ItemH parentFolder = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[1]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		Result<AEGP_ItemH> parentFolderH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(parentFolder.getSessionID()));
+		auto& message = enqueueSyncTask(SetItemParentFolder, itemH, parentFolderH);
+		message->wait();
+		Result<void> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetItemDurationCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(GetItemDuration, itemH);
+		message->wait();
+		Result<float> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetItemCurrentTimeCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(GetItemCurrentTime, itemH);
+		message->wait();
+		Result<float> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetItemDimensionsCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(GetItemDimensions, itemH);
+		message->wait();
+		Result<size> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		dimensionsH dimensions;
+		dimensions.width = result.value.width;
+		dimensions.height = result.value.height;
+		response.args.push_back(dimensions);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetItemPixelAspectRatioCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(GetItemPixelAspectRatio, itemH);
+		message->wait();
+		Result<float> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void DeleteItemCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(DeleteItem, itemH);
+		message->wait();
+		Result<void> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void SetItemCurrentTimeCommand::execute() {
-    // Implement the command logic here
 }
 
 void GetItemCommentCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(GetItemComment, itemH);
+		message->wait();
+		Result<std::string> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void SetItemCommentCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		std::string comment = boost::get<std::string>(cmd.args[1]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(SetItemComment, itemH, comment);
+		message->wait();
+		Result<void> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetItemLabelCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(GetItemLabel, itemH);
+		message->wait();
+		Result<AEGP_LabelID> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void SetItemLabelCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		A_long label = boost::get<A_long>(cmd.args[1]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(SetItemLabel, itemH, label);
+		message->wait();
+		Result<void> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetItemMRUViewCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		auto& message = enqueueSyncTask(GetItemMRUView, itemH);
+		message->wait();
+		Result<AEGP_ItemViewP> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+	
+		Response response;
+		response.sessionID = cmd.sessionID;
+		//response.args.push_back(boost::make_shared<StreamRefH>(streamRef));
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 
-// LAYER COMMANDS
+// LAYER COMMANDS ----~~~~~~~~~~~~~~------------------~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~LAYER COMMANDS
 void getNumLayersCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		CompH comp = *boost::get<boost::shared_ptr<CompH>>(cmd.args[0]);
+		Result<AEGP_CompH> compH = std::get<CompPtr>(SessionManager::GetInstance().getSession(comp.getSessionID()));
+		auto& message = enqueueSyncTask(getNumLayers, compH);
+		message->wait();
+		Result<A_long> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void getLayerIndexCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(getLayerIndex, layerH);
+		message->wait();
+		Result<A_long> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void getLayerNameCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(getLayerName, layerH);
+		message->wait();
+		Result<std::string> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void getLayerSourceNameCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(getLayerSourceName, layerH);
+		message->wait();
+		Result<std::string> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void setLayerNameCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		std::string name = boost::get<std::string>(cmd.args[1]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(setLayerName, layerH, name);
+		message->wait();
+		Result<void> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void getLayerFromCompCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		CompH comp = *boost::get<boost::shared_ptr<CompH>>(cmd.args[0]);
+		A_long index = boost::get<A_long>(cmd.args[1]);
+		Result<AEGP_CompH> compH = std::get<CompPtr>(SessionManager::GetInstance().getSession(comp.getSessionID()));
+		auto& message = enqueueSyncTask(getLayerFromComp, compH, index);
+		message->wait();
+		Result<AEGP_LayerH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		LayerH layer(createUUID());
+		SessionManager::GetInstance().addSession(result, layer.getSessionID());
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<LayerH>(layer));
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void changeLayerIndexCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		A_long newIndex = boost::get<A_long>(cmd.args[1]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(changeLayerIndex, layerH, newIndex);
+		message->wait();
+		Result<void> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void isAddLayerValidCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		CompH comp = *boost::get<boost::shared_ptr<CompH>>(cmd.args[1]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		Result<AEGP_CompH> compH = std::get<CompPtr>(SessionManager::GetInstance().getSession(comp.getSessionID()));
+		auto& message = enqueueSyncTask(isAddLayerValid, itemH, compH);
+		message->wait();
+		Result<bool> result = message->getResult();
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void AddLayerCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(cmd.args[0]);
+		CompH comp = *boost::get<boost::shared_ptr<CompH>>(cmd.args[1]);
+		Result<AEGP_ItemH> itemH = std::get<ItemPtr>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		Result<AEGP_CompH> compH = std::get<CompPtr>(SessionManager::GetInstance().getSession(comp.getSessionID()));
+		auto& message = enqueueSyncTask(AddLayer, itemH, compH);
+		message->wait();
+		Result<AEGP_LayerH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		LayerH layer(createUUID());
+		SessionManager::GetInstance().addSession(result, layer.getSessionID());
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<LayerH>(layer));
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void getLayerSourceItemCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(getLayerSourceItem, layerH);
+		message->wait();
+		Result<AEGP_ItemH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		ItemH item(createUUID());
+		SessionManager::GetInstance().addSession(result, item.getSessionID());
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<ItemH>(item));
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetLayerSourceItemIDCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(GetLayerSourceItemID, layerH);
+		message->wait();
+		Result<int> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetLayerParentCompCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(GetLayerParentComp, layerH);
+		message->wait();
+		Result<AEGP_CompH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		CompH comp(createUUID());
+		SessionManager::GetInstance().addSession(result, comp.getSessionID());
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<CompH>(comp));
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetLayerQualityCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(GetLayerQuality, layerH);
+		message->wait();
+		Result<std::string> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void SetLayerQualityCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		int quality = boost::get<int>(cmd.args[1]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(SetLayerQuality, layerH, quality);
+		message->wait();
+		Result<void> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetLayerFlagsCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(GetLayerFlags, layerH);
+		message->wait();
+		Result<AEGP_LayerFlags> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void SetLayerFlagCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		// flag = boost::get<A_long>(cmd.args[1]);
+		//Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		//auto& message = enqueueSyncTask(SetLayerFlag, layerH, flag);
+		//message->wait();
+		//Result<void> result = message->getResult();
+		//if (result.error != A_Err_NONE) {
+//throw AEException(result.error);
+		//}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void IsLayerVideoReallyOnCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(IsLayerVideoReallyOn, layerH);
+		message->wait();
+		Result<bool> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void IsLayerAudioReallyOnCommand::execute() {
-    // Implement the command logic here
+    auto& mqm = MessageQueueManager::getInstance();
+	try {
+LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(IsLayerAudioReallyOn, layerH);
+		message->wait();
+		Result<bool> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetLayerCurrentTimeCommand::execute() {
-    // Implement the command logic here
 }
 
 void GetLayerInPointCommand::execute() {
@@ -1677,11 +2664,58 @@ void SetLayerInPointAndDurationCommand::execute() {
 }
 
 void GetLayerOffsetCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(GetLayerOffset, layerH);
+		message->wait();
+		Result<float> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void SetLayerOffsetCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		float offset = boost::get<float>(cmd.args[1]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		//auto& message = enqueueSyncTask(SetLayerOffset, layerH, offset);
+		//message->wait();
+		//Result<void> result = message->getResult();
+		//if (result.error != A_Err_NONE) {
+		//	throw AEException(result.error);
+		//}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetLayerStretchCommand::execute() {
@@ -1709,16 +2743,86 @@ void GetLayerObjectTypeCommand::execute() {
 }
 
 void IsLayer3DCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(IsLayer3D, layerH);
+		message->wait();
+		Result<A_Boolean> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void IsLayer2DCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(IsLayer2D, layerH);
+		message->wait();
+		Result<A_Boolean> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void IsVideoActiveCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		//auto& message = enqueueSyncTask(IsVideoActive, layerH);
+		//message->wait();
+		//Result<bool> result = message->getResult();
+		//if (result.error != A_Err_NONE) {
+		//	throw AEException(result.error);
+		//}
+		Response response;
+		response.sessionID = cmd.sessionID;
+		//response.args.push_back(result.value);
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
+
 
 void IsLayerUsedAsTrackMatteCommand::execute() {
     // Implement the command logic here
@@ -1777,20 +2881,126 @@ void RemoveTrackMatteCommand::execute() {
 }
 
 void DeleteLayerCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(DeleteLayer, layerH);
+		message->wait();
+		Result<void> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void DuplicateLayerCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(DuplicateLayer, layerH);
+		message->wait();
+		Result<AEGP_LayerH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		LayerH layer2(createUUID());
+		SessionManager::GetInstance().addSession(result, layer2.getSessionID());
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<LayerH>(layer2));
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void GetLayerParentCommand::execute() {
-    // Implement the command logic here
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		auto& message = enqueueSyncTask(GetLayerParent, layerH);
+		message->wait();
+		Result<AEGP_LayerH> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		LayerH layer2(createUUID());
+		SessionManager::GetInstance().addSession(result, layer2.getSessionID());
+		Response response;
+		response.sessionID = cmd.sessionID;
+		response.args.push_back(boost::make_shared<LayerH>(layer2));
+		mqm.sendResponse(response);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
 
 void SetLayerParentCommand::execute() {
-    // Implement the command logic here
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		LayerH layer = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[0]);
+		LayerH parent = *boost::get<boost::shared_ptr<LayerH>>(cmd.args[1]);
+		Result<AEGP_LayerH> layerH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(layer.getSessionID()));
+		Result<AEGP_LayerH> parentH = std::get<LayerPtr>(SessionManager::GetInstance().getSession(parent.getSessionID()));
+		auto& message = enqueueSyncTask(SetLayerParent, layerH, parentH);
+		message->wait();
+		Result<void> result = message->getResult();
+		if (result.error != A_Err_NONE) {
+			throw AEException(result.error);
+		}
+		mqm.sendEmptyResponse(cmd.sessionID);
+	}
+	catch (const AEException& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const boost::bad_get& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (const std::exception& e) {
+		mqm.sendErrorResponse(cmd.sessionID, e.what());
+	}
+	catch (...) {
+		mqm.sendErrorResponse(cmd.sessionID, "Unknown error");
+	}
 }
+
+// MARKER COMMANDS
 
 void NewMarkerCommand::execute() {
     // Implement the command logic here
@@ -1804,6 +3014,8 @@ void DuplicateMarkerCommand::execute() {
     // Implement the command logic here
 }
 
+
+// PANEL COMMANDS
 void setPanelTitleCommand::execute() {
     // Implement the command logic here
 }
@@ -1816,6 +3028,7 @@ void isPanelShownCommand::execute() {
     // Implement the command logic here
 }
 
+// PROJECT COMMANDS
 
 void executecmdCommand::execute() {
     // Implement the command logic here
@@ -1869,6 +3082,7 @@ void getProjectRootFolderCommand::execute() {
     // Implement the command logic here
 }
 
+// RENDER COMMANDS
 void getRenderOptionsCommand::execute() {
     // Implement the command logic here
 }

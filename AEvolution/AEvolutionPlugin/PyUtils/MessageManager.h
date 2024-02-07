@@ -23,7 +23,8 @@
 std::string createUUID();
 
 typedef boost::variant<int, float, std::string, bool, std::vector<std::string>, boost::shared_ptr<ItemH>,
-    boost::shared_ptr<CompH>, boost::shared_ptr<LayerH>, boost::shared_ptr<ProjectH>, boost::shared_ptr<StreamRefH>, dimensionsH, colorH> CommandArg;
+    boost::shared_ptr<CompH>, boost::shared_ptr<LayerH>, boost::shared_ptr<ProjectH>, boost::shared_ptr<StreamRefH>,
+    boost::shared_ptr<FootageH>, dimensionsH, colorH> CommandArg;
 
 typedef std::vector<CommandArg> CommandArgs;
 

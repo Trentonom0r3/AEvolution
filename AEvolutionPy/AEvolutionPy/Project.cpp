@@ -36,22 +36,17 @@ void Project::setBitDepth(std::string bitDepth) {
 std::unique_ptr<Item> Project::GetActiveItem() {
     ItemH itemH = getActiveItem();
     ItemType type = checkType(itemH);
-    std::cout << "Item type: " << type << std::endl;
     if (type == ItemType::Folder) {
-        std::cout << "Returning Folder" << std::endl;
         return std::make_unique<FolderItem>(itemH);
     }
     else if (type == ItemType::Comp) {
-        std::cout << "Returning Comp" << std::endl;
         return std::make_unique<CompItem>(itemH);
     }
     else if (type == ItemType::Footage) {
-        std::cout << "Returning Footage" << std::endl;
         return std::make_unique<FootageItem>(itemH);
     }
     else {
-        std::cout << "Returning Item" << std::endl;
-        return std::make_unique<Item>(itemH);
+        throw std::invalid_argument("Invalid item type");
     }
 }
 

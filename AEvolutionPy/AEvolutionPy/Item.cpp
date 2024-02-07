@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Item.h"
+#include "Folder.h"
 
 std::string Item::name() {
 	std::string name = getItemName(this->itemH);
@@ -8,53 +9,78 @@ std::string Item::name() {
 
 void Item::setName(std::string name)
 {
-	setItemName(this->itemH, name);
+	SetItemName(this->itemH, name);
 }
 
 float Item::duration()
 {
-	return 0.0f;
+	return getItemDuration(this->itemH);
 }
 
 float Item::currentTime()
 {
-	return 0.0f;
+	return getItemCurrentTime(this->itemH);
 }
 
-dimensionsH Item::getDimensions()
+std::tuple<float, float> Item::getDimensions()
 {
-	return dimensionsH();
+	dimensionsH dimensions= getItemDimensions(this->itemH);
+	return std::make_tuple(dimensions.width, dimensions.height);
 }
 
 std::string Item::getComment()
 {
-	return std::string();
+	return getItemComment(this->itemH);
 }
 
 void Item::setComment(std::string comment)
 {
+	setItemComment(this->itemH, comment);
 }
 
 bool Item::isSelected()
 {
-	return false;
+	return isItemSelected(this->itemH);
 }
 
 void Item::setSelected(bool selected)
 {
+	selectItem(this->itemH, selected, FALSE); //deselect others is false
 }
+
+/*
 
 float Item::currentTimeInComp()
 {
-	return 0.0f;
+
 }
 
 void Item::setCurrentTimeInComp(float time)
 {
 }
 
+*/
+
 void Item::setProxy(bool useProxy)
 {
+	setItemUseProxy(this->itemH, useProxy);
+	proxyH = useProxy;
+}
+
+bool Item::getProxy()
+{
+	return proxyH;
+}
+
+FolderItem Item::getParent()
+{
+	ItemH parent = getItemParentFolder(this->itemH);
+	return FolderItem(parent);
+}
+
+void Item::setParent(FolderItem parent)
+{
+	SetItemParentFolder(this->itemH, parent.getItemH());
 }
 
 
@@ -63,6 +89,7 @@ ItemH Item::getItemH() {
 	return itemH;
 }
 
-void Item::deleteItem()
+void Item::Delete()
 {
+	deleteItem(this->itemH);
 }

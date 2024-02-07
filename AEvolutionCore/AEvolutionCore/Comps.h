@@ -55,6 +55,10 @@ AEvolution_API LayerH createLightInComp(const std::string& name, dimensionsH pos
 
 //AEvolution_API void setSelection(CompH compH, Collection2H collectionH);
 
+AEvolution_API void SetCompDimensions(CompH compH, dimensionsH dimensions);
+
+AEvolution_API dimensionsH GetCompDimensions(CompH compH);
+
 AEvolution_API float getCompDisplayStartTime(CompH compH);
 
 AEvolution_API void setCompDisplayStartTime(CompH compH, float startTimeInSeconds);
@@ -79,6 +83,5 @@ AEvolution_API bool getCompDisplayDropFrame(CompH compH);
 
 AEvolution_API void setCompDisplayDropFrame(CompH compH, bool dropFrame);
 
-AEvolution_API void reorderCompSelection(CompH compH, int index);
 
 

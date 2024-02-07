@@ -6,6 +6,7 @@ class FolderItem;
 class Item {
 public:
 	virtual ~Item() {}
+	Item() : itemH(nullptr) {}
 
 	Item(ItemH itemH) : itemH(itemH) {}
 
@@ -19,7 +20,7 @@ public:
 
 	float currentTime();
 
-	dimensionsH getDimensions();
+	std::tuple<float, float> getDimensions();
 
 	std::string getComment();
 
@@ -29,11 +30,13 @@ public:
 
 	void setSelected(bool selected);
 
-	float currentTimeInComp();
+	//float currentTimeInComp();
 
-	void setCurrentTimeInComp(float time);
+	//void setCurrentTimeInComp(float time);
 
 	void setProxy(bool useProxy);
+
+	bool getProxy();
 
 	FolderItem getParent();
 
@@ -41,8 +44,8 @@ public:
 
 	ItemH getItemH();
 
-	void deleteItem();
+	void Delete();
 protected:
 	ItemH itemH;
-
+	bool proxyH;
 };

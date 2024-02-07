@@ -316,9 +316,9 @@ Result<float> GetItemDuration(Result<AEGP_ItemH> itemH) {
 		throw A_Err_STRUCT; // throw an error if item is null
 	}
 	err = suites.ItemSuite9()->AEGP_GetItemDuration(item, &duration);
-		float durationInSeconds = duration.value / duration.scale;
-		Result<float> result(durationInSeconds, err);
-		return result;
+	float durationInSeconds = duration.value / duration.scale;
+	Result<float> result(durationInSeconds, err);
+	return result;
 	
 }
 

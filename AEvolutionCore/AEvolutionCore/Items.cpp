@@ -6,7 +6,7 @@ ItemH getActiveItem()
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getActiveItem", CommandArgs{}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetActiveItem", CommandArgs{}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -26,7 +26,7 @@ std::string getItemType(ItemH item)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getItemType", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetItemType", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -46,7 +46,7 @@ std::string getItemName(ItemH item)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getItemName", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetItemName", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -62,11 +62,11 @@ std::string getItemName(ItemH item)
 	}
 }
 
-void setItemName(ItemH item, const std::string& name)
+void SetItemName(ItemH item, const std::string& name)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setItemName", CommandArgs{ boost::make_shared<ItemH>(item), name }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetItemName", CommandArgs{ boost::make_shared<ItemH>(item), name }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -75,8 +75,8 @@ void setItemName(ItemH item, const std::string& name)
 		}
 	}
 	catch (std::exception& e) {
-		std::cerr << "Error in setItemName: " << e.what() << std::endl;
-		throw std::runtime_error("Error in setItemName: " + std::string(e.what()));
+		std::cerr << "Error in SetItemName: " << e.what() << std::endl;
+		throw std::runtime_error("Error in SetItemName: " + std::string(e.what()));
 	}
 }
 
@@ -84,7 +84,7 @@ float getItemDuration(ItemH item)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getItemDuration", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetItemDuration", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -104,7 +104,7 @@ float getItemCurrentTime(ItemH item)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getItemCurrentTime", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetItemCurrentTime", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -125,7 +125,7 @@ dimensionsH getItemDimensions(ItemH item)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getItemDimensions", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetItemDimensions", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -146,7 +146,7 @@ float getItemPixelAspectRatio(ItemH item)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getItemPixelAspectRatio", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetItemPixelAspectRatio", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -167,7 +167,7 @@ void deleteItem(ItemH item)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "deleteItem", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		Command cmd(createUUID(), "DeleteItem", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -185,7 +185,7 @@ std::string getItemComment(ItemH item)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getItemComment", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetItemComment", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -204,9 +204,9 @@ std::string getItemComment(ItemH item)
 
 void setItemComment(ItemH item, const std::string& comment)
 {
-	auto& mqm = MessageQueueManager::getInstance();
+auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setItemComment", CommandArgs{ boost::make_shared<ItemH>(item), comment }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetItemComment", CommandArgs{ boost::make_shared<ItemH>(item), comment }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -215,8 +215,26 @@ void setItemComment(ItemH item, const std::string& comment)
 		}
 	}
 	catch (std::exception& e) {
-		//std::cerr << "Error in setItemComment: " << e.what() << std::endl;
-		throw std::runtime_error("Error in setItemComment: " + std::string(e.what()));
+		//std::cerr << "Error in SetItemComment: " << e.what() << std::endl;
+		throw std::runtime_error("Error in SetItemComment: " + std::string(e.what()));
+	}
+}
+
+void SetItemComment(ItemH item, const std::string& comment)
+{
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "SetItemComment", CommandArgs{ boost::make_shared<ItemH>(item), comment }); // Command to be sent to the server
+		mqm.sendCommand(cmd);
+
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error); // Throw an error if the response contains an error (Propogated from the server)
+		}
+	}
+	catch (std::exception& e) {
+		//std::cerr << "Error in SetItemComment: " << e.what() << std::endl;
+		throw std::runtime_error("Error in SetItemComment: " + std::string(e.what()));
 	}
 }
 
@@ -224,7 +242,7 @@ float getUniqueItemID(ItemH item)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getUniqueItemID", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetUniqueItemID", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -245,7 +263,7 @@ ItemH createFolderItem(const std::string& name, ItemH parentFolder)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "createFolderItem", CommandArgs{ name, boost::make_shared<ItemH>(parentFolder)}); // Command to be sent to the server
+		Command cmd(createUUID(), "CreateFolderItem", CommandArgs{ name, boost::make_shared<ItemH>(parentFolder)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -266,7 +284,7 @@ ItemH getFirstProjItem(ProjectH project)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getFirstProjItem", CommandArgs{ boost::make_shared<ProjectH>(project)}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetFirstProjItem", CommandArgs{ boost::make_shared<ProjectH>(project)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -287,7 +305,7 @@ ItemH getNextProjItem(ProjectH project, ItemH currentItem)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getNextProjItem", CommandArgs{ boost::make_shared<ProjectH>(project), boost::make_shared<ItemH>(currentItem)}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetNextProjItem", CommandArgs{ boost::make_shared<ProjectH>(project), boost::make_shared<ItemH>(currentItem)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -308,7 +326,7 @@ bool isItemSelected(ItemH item)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "isItemSelected", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		Command cmd(createUUID(), "IsItemSelected", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -329,7 +347,7 @@ void selectItem(ItemH item, bool select, bool deselectOthers)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "selectItem", CommandArgs{ boost::make_shared<ItemH>(item), select, deselectOthers }); // Command to be sent to the server
+		Command cmd(createUUID(), "SelectItem", CommandArgs{ boost::make_shared<ItemH>(item), select, deselectOthers }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		Response resp = mqm.waitForResponse();
 		if (resp.error != "") {
@@ -344,14 +362,28 @@ void selectItem(ItemH item, bool select, bool deselectOthers)
 
 float getItemFlags(ItemH item)
 {
-	return 0.0f;
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "GetItemFlags", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		mqm.sendCommand(cmd);
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error);
+		}
+		float flags = boost::get<float>(resp.args[0]);
+		return flags;
+	}
+	catch (std::exception& e) {
+		//std::cerr << "Error in getItemFlags: " << e.what() << std::endl;
+		throw std::runtime_error("Error in getItemFlags: " + std::string(e.what()));
+	}
 }
 
 float getCompItemCurrentTime(ItemH item, float frameRate)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getCompItemCurrentTime", CommandArgs{ boost::make_shared<ItemH>(item), frameRate }); // Command to be sent to the server
+		Command cmd(createUUID(), "GetCompItemCurrentTime", CommandArgs{ boost::make_shared<ItemH>(item), frameRate }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		Response resp = mqm.waitForResponse();
 		if (resp.error != "") {
@@ -368,9 +400,9 @@ float getCompItemCurrentTime(ItemH item, float frameRate)
 
 void setCompItemCurrentTime(ItemH item, float time, float frameRate)
 {
-	auto& mqm = MessageQueueManager::getInstance();
+auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setCompItemCurrentTime", CommandArgs{ boost::make_shared<ItemH>(item), time, frameRate }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetCompItemCurrentTime", CommandArgs{ boost::make_shared<ItemH>(item), time, frameRate }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		Response resp = mqm.waitForResponse();
 		if (resp.error != "") {
@@ -378,8 +410,8 @@ void setCompItemCurrentTime(ItemH item, float time, float frameRate)
 		}
 	}
 	catch (std::exception& e) {
-		//std::cerr << "Error in setCompItemCurrentTime: " << e.what() << std::endl;
-		throw std::runtime_error("Error in setCompItemCurrentTime: " + std::string(e.what()));
+		//std::cerr << "Error in SetCompItemCurrentTime: " << e.what() << std::endl;
+		throw std::runtime_error("Error in SetCompItemCurrentTime: " + std::string(e.what()));
 	}
 }
 
@@ -387,7 +419,7 @@ void setItemUseProxy(ItemH item, bool useProxy)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setItemUseProxy", CommandArgs{ boost::make_shared<ItemH>(item), useProxy }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetItemUseProxy", CommandArgs{ boost::make_shared<ItemH>(item), useProxy }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		Response resp = mqm.waitForResponse();
 		if (resp.error != "") {
@@ -395,8 +427,42 @@ void setItemUseProxy(ItemH item, bool useProxy)
 		}
 	}
 	catch (std::exception& e) {
-		//std::cerr << "Error in setItemUseProxy: " << e.what() << std::endl;
-		throw std::runtime_error("Error in setItemUseProxy: " + std::string(e.what()));
+		//std::cerr << "Error in SetItemUseProxy: " << e.what() << std::endl;
+		throw std::runtime_error("Error in SetItemUseProxy: " + std::string(e.what()));
+	}
+}
+
+void SetCompItemCurrentTime(ItemH item, float time, float frameRate)
+{
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "SetCompItemCurrentTime", CommandArgs{ boost::make_shared<ItemH>(item), time, frameRate }); // Command to be sent to the server
+		mqm.sendCommand(cmd);
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error); // Throw an error if the response contains an error (Propogated from the server)
+		}
+	}
+	catch (std::exception& e) {
+		//std::cerr << "Error in SetCompItemCurrentTime: " << e.what() << std::endl;
+		throw std::runtime_error("Error in SetCompItemCurrentTime: " + std::string(e.what()));
+	}
+}
+
+void SetItemUseProxy(ItemH item, bool useProxy)
+{
+	auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "SetItemUseProxy", CommandArgs{ boost::make_shared<ItemH>(item), useProxy }); // Command to be sent to the server
+		mqm.sendCommand(cmd);
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error); // Throw an error if the response contains an error (Propogated from the server)
+		}
+	}
+	catch (std::exception& e) {
+		//std::cerr << "Error in SetItemUseProxy: " << e.what() << std::endl;
+		throw std::runtime_error("Error in SetItemUseProxy: " + std::string(e.what()));
 	}
 }
 
@@ -404,7 +470,7 @@ ItemH getItemParentFolder(ItemH item)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getItemParentFolder", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetItemParentFolder", CommandArgs{ boost::make_shared<ItemH>(item)}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		Response resp = mqm.waitForResponse();
 		if (resp.error != "") {
@@ -419,11 +485,11 @@ ItemH getItemParentFolder(ItemH item)
 	}
 }
 
-void setItemParentFolder(ItemH item, ItemH parentFolder)
+void SetItemParentFolder(ItemH item, ItemH parentFolder)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setItemParentFolder", CommandArgs{ boost::make_shared<ItemH>(item), boost::make_shared<ItemH>(parentFolder) }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetItemParentFolder", CommandArgs{ boost::make_shared<ItemH>(item), boost::make_shared<ItemH>(parentFolder) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		Response resp = mqm.waitForResponse();
 		if (resp.error != "") {
@@ -431,7 +497,7 @@ void setItemParentFolder(ItemH item, ItemH parentFolder)
 		}
 	}
 	catch (std::exception& e) {
-		//std::cerr << "Error in setItemParentFolder: " << e.what() << std::endl;
-		throw std::runtime_error("Error in setItemParentFolder: " + std::string(e.what()));
+		//std::cerr << "Error in SetItemParentFolder: " << e.what() << std::endl;
+		throw std::runtime_error("Error in SetItemParentFolder: " + std::string(e.what()));
 	}
 }

@@ -33,7 +33,7 @@ CompH addComp(const std::string& name, dimensionsH dimensions, float frameRate, 
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "addComp", CommandArgs{ name, dimensions, frameRate, duration, pixelAspectRatio, boost::make_shared<ItemH>(parentFolder) });
+		Command cmd(createUUID(), "AddComp", CommandArgs{ name, dimensions, frameRate, duration, pixelAspectRatio, boost::make_shared<ItemH>(parentFolder) });
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -170,14 +170,30 @@ void SetCompBGColor(CompH compH, colorH color)
 
 float getCompFlags(CompH compH)
 {
-	return 0.0f;
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "GetCompFlags", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		mqm.sendCommand(cmd);
+		
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error);
+		}
+
+		float flags = boost::get<float>(resp.args[0]); // Extract the flags from the response
+		return flags; // Return the flags
+	}
+	catch (std::exception& e) {
+		std::cerr << "Error in getCompFlags: " << e.what() << std::endl;
+		throw std::runtime_error("Error in getCompFlags: " + std::string(e.what()));
+	}
 }
 
 bool getShowLayerNameOrSourceName(CompH compH)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getShowLayerNameOrSourceName", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "GetShowLayerNameOrSourceName", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -195,7 +211,7 @@ void setShowLayerNameOrSourceName(CompH compH, bool showLayerNames)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setShowLayerNameOrSourceName", CommandArgs{ boost::make_shared<CompH>(compH), showLayerNames }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetShowLayerNameOrSourceName", CommandArgs{ boost::make_shared<CompH>(compH), showLayerNames }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -213,7 +229,7 @@ bool getShowBlendModes(CompH compH)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getShowBlendModes", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "GetShowBlendModes", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -234,7 +250,7 @@ void setShowBlendModes(CompH compH, bool showBlendModes)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setShowBlendModes", CommandArgs{ boost::make_shared<CompH>(compH), showBlendModes }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetShowBlendModes", CommandArgs{ boost::make_shared<CompH>(compH), showBlendModes }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -252,7 +268,7 @@ float getCompFramerate(CompH compH)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getCompFramerate", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "GetCompFramerate", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -273,7 +289,7 @@ void setCompFramerate(CompH compH, float fps)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setCompFramerate", CommandArgs{ boost::make_shared<CompH>(compH), fps }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetCompFramerate", CommandArgs{ boost::make_shared<CompH>(compH), fps }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -289,14 +305,30 @@ void setCompFramerate(CompH compH, float fps)
 
 std::pair<float, float> getCompShutterAnglePhase(CompH compH)
 {
-	return std::pair<float, float>();
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "GetCompShutterAnglePhase", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		mqm.sendCommand(cmd);
+		
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error);
+		}
+
+		std::pair<float, float> anglePhase = std::make_pair(boost::get<float>(resp.args[0]), boost::get<float>(resp.args[1])); // Extract the anglePhase from the response
+		return anglePhase; // Return the anglePhase
+	}
+	catch (std::exception& e) {
+		std::cerr << "Error in getCompShutterAnglePhase: " << e.what() << std::endl;
+		throw std::runtime_error("Error in getCompShutterAnglePhase: " + std::string(e.what()));
+	}
 }
 
 void setCompSuggestedMotionBlurSamples(CompH compH, int samples)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setCompSuggestedMotionBlurSamples", CommandArgs{ boost::make_shared<CompH>(compH), samples }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetCompSuggestedMotionBlurSamples", CommandArgs{ boost::make_shared<CompH>(compH), samples }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 
 		Response resp = mqm.waitForResponse();
@@ -314,7 +346,7 @@ float getCompWorkAreaStart(CompH compH)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getCompWorkAreaStart", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "GetCompWorkAreaStart", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -335,7 +367,7 @@ float getCompWorkAreaDuration(CompH compH)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getCompWorkAreaDuration", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "GetCompWorkAreaDuration", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -356,7 +388,7 @@ void setCompWorkAreaStartAndDuration(CompH compH, float start, float dur)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setCompWorkAreaStartAndDuration", CommandArgs{ boost::make_shared<CompH>(compH), start, dur }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetCompWorkAreaStartAndDuration", CommandArgs{ boost::make_shared<CompH>(compH), start, dur }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -374,7 +406,7 @@ LayerH createSolidInComp(const std::string& name, dimensionsH dimensions, colorH
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "createSolidInComp", CommandArgs{ name, dimensions, color, boost::make_shared<CompH>(parentCompH), dur }); // Command to be sent to the server
+		Command cmd(createUUID(), "CreateSolidInComp", CommandArgs{ name, dimensions, color, boost::make_shared<CompH>(parentCompH), dur }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -396,7 +428,7 @@ LayerH createCameraInComp(const std::string& name, dimensionsH position, CompH p
 	try {
 		float x = position.width;
 		float y = position.height;
-		Command cmd(createUUID(), "createCameraInComp", CommandArgs{ name, x, y , boost::make_shared<CompH>(parentCompH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "CreateCameraInComp", CommandArgs{ name, x, y , boost::make_shared<CompH>(parentCompH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -418,7 +450,7 @@ LayerH createLightInComp(const std::string& name, dimensionsH position, CompH pa
 	try {
 		float x = position.width;
 		float y = position.height;
-		Command cmd(createUUID(), "createLightInComp", CommandArgs{ name, x, y, boost::make_shared<CompH>(parentCompH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "CreateLightInComp", CommandArgs{ name, x, y, boost::make_shared<CompH>(parentCompH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -434,11 +466,50 @@ LayerH createLightInComp(const std::string& name, dimensionsH position, CompH pa
 	}
 }
 
+void SetCompDimensions(CompH compH, dimensionsH dimensions)
+{
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "SetCompDimensions", CommandArgs{ boost::make_shared<CompH>(compH), dimensions }); // Command to be sent to the server
+		mqm.sendCommand(cmd);
+		
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error);
+		}
+	}
+	catch (std::exception& e) {
+		std::cerr << "Error in SetCompDimensions: " << e.what() << std::endl;
+		throw std::runtime_error("Error in SetCompDimensions: " + std::string(e.what()));
+	}
+}
+
+dimensionsH GetCompDimensions(CompH compH)
+{
+auto& mqm = MessageQueueManager::getInstance();
+	try {
+		Command cmd(createUUID(), "GetCompDimensions", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		mqm.sendCommand(cmd);
+		
+		Response resp = mqm.waitForResponse();
+		if (resp.error != "") {
+			throw std::runtime_error("Error in Response:" + resp.error);
+		}
+
+		dimensionsH dimensions = boost::get<dimensionsH>(resp.args[0]); // Extract the dimensions from the response
+		return dimensions; // Return the dimensions
+	}
+	catch (std::exception& e) {
+		std::cerr << "Error in GetCompDimensions: " << e.what() << std::endl;
+		throw std::runtime_error("Error in GetCompDimensions: " + std::string(e.what()));
+	}
+}
+
 float getCompDisplayStartTime(CompH compH)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getCompDisplayStartTime", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "GetCompDisplayStartTime", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -459,7 +530,7 @@ void setCompDisplayStartTime(CompH compH, float startTimeInSeconds)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setCompDisplayStartTime", CommandArgs{ boost::make_shared<CompH>(compH), startTimeInSeconds }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetCompDisplayStartTime", CommandArgs{ boost::make_shared<CompH>(compH), startTimeInSeconds }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -477,7 +548,7 @@ void setCompDuration(CompH compH, float durationInSeconds)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setCompDuration", CommandArgs{ boost::make_shared<CompH>(compH), durationInSeconds }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetCompDuration", CommandArgs{ boost::make_shared<CompH>(compH), durationInSeconds }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -495,7 +566,7 @@ LayerH createNullInComp(const std::string& name, CompH parentCompH, float dur)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "createNullInComp", CommandArgs{ name, boost::make_shared<CompH>(parentCompH), dur }); // Command to be sent to the server
+		Command cmd(createUUID(), "CreateNullInComp", CommandArgs{ name, boost::make_shared<CompH>(parentCompH), dur }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -515,7 +586,7 @@ void setCompPixelAspectRatio(CompH compH, float pixelAspect)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setCompPixelAspectRatio", CommandArgs{ boost::make_shared<CompH>(compH), pixelAspect }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetCompPixelAspectRatio", CommandArgs{ boost::make_shared<CompH>(compH), pixelAspect }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -533,7 +604,7 @@ CompH duplicateComp(CompH compH)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "duplicateComp", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "DuplicateComp", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -553,7 +624,7 @@ float getCompFrameDuration(CompH compH)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getCompFrameDuration", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "GetCompFrameDuration", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -574,7 +645,7 @@ CompH getMostRecentlyUsedComp()
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getMostRecentlyUsedComp", CommandArgs{}); // Command to be sent to the server
+		Command cmd(createUUID(), "GetMostRecentlyUsedComp", CommandArgs{}); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -594,7 +665,7 @@ LayerH createVectorLayerInComp(CompH parentCompH)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "createVectorLayerInComp", CommandArgs{ boost::make_shared<CompH>(parentCompH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "CreateVectorLayerInComp", CommandArgs{ boost::make_shared<CompH>(parentCompH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -614,7 +685,7 @@ StreamRefH getNewCompMarkerStream(CompH parentCompH)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getNewCompMarkerStream", CommandArgs{ boost::make_shared<CompH>(parentCompH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "GetNewCompMarkerStream", CommandArgs{ boost::make_shared<CompH>(parentCompH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -634,7 +705,7 @@ bool getCompDisplayDropFrame(CompH compH)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "getCompDisplayDropFrame", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
+		Command cmd(createUUID(), "GetCompDisplayDropFrame", CommandArgs{ boost::make_shared<CompH>(compH) }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -654,7 +725,7 @@ void setCompDisplayDropFrame(CompH compH, bool dropFrame)
 {
 	auto& mqm = MessageQueueManager::getInstance();
 	try {
-		Command cmd(createUUID(), "setCompDisplayDropFrame", CommandArgs{ boost::make_shared<CompH>(compH), dropFrame }); // Command to be sent to the server
+		Command cmd(createUUID(), "SetCompDisplayDropFrame", CommandArgs{ boost::make_shared<CompH>(compH), dropFrame }); // Command to be sent to the server
 		mqm.sendCommand(cmd);
 		
 		Response resp = mqm.waitForResponse();
@@ -668,20 +739,3 @@ void setCompDisplayDropFrame(CompH compH, bool dropFrame)
 	}
 }
 
-void reorderCompSelection(CompH compH, int index)
-{
-	auto& mqm = MessageQueueManager::getInstance();
-	try {
-		Command cmd(createUUID(), "reorderCompSelection", CommandArgs{ boost::make_shared<CompH>(compH), index }); // Command to be sent to the server
-		mqm.sendCommand(cmd);
-		
-		Response resp = mqm.waitForResponse();
-		if (resp.error != "") {
-			throw std::runtime_error("Error in Response:" + resp.error);
-		}
-	}
-	catch (std::exception& e) {
-		std::cerr << "Error in reorderCompSelection: " << e.what() << std::endl;
-		throw std::runtime_error("Error in reorderCompSelection: " + std::string(e.what()));
-	}
-}

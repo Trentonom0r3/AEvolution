@@ -9,36 +9,45 @@ class CompItem : public Item {
 public:
 	using Item::Item;
 	virtual ~CompItem() {}
+	CompItem(CompH compH) : Item(GetItemFromComp(compH)), compH(compH) {}
+	CompItem(ItemH itemH) : Item(itemH) {
+		compH = GetCompFromItem(itemH);
+	}
+	CompItem(const CompItem& compItem) : Item(compItem.itemH), compH(compItem.compH) {}
 
-	LayerCollection getLayers();
+	std::shared_ptr<LayerCollection> getLayers();
 
-	static CompItem create(std::string name, dimensionsH dimensions, ItemH parent);
+	static CompItem create(std::string name, std::tuple<float, float> dimensions, float frameRate, float duration, float pixelAspect);
 
 	float getFrameRate();
 
 	void setFrameRate(float frameRate);
 
-	float getWorkAreaStart();
+	float WorkAreaStart();
 
-	float getWorkAreaDuration();
+	float WorkAreaDuration();
 
-	void setWorkAreaStart(float start);
+	void setWorkStart(float start);
 
-	void setWorkAreaDuration(float duration);
+	void setWorkDuration(float duration);
 
-	Layer createSolid(std::string name, dimensionsH dimensions, std::string color, float duration, float frameRate, ItemH parent);
+	Layer createSolid(std::string name, std::tuple<float, float> dimensions, std::tuple<float, float, float, float> color, float duration, float frameRate);
 
-	Layer createCamera(std::string name, dimensionsH position, ItemH parent);
+	Layer createCamera(std::string name, std::tuple<float, float> position);
 
-	Layer createLight(std::string name, dimensionsH position, ItemH parent);
+	Layer createLight(std::string name, std::tuple<float, float> position);
 
-	Layer createNull(std::string name, dimensionsH position, ItemH parent);
+	Layer createNull(std::string name, float duration);
 
-	Layer createVectorLayerInComp();
+	Layer createVector();
 
 	float getDisplayStartTime();
 
 	void setDisplayStartTime(float startTimeInSeconds);
+
+	float getCurrentTime();
+
+	void setCurrentTime(float time);
 
 	void setDuration(float duration);
 
@@ -48,12 +57,16 @@ public:
 
 	CompItem recentlyUsed();
 
+	void setDimensions(std::tuple<float, float> dimensions);
+
 	bool getDisplayDropFrame();
 
 	void setDisplayDropFrame(bool dropFrame);
 
-	void reorderComp(int index);
-
+	CompItem getSelf() {
+		return *this;
+	}
 protected:
 	CompH compH;
+
 };

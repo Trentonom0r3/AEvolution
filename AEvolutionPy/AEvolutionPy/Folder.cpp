@@ -1,10 +1,13 @@
 #include "pch.h"
-#include "Item.h"
-#include "Collection.h"
 #include "Folder.h"
+#include "Collection.h"
 
-ItemCollection FolderItem::getChildren()
+std::shared_ptr<ItemCollection> FolderItem::getChildren()
 {
-    ItemCollection children("");
-    return children;
+	return std::make_shared<ItemCollection>(std::make_unique<FolderItem>(*this));
+}
+
+FolderItem FolderItem::create(std::string name, ItemH parent)
+{
+	return FolderItem();
 }
