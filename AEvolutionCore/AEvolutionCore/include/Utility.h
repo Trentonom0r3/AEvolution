@@ -1,0 +1,11 @@
+#include "Core.h"
+#include "MessageQueue.h"
+#include "../Collections.h"
+#include "../Utilities.h"
+#include "../Comps.h"
+#include "../Items.h"
+#include "../Projects.h"
+#include "../Layers.h"
+#include "../Effects.h"
+#include "../Footage.h"
+

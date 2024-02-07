@@ -16,25 +16,37 @@
 #include <boost/serialization/variant.hpp>
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/interprocess/sync/named_condition.hpp>
-//posix time
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <iostream>
 #include <thread>
 #include <sstream>
 #include <string>
+#include <variant>
+#include <memory>
+#include <vector>
 #include "UUID.hpp"
+#include "Core.h"
 
-// UUID generator
-std::string AEvolution_API createUUID();
+std::string createUUID();
 
-typedef boost::variant<int, float, std::string, bool, std::vector<std::string>> CommandArg;
+typedef boost::variant<int, float, std::string, bool, std::vector<std::string>, boost::shared_ptr<ItemH>,
+        boost::shared_ptr<CompH>, boost::shared_ptr<LayerH>, boost::shared_ptr<ProjectH>, boost::shared_ptr<StreamRefH>,
+        boost::shared_ptr<FootageH>, dimensionsH, colorH> CommandArg;
+
 typedef std::vector<CommandArg> CommandArgs;
 
 
-struct AEvolution_API Command {
+struct Command {
     std::string sessionID = "0";
     std::string name = "name";
     CommandArgs args; // Vector of arguments
+    Command() = default;
+    Command(std::string sessionID, std::string name, CommandArgs args) : sessionID(sessionID), name(name), args(args) {};
+    Command(std::string sessionID, std::string name, CommandArg arg) : sessionID(sessionID), name(name) {
+        args.push_back(arg);
+    }
+    Command(std::string sessionID, std::string name) : sessionID(sessionID), name(name) {};
+    Command(std::string sessionID, CommandArgs args) : sessionID(sessionID), args(args) {};
 
     template <class Archive>
     void serialize(Archive& ar, const unsigned int version) {
@@ -44,20 +56,29 @@ struct AEvolution_API Command {
     }
 };
 
-struct AEvolution_API Response {
+
+struct Response {
     std::string sessionID = "0";
     CommandArgs args; // Vector of arguments
     std::string error = "";
+    Response() = default;
+    Response(std::string sessionID, CommandArgs args, std::string error) : sessionID(sessionID), args(args), error(error) {};
+    Response(std::string sessionID, CommandArg arg) : sessionID(sessionID) {
+        args.push_back(arg);
+    }
+    Response(std::string sessionID, std::string error) : sessionID(sessionID), error(error) {};
+    Response(std::string sessionID, CommandArgs args) : sessionID(sessionID), args(args) {};
     //serialize method
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
         ar& sessionID;
         ar& args;
+        ar& error;
     }
 };      // Response to be sent to the client
 
 
-class AEvolution_API MessageQueueManager {
+class MessageQueueManager {
 public:
     // Deletes copy constructor and assignment operator
     MessageQueueManager(const MessageQueueManager&) = delete;
@@ -78,22 +99,36 @@ public:
     }
 
     bool tryReceiveResponse(Response& response) {
-		boost::interprocess::message_queue::size_type recvd_size;
-		unsigned int priority;
-		std::size_t max_msg_size = responseQueue->get_max_msg_size();
-		std::vector<char> buffer(max_msg_size);
-		if (responseQueue->timed_receive(buffer.data(), buffer.size(), recvd_size, priority,
-			boost::posix_time::microsec_clock::universal_time() +
-			boost::posix_time::milliseconds(100))) {
-			std::string serializedResponse(buffer.begin(), buffer.begin() + recvd_size);
-			std::stringstream ss(serializedResponse);
-			boost::archive::text_iarchive ia(ss);
-			ia >> response;
-			return true;
-		}
-		return false;
-	}
+        boost::interprocess::message_queue::size_type recvd_size;
+        unsigned int priority;
+        std::size_t max_msg_size = responseQueue->get_max_msg_size();
+        std::vector<char> buffer(max_msg_size);
+        if (responseQueue->timed_receive(buffer.data(), buffer.size(), recvd_size, priority,
+            boost::posix_time::microsec_clock::universal_time() +
+            boost::posix_time::milliseconds(100))) {
+            std::string serializedResponse(buffer.begin(), buffer.begin() + recvd_size);
+            std::stringstream ss(serializedResponse);
+            boost::archive::text_iarchive ia(ss);
+           ia >> response;
+            return true;
+        }
+        return false;
+    }
 
+    Response waitForResponse() {
+        const std::chrono::milliseconds timeoutDuration(5000); // 5 seconds timeout
+        auto start = std::chrono::steady_clock::now();
+        Response resp;
+
+        while (!tryReceiveResponse(resp)) {
+            if (std::chrono::steady_clock::now() - start > timeoutDuration) {
+                throw std::runtime_error("Timeout exceeded while waiting for response");
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        return resp;
+    }
 
 private:
     MessageQueueManager() {

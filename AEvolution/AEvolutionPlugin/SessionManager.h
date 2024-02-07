@@ -3,12 +3,14 @@
 #include "Commands.h"
 #include "Library.h"
 
-typedef std::variant<std::monostate, std::shared_ptr<Project>, std::shared_ptr<Item>, std::shared_ptr<ItemCollection>,
-        std::shared_ptr<ProjectCollection>, std::shared_ptr<Layer>, std::shared_ptr<LayerCollection>, std::shared_ptr<CompItem>, std::shared_ptr<FolderItem>,
-        std::shared_ptr<SolidItem>, std::shared_ptr<FootageItem>> SessionObject;
+typedef Result<AEGP_ItemH> ItemPtr;
+typedef Result<AEGP_CompH> CompPtr;
+typedef Result<AEGP_LayerH> LayerPtr;
+typedef Result<AEGP_ProjectH> ProjectPtr;
 
-typedef std::map<std::string, SessionObject> SessionMap;
+typedef std::variant<ItemPtr, CompPtr, LayerPtr, ProjectPtr> SessionObject;
 
+typedef std::map<std::string, SessionObject> Sessions;
 
 class SessionManager {
 public:
@@ -19,46 +21,27 @@ public:
 
     SessionManager() {
         sessions.clear();
-        std::thread messageQueueThread(&SessionManager::handleMessageQueue, this);
-        messageQueueThread.detach();
+        std::thread t(&SessionManager::handleMessageQueue, this);
+        t.detach();
     }
-
-
 
     SessionManager(const SessionManager&) = delete;
     void operator=(const SessionManager&) = delete;
 
-    const SessionObject& getSessionObject(const std::string& sessionID) {
-        auto it = sessions.find(sessionID);
-        if (it == sessions.end()) {
-            throw std::runtime_error("Session ID not found: " + sessionID);
+    void addSession(SessionObject session, const std::string& sessionID) {
+		sessions[sessionID] = std::move(session);
+	}
+
+    SessionObject getSession(const std::string& sessionID) {
+        return std::move(sessions[sessionID]);
         }
-
-        return it->second;
-    }
-
-    bool sessionExists(const std::string& sessionID) {
-		auto it = sessions.find(sessionID);
-        if (it == sessions.end()) {
-			return false;
-		}
-		return true;
-	}
-
-    void addToSessions(const std::string& sessionID, const SessionObject& sessionObject) {
-		sessions[sessionID] = sessionObject;
-	}
-
-    void removeFromSessions(const std::string& sessionID) {
-		sessions.erase(sessionID);
-	}
 
     void cleanAll() {
 		sessions.clear();
 	}
 
 protected:
-    SessionMap sessions;
+    Sessions sessions;
 
     void handleMessageQueue() {
         auto& mqm = MessageQueueManager::getInstance();

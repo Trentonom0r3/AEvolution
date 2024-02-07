@@ -69,13 +69,13 @@ AEGP_EffectRefHs, on the other hand, are not adopted, and must be freed by the c
 
 Result<AEGP_Collection2H> NewCollection();
 
-Result<void> DisposeCollection(AEGP_Collection2H collectionH);
+Result<void> DisposeCollection(Result<AEGP_Collection2H> collectionH);
 
-Result<int> GetCollectionNumItems(AEGP_Collection2H collectionH);
+Result<int> GetCollectionNumItems(Result<AEGP_Collection2H> collectionH);
 
-Result<AEGP_CollectionItemV2> GetCollectionItemByIndex( AEGP_Collection2H collectionH, int indexL);
+Result<AEGP_CollectionItemV2> GetCollectionItemByIndex(Result<AEGP_Collection2H> collectionH, int indexL);
 
-Result<void> CollectionPushBack( AEGP_Collection2H collectionH, const AEGP_CollectionItemV2* itemP);
+Result<void> CollectionPushBack(Result<AEGP_Collection2H> collectionH, const AEGP_CollectionItemV2* itemP);
 
-Result<void> CollectionErase( AEGP_Collection2H collectionH, int index_firstL, int index_lastL);
+Result<void> CollectionErase(Result<AEGP_Collection2H> collectionH, int index_firstL, int index_lastL);
 

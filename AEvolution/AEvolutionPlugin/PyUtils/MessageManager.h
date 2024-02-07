@@ -18,16 +18,28 @@
 #include <variant>
 #include <vector>
 #include "../UUID.hpp"
+#include "../CoreLib/CoreUtils.h"
 
 std::string createUUID();
 
-typedef boost::variant<int, float, std::string, bool, std::vector<std::string>> CommandArg;
+typedef boost::variant<int, float, std::string, bool, std::vector<std::string>, boost::shared_ptr<ItemH>,
+    boost::shared_ptr<CompH>, boost::shared_ptr<LayerH>, boost::shared_ptr<ProjectH>, boost::shared_ptr<StreamRefH>,
+    boost::shared_ptr<FootageH>, dimensionsH, colorH> CommandArg;
+
 typedef std::vector<CommandArg> CommandArgs;
+
 
 struct Command {
     std::string sessionID = "0";
     std::string name = "name";
     CommandArgs args; // Vector of arguments
+    Command() = default;
+    Command(std::string sessionID, std::string name, CommandArgs args) : sessionID(sessionID), name(name), args(args) {};
+    Command(std::string sessionID, std::string name, CommandArg arg) : sessionID(sessionID), name(name) {
+        args.push_back(arg);
+    }
+    Command(std::string sessionID, std::string name) : sessionID(sessionID), name(name) {};
+    Command(std::string sessionID, CommandArgs args) : sessionID(sessionID), args(args) {};
 
     template <class Archive>
     void serialize(Archive& ar, const unsigned int version) {
@@ -42,11 +54,19 @@ struct Response {
     std::string sessionID = "0";
     CommandArgs args; // Vector of arguments
     std::string error = "";
+    Response() = default;
+    Response(std::string sessionID, CommandArgs args, std::string error) : sessionID(sessionID), args(args), error(error) {};
+    Response(std::string sessionID, CommandArg arg) : sessionID(sessionID) {
+		args.push_back(arg);
+	}
+    Response(std::string sessionID, std::string error) : sessionID(sessionID), error(error) {};
+    Response(std::string sessionID, CommandArgs args) : sessionID(sessionID), args(args) {};
     //serialize method
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
         ar& sessionID;
         ar& args;
+        ar& error;
     }
 };      // Response to be sent to the client
 
@@ -138,10 +158,7 @@ private:
         responseQueue = std::make_unique<boost::interprocess::message_queue>(
             boost::interprocess::create_only, "PyR21", 100, 1024);
     }
-    ~MessageQueueManager() {
-		boost::interprocess::message_queue::remove("PyC21");
-		boost::interprocess::message_queue::remove("PyR21");
-	}
+
     std::unique_ptr<boost::interprocess::message_queue> commandQueue;
     std::unique_ptr<boost::interprocess::message_queue> responseQueue;
     void clearQueue(const char* queueName) {

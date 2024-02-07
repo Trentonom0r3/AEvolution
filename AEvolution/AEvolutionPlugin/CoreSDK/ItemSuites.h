@@ -4,7 +4,6 @@
 #include "ItemSuites.h"
 
 Result<AEGP_ItemH> getActiveItem();
-
 Result<AEGP_ItemType> getItemType(Result<AEGP_ItemH> item);
 
 Result<std::string>getItemName(Result<AEGP_ItemH> itemH);

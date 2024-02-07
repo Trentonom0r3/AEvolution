@@ -6,16 +6,22 @@ Result<AEGP_ItemH> getActiveItem()
 	AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 	A_Err err = A_Err_NONE;
 	AEGP_ItemH itemH; // Initialize to nullptr in case AEGP_GetActiveItem fails
+	Result<AEGP_ItemH> result;
+
 	ERR(suites.ItemSuite9()->AEGP_GetActiveItem(&itemH));
 
-	Result<AEGP_ItemH> result;
+	if (itemH == NULL) {
+		result.value = nullptr;
+		result.error = A_Err_ALLOC;
+		return result;
+	}
 	if (err != A_Err_NONE) {
 		result.value = nullptr;
-		throw std::runtime_error("Error getting active item. Error code: " + std::to_string(err));
+		result.error = err;
+		return result;
 	}
-	else {
-		result.value = itemH;
-	}
+
+	result.value = itemH;
 	result.error = err;   // Set the error
 
 	return result;
@@ -29,14 +35,16 @@ Result<AEGP_ItemType> getItemType(Result<AEGP_ItemH> item)
 	A_Err err = A_Err_NONE;
 	AEGP_ItemType item_type = AEGP_ItemType_NONE; // Initialize to AEGP_ItemType_NONE in case AEGP_GetItemType fails
 	AEGP_ItemH itemH = item.value;
-	if (!itemH) {
-		throw A_Err_STRUCT; // throw an error if item is null
-	}
-	ERR(suites.ItemSuite9()->AEGP_GetItemType(itemH, &item_type));
-	if (err != A_Err_NONE) {
-		throw std::runtime_error("Error getting item type. Error code: " + std::to_string(err));
-	}
 	Result<AEGP_ItemType> result;
+
+	ERR(suites.ItemSuite9()->AEGP_GetItemType(itemH, &item_type));
+
+	if (err != A_Err_NONE) {
+		result.value = AEGP_ItemType_NONE;
+		result.error = err;
+		return result;
+	}
+
 	result.value = item_type; // Set the value to the item type
 	result.error = err;       // Set the error
 
@@ -308,9 +316,9 @@ Result<float> GetItemDuration(Result<AEGP_ItemH> itemH) {
 		throw A_Err_STRUCT; // throw an error if item is null
 	}
 	err = suites.ItemSuite9()->AEGP_GetItemDuration(item, &duration);
-		float durationInSeconds = duration.value / duration.scale;
-		Result<float> result(durationInSeconds, err);
-		return result;
+	float durationInSeconds = duration.value / duration.scale;
+	Result<float> result(durationInSeconds, err);
+	return result;
 	
 }
 

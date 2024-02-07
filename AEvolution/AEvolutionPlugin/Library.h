@@ -1,4 +1,7 @@
 #pragma once
-#include "CoreLib/App.h"
-#include "CoreLib/Project.h"
-#include "CoreLib/ItemManager.h"
+#include "CoreSDK/TaskUtils.h"
+#include "CoreSDK/Utils.h"
+#include "CoreLib/CoreUtils.h"
+
+std::string errToString(A_Err err);
+

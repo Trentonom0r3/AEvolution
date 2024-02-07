@@ -9,7 +9,6 @@
 //SDK HEADERS
 #include "entry.h"
 #include "AE_GeneralPlug.h"
-#include "AE_Macros.h"
 #include "AEGP_SuiteHandler.h"
 #include "AE_Macros.h"
 #include "CoreSDK/SuiteManager.h"

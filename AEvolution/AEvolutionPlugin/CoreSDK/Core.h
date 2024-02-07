@@ -18,6 +18,51 @@
 #include <mutex>
 #include <boost/locale/encoding_utf.hpp>
 
+// Custom Exception class
+class AEException : public std::exception {
+public:
+    // Constructor
+    AEException(A_long errorCode)
+        : errorCode_(errorCode), errorMessage_(ErrToString(errorCode)) {}
+
+    // Default virtual destructor
+    virtual ~AEException() noexcept {}
+
+    // Override the what() function to provide a custom error message
+    virtual const char* what() const noexcept override {
+        return errorMessage_.c_str();
+    }
+
+    // Function to convert error code to string
+    // You can expand this function to return more detailed messages based on errorCode_
+    static std::string ErrToString(A_long errorCode) {
+        switch (errorCode) {
+        case A_Err_NONE: return "";
+        case A_Err_GENERIC: return "Generic error";
+        case A_Err_STRUCT: return "Structural error";
+        case A_Err_PARAMETER: return "Parameter error"; 
+        case A_Err_ALLOC: return "Allocation error";    
+        case A_Err_WRONG_THREAD: return "Wrong thread error";
+        case A_Err_CONST_PROJECT_MODIFICATION: return "Constant project modification error";
+        case A_Err_MISSING_SUITE: return "Missing suite error";
+        case A_Err_NOT_IN_CACHE_OR_COMPUTE_PENDING: return "Not in cache or compute pending error";
+        case A_Err_PROJECT_LOAD_FATAL: return "Project load fatal error";
+        case A_Err_EFFECT_APPLY_FATAL: return "Effect apply fatal error";
+            // Add more cases as needed
+        default: return "Unknown error";
+        }
+    }
+
+    // Getter for the error code
+    A_long ErrorCode() const {
+        return errorCode_;
+    }
+
+private:
+    A_long errorCode_;
+    std::string errorMessage_;
+};
+
 
 /*
  * File: Core.h
@@ -59,6 +104,7 @@ struct Result<void> {
     // Constructor for error-only results
     explicit Result(A_Err err = A_Err_NONE) : error(err) {}
 };
+
 
 /*
 

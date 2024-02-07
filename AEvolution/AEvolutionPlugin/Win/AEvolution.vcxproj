@@ -66,7 +66,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\tjerf\source\repos\AEvolution\dist\debug</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\Adobe\Adobe After Effects 2023\Support Files\Plug-ins\Effects</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\tjerf\source\repos\AEvolution\dist\release</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
@@ -141,6 +141,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -348,9 +349,7 @@
     <ClInclude Include="..\..\..\Headers\PR_Public.h" />
     <ClInclude Include="..\..\..\Util\String_Utils.h" />
     <ClInclude Include="..\Commands.h" />
-    <ClInclude Include="..\CoreLib\App.h" />
-    <ClInclude Include="..\CoreLib\ItemManager.h" />
-    <ClInclude Include="..\CoreLib\Project.h" />
+    <ClInclude Include="..\CoreLib\CoreUtils.h" />
     <ClInclude Include="..\CoreSDK\CollectionSuites.h" />
     <ClInclude Include="..\CoreSDK\CompSuites.h" />
     <ClInclude Include="..\CoreSDK\Core.h" />
@@ -363,8 +362,6 @@
     <ClInclude Include="..\CoreSDK\PanelSuites.h" />
     <ClInclude Include="..\CoreSDK\ProjectSuites.h" />
     <ClInclude Include="..\CoreSDK\PT_Err.h" />
-    <ClInclude Include="..\CoreSDK\RenderOptionsSuites.h" />
-    <ClInclude Include="..\CoreSDK\RenderSuites.h" />
     <ClInclude Include="..\CoreSDK\SuiteManager.h" />
     <ClInclude Include="..\CoreSDK\TaskUtils.h" />
     <ClInclude Include="..\CoreSDK\UtilitySuites.h" />
@@ -410,9 +407,6 @@ cl /D "MSWindows" /EP $(IntDir)%(Filename).rrc &gt;               "$(ProjectDir)
     <ClCompile Include="..\..\..\Util\AEGP_SuiteHandler.cpp" />
     <ClCompile Include="..\..\..\Util\MissingSuiteError.cpp" />
     <ClCompile Include="..\AEvolution.cpp" />
-    <ClCompile Include="..\CoreLib\App.cpp" />
-    <ClCompile Include="..\CoreLib\ItemManager.cpp" />
-    <ClCompile Include="..\CoreLib\Project.cpp" />
     <ClCompile Include="..\CoreSDK\CollectionSuites.cpp" />
     <ClCompile Include="..\CoreSDK\CompSuites.cpp" />
     <ClCompile Include="..\CoreSDK\Core.cpp" />
@@ -423,11 +417,11 @@ cl /D "MSWindows" /EP $(IntDir)%(Filename).rrc &gt;               "$(ProjectDir)
     <ClCompile Include="..\CoreSDK\MarkerSuites.cpp" />
     <ClCompile Include="..\CoreSDK\PanelSuites.cpp" />
     <ClCompile Include="..\CoreSDK\ProjectSuites.cpp" />
-    <ClCompile Include="..\CoreSDK\RenderOptionsSuites.cpp" />
-    <ClCompile Include="..\CoreSDK\RenderSuites.cpp" />
     <ClCompile Include="..\CoreSDK\UtilitySuites.cpp" />
     <ClCompile Include="..\CoreSDK\WorldSuites.cpp" />
+    <ClCompile Include="..\Library.cpp" />
     <ClCompile Include="..\SessionManager.cpp" />
+    <ClCompile Include="CoreUtils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

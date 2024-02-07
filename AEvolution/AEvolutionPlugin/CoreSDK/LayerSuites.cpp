@@ -1028,7 +1028,7 @@ Result<AEGP_LayerH> GetLayerParent(Result<AEGP_LayerH> layerH)
 	return result;
 }
 
-Result<void> SetLayerParent(Result<AEGP_LayerH> layerH, AEGP_LayerH parent_layer)
+Result<void> SetLayerParent(Result<AEGP_LayerH> layerH, Result<AEGP_LayerH> parent_layer)
 {
 	AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 	A_Err err = A_Err_NONE;
@@ -1036,7 +1036,7 @@ Result<void> SetLayerParent(Result<AEGP_LayerH> layerH, AEGP_LayerH parent_layer
 	if (!layer) {
 		throw A_Err_STRUCT;
 	}
-	ERR(suites.LayerSuite9()->AEGP_SetLayerParent(layer, parent_layer));
+	ERR(suites.LayerSuite9()->AEGP_SetLayerParent(layer, parent_layer.value));
 
 	Result<void> result;
 	result.error = err;

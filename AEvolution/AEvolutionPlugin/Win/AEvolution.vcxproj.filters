@@ -134,12 +134,6 @@
     <ClInclude Include="..\CoreSDK\CollectionSuites.h">
       <Filter>CoreSDK</Filter>
     </ClInclude>
-    <ClInclude Include="..\CoreSDK\RenderOptionsSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\RenderSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
     <ClInclude Include="..\CoreSDK\WorldSuites.h">
       <Filter>CoreSDK</Filter>
     </ClInclude>
@@ -149,13 +143,7 @@
     <ClInclude Include="..\CoreSDK\MessageQueue.h">
       <Filter>CoreSDK</Filter>
     </ClInclude>
-    <ClInclude Include="..\CoreLib\App.h">
-      <Filter>CoreLib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreLib\ItemManager.h">
-      <Filter>CoreLib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreLib\Project.h">
+    <ClInclude Include="..\CoreLib\CoreUtils.h">
       <Filter>CoreLib</Filter>
     </ClInclude>
     <ClInclude Include="..\PyUtils\MessageManager.h">
@@ -215,24 +203,11 @@
     <ClCompile Include="..\CoreSDK\CollectionSuites.cpp">
       <Filter>CoreSDK</Filter>
     </ClCompile>
-    <ClCompile Include="..\CoreSDK\RenderOptionsSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\RenderSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
     <ClCompile Include="..\CoreSDK\WorldSuites.cpp">
       <Filter>CoreSDK</Filter>
     </ClCompile>
-    <ClCompile Include="..\CoreLib\App.cpp">
-      <Filter>CoreLib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreLib\ItemManager.cpp">
-      <Filter>CoreLib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreLib\Project.cpp">
-      <Filter>CoreLib</Filter>
-    </ClCompile>
+    <ClCompile Include="..\Library.cpp" />
+    <ClCompile Include="CoreUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\AEvolution_PiPL.r">

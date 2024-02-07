@@ -74,3 +74,8 @@
  * 
  * Happy coding, and we look forward to seeing the innovative ways you extend AEvolution!
  */
+
+void print(std::string message) {
+	App app;
+	app.reportInfo(message);
+}
