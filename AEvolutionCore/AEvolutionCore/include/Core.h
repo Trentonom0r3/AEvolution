@@ -42,7 +42,9 @@ BOOST_SERIALIZATION_ASSUME_ABSTRACT(BaseH)
 
 class ItemH : public BaseH {
 public:
-    ItemH() {}
+    ItemH() {
+        sessionID = "";
+    }
     ItemH(std::string sessionID) : BaseH(sessionID) {}
 
 private:

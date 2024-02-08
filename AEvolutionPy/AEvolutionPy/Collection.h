@@ -73,23 +73,11 @@ public:
 		items_ = initialize();
 	}
 
-    std::vector<std::unique_ptr<Item>> initialize() override {
-        // Implementation of initializing items specific to ItemCollection
-        return {};
-    }
+    std::vector<std::unique_ptr<Item>> initialize() override;
 
-    void append(std::unique_ptr<Item> item) override {
-        items_.push_back(std::move(item));
-    }
+    void append(std::unique_ptr<Item> item) override;
 
-    std::unique_ptr<Item> pop() override {
-        if (items_.empty()) {
-			throw std::out_of_range("Collection is empty");
-		}
-		auto item = std::move(items_.back());
-		items_.pop_back();
-		return item;
-    }
+    std::unique_ptr<Item> pop() override;
 
 private:
     std::unique_ptr<FolderItem> handle_;

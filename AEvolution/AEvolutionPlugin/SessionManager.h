@@ -1,16 +1,7 @@
 #pragma once
-#include "PyUtils/MessageManager.h"
-#include "Commands.h"
-#include "Library.h"
-
-typedef Result<AEGP_ItemH> ItemPtr;
-typedef Result<AEGP_CompH> CompPtr;
-typedef Result<AEGP_LayerH> LayerPtr;
-typedef Result<AEGP_ProjectH> ProjectPtr;
-
-typedef std::variant<ItemPtr, CompPtr, LayerPtr, ProjectPtr> SessionObject;
-
-typedef std::map<std::string, SessionObject> Sessions;
+#include "main.h"
+#include "MessageQueueManager.h"
+#include <queue>
 
 class SessionManager {
 public:
@@ -28,35 +19,74 @@ public:
     SessionManager(const SessionManager&) = delete;
     void operator=(const SessionManager&) = delete;
 
-    void addSession(SessionObject session, const std::string& sessionID) {
-		sessions[sessionID] = std::move(session);
-	}
+    void addSession(SessionObject session, int sessionID) {
+        std::lock_guard<std::mutex> lock(sessionListMutex);
+        //make sure the sessionID is unique, if it isn't return early
+        for (auto& s : sessions) {
+            if (s.first == sessionID) {
+				return;
+			}
+		}
+        sessions[sessionID] = std::move(session);
+    }
 
-    SessionObject getSession(const std::string& sessionID) {
-        return std::move(sessions[sessionID]);
-        }
+    SessionObject getSession(int sessionID) {
+        std::lock_guard<std::mutex> lock(sessionListMutex);
+		return sessions[sessionID];
+    }
 
     void cleanAll() {
-		sessions.clear();
+        std::lock_guard<std::mutex> lock(sessionListMutex);
+        sessions.clear();
+    }
+
+    bool areCommandsAvailable() {
+		std::lock_guard<std::mutex> lock(commandQueueMutex);
+        if (!commandQueue.empty()) {
+			return true;
+		}
+        return false;
 	}
 
+    // Adjust popCommand to match the new queue type
+    std::unique_ptr<CommandBase> popCommand() {
+        std::lock_guard<std::mutex> lock(commandQueueMutex);
+        if (!commandQueue.empty()) {
+            std::unique_ptr<CommandBase> cmd = std::move(commandQueue.front()); // Explicit type instead of auto
+            commandQueue.pop();
+            return cmd;
+        }
+        return nullptr;
+    }
+
+
+
 protected:
+    std::mutex sessionListMutex;
     Sessions sessions;
+    std::mutex commandQueueMutex;
+    std::queue<std::unique_ptr<CommandBase>> commandQueue;
+
 
     void handleMessageQueue() {
         auto& mqm = MessageQueueManager::getInstance();
-        CommandFactory commandFactory;
+        auto& factory = CommandFactory::get();
 
         while (true) {
             Command receivedCmd;
             if (mqm.tryReceiveCommand(receivedCmd)) {
-                // Process the command
-                auto cmd = commandFactory.createCommand(receivedCmd.name, receivedCmd);
+                // Try to create the command object from the received command name
+                auto cmd = factory.createCommand(receivedCmd.id, receivedCmd);
                 if (cmd) {
-                    cmd->execute();
+                    std::lock_guard<std::mutex> lock(commandQueueMutex);
+                    // Queue the created command object for execution
+                    commandQueue.push(std::move(cmd));
+
+                    AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
+                    suites.UtilitySuite6()->AEGP_CauseIdleRoutinesToBeCalled();
                 }
                 else {
-                    std::cout << "Command not found: " << receivedCmd.name << std::endl;
+                    std::cout << "Command not found: " << std::endl;
                 }
             }
             else {
@@ -65,5 +95,6 @@ protected:
             }
         }
     }
+
 
 };
