@@ -22,6 +22,7 @@
     <ProjectGuid>{F92835DD-4FE4-4F57-A439-B7EA704933DF}</ProjectGuid>
     <RootNamespace>AEvolution</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>AEvolution</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -66,8 +67,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\Adobe\Adobe After Effects 2023\Support Files\Plug-ins\Effects</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\tjerf\source\repos\AEvolution\dist\release</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(AE_PLUGIN_BUILD_DIR)\AEGP\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(AE_PLUGIN_BUILD_DIR)\AEGP\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</IgnoreImportLibrary>
@@ -95,20 +96,16 @@
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.aex</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.aex</TargetExt>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\tjerf\vcpkg\installed\x64-windows-static\include;..\..\..\Headers\adobesdk;..\..\..\Util;..\..\..\Resources;..\..\..\Headers\SP;..\..\..\Headers;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\tjerf\vcpkg\installed\x64-windows-static\include;..\..\..\Headers\adobesdk;..\..\..\Headers\SP;..\..\..\Util;..\..\..\Resources;..\..\..\Headers;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib;$(LibraryPath)</LibraryPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgInstalledDir>..\..\..\..\..\..\vcpkg\installed</VcpkgInstalledDir>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgConfiguration>Debug</VcpkgConfiguration>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
-  </PropertyGroup>
-  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <VcpkgUseStatic>true</VcpkgUseStatic>
-    <VcpkgConfiguration>Debug</VcpkgConfiguration>
+    <VcpkgInstalledDir>..\..\..\..\..\..\vcpkg\installed</VcpkgInstalledDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -122,7 +119,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Users\tjerf\vcpkg\installed\x64-windows-static\include;..\..\..\Headers;..\..\..\Headers\SP;..\..\..\Headers\Win;..\..\..\Resources;..\..\..\Util;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Headers;..\..\..\Headers\SP;..\..\..\Headers\Win;..\..\..\Resources;..\..\..\Util;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSWindows;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -136,12 +133,11 @@
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
-      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWarningAsError>true</TreatWarningAsError>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -159,8 +155,6 @@
       </DataExecutionPrevention>
       <ImportLibrary>$(IntDir)/$(TargetName).lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
-      <AdditionalLibraryDirectories>C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_atomic-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_chrono-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_container-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_context-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_contract-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_coroutine-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_date_time-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_exception-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_fiber-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_filesystem-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_graph-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_iostreams-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_json-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_locale-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_log_setup-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_log-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_math_c99f-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_math_c99l-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_math_c99-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_math_tr1f-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_math_tr1l-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_math_tr1-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_nowide-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_program_options-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_random-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_regex-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_serialization-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_stacktrace_noop-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_stacktrace_windbg_cached-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_stacktrace_windbg-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_system-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_thread-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_timer-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_type_erasure-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_unit_test_framework-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_url-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_wave-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\boost_wserialization-vc140-mt-gd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\bz2d.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\libexpatdMT.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\lzma.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\zlibd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\debug\lib\zstd.lib";%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
@@ -178,6 +172,7 @@
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>C:\Users\tjerf\vcpkg\installed\x64-windows-static\include;$(IncludePath);..\..\..\Headers;..\..\..\Headers\SP;..\..\..\Headers\Win;..\..\..\Resources;..\..\..\Util;C:\Users\tjerf\source\repos\AEvolution\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSWindows;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -191,12 +186,11 @@
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
-      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWarningAsError>true</TreatWarningAsError>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\tjerf\vcpkg\installed\x64-windows-static\include;..\..\..\Headers\adobesdk;..\..\..\Headers\SP;..\..\..\Util;..\..\..\Resources;..\..\..\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -216,7 +210,6 @@
       <ImportLibrary>$(IntDir)/$(TargetName).lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
       <AdditionalLibraryDirectories>C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_unit_test_framework-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_stacktrace_windbg_cached-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_stacktrace_windbg-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_stacktrace_noop-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_program_options-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_type_erasure-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\libexpatMT.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_nowide-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_log_setup-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_log-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_locale-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_json-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_iostreams-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\zstd.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\zlib.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\lzma.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\bz2.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_graph-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_fiber-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_math_c99f-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_math_c99l-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_math_c99-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_math_tr1f-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_math_tr1l-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_math_tr1-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_contract-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_random-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_filesystem-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_coroutine-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_context-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_serialization-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_wserialization-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_thread-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_date_time-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_container-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_chrono-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_system-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_atomic-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_exception-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_regex-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_wave-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_url-vc140-mt.lib";"C:\Users\tjerf\vcpkg\installed\x64-windows-static\lib\boost_timer-vc140-mt.lib";%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
@@ -328,6 +321,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\commands.h" />
     <ClInclude Include="..\AEvolution.h" />
     <ClInclude Include="..\..\..\Headers\A.h" />
     <ClInclude Include="..\..\..\Headers\AE_AdvEffectSuites.h" />
@@ -348,29 +342,11 @@
     <ClInclude Include="..\..\..\Headers\PF_Masks.h" />
     <ClInclude Include="..\..\..\Headers\PR_Public.h" />
     <ClInclude Include="..\..\..\Util\String_Utils.h" />
-    <ClInclude Include="..\Commands.h" />
-    <ClInclude Include="..\CoreLib\CoreUtils.h" />
-    <ClInclude Include="..\CoreSDK\CollectionSuites.h" />
-    <ClInclude Include="..\CoreSDK\CompSuites.h" />
-    <ClInclude Include="..\CoreSDK\Core.h" />
-    <ClInclude Include="..\CoreSDK\EffectSuites.h" />
-    <ClInclude Include="..\CoreSDK\FootageSuites.h" />
-    <ClInclude Include="..\CoreSDK\ItemSuites.h" />
-    <ClInclude Include="..\CoreSDK\LayerSuites.h" />
-    <ClInclude Include="..\CoreSDK\MarkerSuites.h" />
-    <ClInclude Include="..\CoreSDK\MessageQueue.h" />
-    <ClInclude Include="..\CoreSDK\PanelSuites.h" />
-    <ClInclude Include="..\CoreSDK\ProjectSuites.h" />
-    <ClInclude Include="..\CoreSDK\PT_Err.h" />
-    <ClInclude Include="..\CoreSDK\SuiteManager.h" />
-    <ClInclude Include="..\CoreSDK\TaskUtils.h" />
-    <ClInclude Include="..\CoreSDK\UtilitySuites.h" />
-    <ClInclude Include="..\CoreSDK\Utils.h" />
-    <ClInclude Include="..\CoreSDK\WorldSuites.h" />
-    <ClInclude Include="..\Library.h" />
+    <ClInclude Include="..\itemCommands.h" />
+    <ClInclude Include="..\main.h" />
+    <ClInclude Include="..\MessageQueueManager.h" />
     <ClInclude Include="..\SessionManager.h" />
-    <ClInclude Include="..\PyUtils\MessageManager.h" />
-    <ClInclude Include="..\UUID.hpp" />
+    <ClInclude Include="..\SuitesManager.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\AEvolution_PiPL.r">
@@ -407,21 +383,7 @@ cl /D "MSWindows" /EP $(IntDir)%(Filename).rrc &gt;               "$(ProjectDir)
     <ClCompile Include="..\..\..\Util\AEGP_SuiteHandler.cpp" />
     <ClCompile Include="..\..\..\Util\MissingSuiteError.cpp" />
     <ClCompile Include="..\AEvolution.cpp" />
-    <ClCompile Include="..\CoreSDK\CollectionSuites.cpp" />
-    <ClCompile Include="..\CoreSDK\CompSuites.cpp" />
-    <ClCompile Include="..\CoreSDK\Core.cpp" />
-    <ClCompile Include="..\CoreSDK\EffectSuites.cpp" />
-    <ClCompile Include="..\CoreSDK\FootageSuites.cpp" />
-    <ClCompile Include="..\CoreSDK\ItemSuites.cpp" />
-    <ClCompile Include="..\CoreSDK\LayerSuites.cpp" />
-    <ClCompile Include="..\CoreSDK\MarkerSuites.cpp" />
-    <ClCompile Include="..\CoreSDK\PanelSuites.cpp" />
-    <ClCompile Include="..\CoreSDK\ProjectSuites.cpp" />
-    <ClCompile Include="..\CoreSDK\UtilitySuites.cpp" />
-    <ClCompile Include="..\CoreSDK\WorldSuites.cpp" />
-    <ClCompile Include="..\Library.cpp" />
-    <ClCompile Include="..\SessionManager.cpp" />
-    <ClCompile Include="CoreUtils.cpp" />
+    <ClCompile Include="..\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

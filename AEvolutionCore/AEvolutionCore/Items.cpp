@@ -313,8 +313,13 @@ ItemH getNextProjItem(ProjectH project, ItemH currentItem)
 			throw std::runtime_error("Error in Response:" + resp.error); // Throw an error if the response contains an error (Propogated from the server)
 		}
 
-		ItemH item = *boost::get<boost::shared_ptr<ItemH>>(resp.args[0]);
-		return item;
+		if (auto item = boost::get<boost::shared_ptr<ItemH>>(resp.args[0])) {
+			return *item;
+		}
+		else {
+			ItemH itemP(nullptr);
+			return itemP;
+		}
 	}
 	catch (std::exception& e) {
 		//std::cerr << "Error in getNextProjItem: " << e.what() << std::endl;

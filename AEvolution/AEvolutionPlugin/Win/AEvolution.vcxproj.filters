@@ -15,15 +15,6 @@
     <Filter Include="Supporting Code">
       <UniqueIdentifier>{8beaf83a-c0ff-4de3-9165-e79e4ff269f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PyUtils">
-      <UniqueIdentifier>{976e9f14-58a0-49da-a050-69e223f28899}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="CoreSDK">
-      <UniqueIdentifier>{500219a6-d254-4883-9ee1-a17c386de38f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="CoreLib">
-      <UniqueIdentifier>{d1668a4b-de96-4368-adb0-6dd4464805df}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AEvolution.h">
@@ -86,73 +77,22 @@
     <ClInclude Include="..\..\..\Util\String_Utils.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
+    <ClInclude Include="..\SuitesManager.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
     <ClInclude Include="..\SessionManager.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Commands.h">
+    <ClInclude Include="..\main.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\CoreSDK\SuiteManager.h">
-      <Filter>CoreSDK</Filter>
+    <ClInclude Include="..\itemCommands.h">
+      <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\CoreSDK\MarkerSuites.h">
-      <Filter>CoreSDK</Filter>
+    <ClInclude Include="..\commands.h">
+      <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\CoreSDK\TaskUtils.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\Utils.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\ProjectSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\FootageSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\Core.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\UtilitySuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\ItemSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\LayerSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\CompSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\PanelSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\EffectSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\CollectionSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\WorldSuites.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\PT_Err.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreSDK\MessageQueue.h">
-      <Filter>CoreSDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CoreLib\CoreUtils.h">
-      <Filter>CoreLib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PyUtils\MessageManager.h">
-      <Filter>PyUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library.h">
-      <Filter>CoreLib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\UUID.hpp">
+    <ClInclude Include="..\MessageQueueManager.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -169,45 +109,7 @@
       <Filter>Supporting Code</Filter>
     </ClCompile>
     <ClCompile Include="..\AEvolution.cpp" />
-    <ClCompile Include="..\SessionManager.cpp" />
-    <ClCompile Include="..\CoreSDK\ItemSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\MarkerSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\ProjectSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\FootageSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\LayerSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\CompSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\Core.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\UtilitySuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\PanelSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\EffectSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\CollectionSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CoreSDK\WorldSuites.cpp">
-      <Filter>CoreSDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library.cpp" />
-    <ClCompile Include="CoreUtils.cpp" />
+    <ClCompile Include="..\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\AEvolution_PiPL.r">

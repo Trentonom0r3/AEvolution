@@ -1,51 +1,40 @@
-#pragma once
+/*******************************************************************/
+/*                                                                 */
+/*                      ADOBE CONFIDENTIAL                         */
+/*                   _ _ _ _ _ _ _ _ _ _ _ _ _                     */
+/*                                                                 */
+/* Copyright 2007-2023 Adobe Inc.                                  */
+/* All Rights Reserved.                                            */
+/*                                                                 */
+/* NOTICE:  All information contained herein is, and remains the   */
+/* property of Adobe Inc. and its suppliers, if                    */
+/* any.  The intellectual and technical concepts contained         */
+/* herein are proprietary to Adobe Inc. and its                    */
+/* suppliers and may be covered by U.S. and Foreign Patents,       */
+/* patents in process, and are protected by trade secret or        */
+/* copyright law.  Dissemination of this information or            */
+/* reproduction of this material is strictly forbidden unless      */
+/* prior written permission is obtained from Adobe Inc.            */
+/* Incorporated.                                                   */
+/*                                                                 */
+/*******************************************************************/
 
 #include "AEConfig.h"
 #ifdef AE_OS_WIN
-#include <windows.h>
+	#include <windows.h>
 #endif
 
-#include <cstdlib>
-//SDK HEADERS
 #include "entry.h"
 #include "AE_GeneralPlug.h"
-#include "AEGP_SuiteHandler.h"
 #include "AE_Macros.h"
-#include "CoreSDK/SuiteManager.h"
-#include "CoreSDK/MessageQueue.h"
+#include "AEGP_SuiteHandler.h"
+#include "String_Utils.h"
+#include "SuitesManager.h"
+#include "SessionManager.h"
+#include "commands.h"
 
-
-//CUSTOM HEADERS
 #define AEGP_MAX_STREAM_DIM 4
 
 // This entry point is exported through the PiPL (.r file)
 extern "C" DllExport AEGP_PluginInitFuncPrototype EntryPointFunc;
-//define the Panelator UI class we'll be using globally, so it can be accessed from anywhere
-
-//function to convert string into a Long
-A_Err StringToLong(const A_char* string, A_long* value) {
-	A_Err err = A_Err_NONE;
-	A_long temp = 0;
-	A_long sign = 1;
-	A_long i = 0;
-	if (string[0] == '-') {
-		sign = -1;
-		i++;
-	}
-	for (; string[i] != '\0'; ++i) {
-		if (string[i] >= '0' && string[i] <= '9') {
-			temp = temp * 10 + (string[i] - '0');
-		}
-		else {
-			err = A_Err_GENERIC;
-			break;
-		}
-	}
-	//make sure value is all numbers, and not a negative sign
-	if (err == A_Err_NONE) {
-		*value = temp * sign;
-	}
-
-	return err;
-}
 

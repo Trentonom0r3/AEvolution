@@ -10,6 +10,6 @@ public:
 	virtual ~FolderItem() {}
 	std::shared_ptr<ItemCollection> getChildren();
 
-	static FolderItem create(std::string name, ItemH parent);
+	static FolderItem create(std::string name, ItemH parent = getProjectRootFolder());
 
 };

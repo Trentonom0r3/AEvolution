@@ -5,7 +5,9 @@ class Item; // Forward declaration
 
 class Project {
 public:
-	Project() {};
+	Project() {
+		this->projectH = getProject();
+	};
 
 	std::string name();
 

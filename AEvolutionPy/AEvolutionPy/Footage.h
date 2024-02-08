@@ -7,6 +7,6 @@ public:
 	using Item::Item;
 
 	virtual ~FootageItem() {}
-	static FootageItem create(std::string name, ItemH parent);
+	static FootageItem create(std::string name, ItemH parent = getProjectRootFolder());
 
 };

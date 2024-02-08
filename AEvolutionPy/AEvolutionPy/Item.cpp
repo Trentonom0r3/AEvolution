@@ -7,6 +7,11 @@ std::string Item::name() {
 	return name;
 }
 
+float Item::getUUID()
+{
+	return getUniqueItemID(this->itemH);
+}
+
 void Item::setName(std::string name)
 {
 	SetItemName(this->itemH, name);

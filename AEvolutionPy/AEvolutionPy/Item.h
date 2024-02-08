@@ -44,6 +44,8 @@ public:
 
 	ItemH getItemH();
 
+	float getUUID();
+
 	void Delete();
 protected:
 	ItemH itemH;

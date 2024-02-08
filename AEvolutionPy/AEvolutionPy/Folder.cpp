@@ -9,5 +9,5 @@ std::shared_ptr<ItemCollection> FolderItem::getChildren()
 
 FolderItem FolderItem::create(std::string name, ItemH parent)
 {
-	return FolderItem();
+	ItemH itemH = createFolderItem(name, parent);
 }
