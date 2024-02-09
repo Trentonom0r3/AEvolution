@@ -29,3 +29,19 @@ Result<AETime> GetItemDuration(Item item);
 Result<int> GetItemCurrentTime(Item item);
 
 Result<Size> GetItemDimensions(Item item);
+
+Result<double> GetItemPixelAspectRatio(Item item);
+
+Result<null> DeleteItem(Item item);
+
+Result<std::string> GetItemComment(Item item);
+
+Result<Item> CreateNewFolder(std::string name, Item parentFolder);
+
+Result<null> SetItemCurrentTime(Item item, AETime time);
+
+Result<null> SetItemComment(Item item, std::string comment);
+
+Result<LabelType> GetItemLabel(Item item);
+
+Result<null> SetItemLabel(Item item, LabelType label);
