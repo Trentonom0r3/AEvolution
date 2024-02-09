@@ -67,8 +67,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(AE_PLUGIN_BUILD_DIR)\AEGP\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(AE_PLUGIN_BUILD_DIR)\AEGP\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\Adobe\Adobe After Effects 2023\Support Files\Plug-ins\Effects\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\Adobe\Adobe After Effects 2023\Support Files\Plug-ins\Effects\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</IgnoreImportLibrary>
@@ -155,6 +155,7 @@
       </DataExecutionPrevention>
       <ImportLibrary>$(IntDir)/$(TargetName).lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalDependencies>bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
@@ -321,6 +322,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\CollectionCommands.h" />
     <ClInclude Include="..\commands.h" />
     <ClInclude Include="..\AEvolution.h" />
     <ClInclude Include="..\..\..\Headers\A.h" />
@@ -342,11 +344,16 @@
     <ClInclude Include="..\..\..\Headers\PF_Masks.h" />
     <ClInclude Include="..\..\..\Headers\PR_Public.h" />
     <ClInclude Include="..\..\..\Util\String_Utils.h" />
-    <ClInclude Include="..\itemCommands.h" />
+    <ClInclude Include="..\CompCommands.h" />
+    <ClInclude Include="..\FootageCommands.h" />
+    <ClInclude Include="..\ItemCommands.h" />
+    <ClInclude Include="..\LayerCommands.h" />
     <ClInclude Include="..\main.h" />
     <ClInclude Include="..\MessageQueueManager.h" />
     <ClInclude Include="..\SessionManager.h" />
+    <ClInclude Include="..\StreamCommands.h" />
     <ClInclude Include="..\SuitesManager.h" />
+    <ClInclude Include="..\UtilityCommands.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\AEvolution_PiPL.r">

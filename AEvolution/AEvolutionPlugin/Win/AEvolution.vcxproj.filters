@@ -86,13 +86,31 @@
     <ClInclude Include="..\main.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\itemCommands.h">
+    <ClInclude Include="..\ItemCommands.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\commands.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\MessageQueueManager.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UtilityCommands.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CompCommands.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\FootageCommands.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LayerCommands.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StreamCommands.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CollectionCommands.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

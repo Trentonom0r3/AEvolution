@@ -135,3 +135,75 @@ Result<Size> GetItemDimensions(Item item) {
 	Result<Size> result = boost::get<Result<Size>>(resp.args[0]);
 	return result;
 }
+
+Result<double> GetItemPixelAspectRatio(Item item) {
+	auto& mqm = MessageQueueManager::getInstance();
+	Command cmd(CommandID::GetItemPixelAspectRatio, CommandArgs{ item });
+	Response resp = mqm.sendAndReceive(cmd);
+
+	Result<double> result = boost::get<Result<double>>(resp.args[0]);
+	return result;
+}
+
+Result<null> DeleteItem(Item item) {
+	auto& mqm = MessageQueueManager::getInstance();
+	Command cmd(CommandID::DeleteItem, CommandArgs{ item });
+	Response resp = mqm.sendAndReceive(cmd);
+
+	Result<null> result = boost::get<Result<null>>(resp.args[0]);
+	return result;
+}
+
+Result<std::string> GetItemComment(Item item) {
+	auto& mqm = MessageQueueManager::getInstance();
+	Command cmd(CommandID::GetItemComment, CommandArgs{ item });
+	Response resp = mqm.sendAndReceive(cmd);
+
+	Result<std::string> result = boost::get<Result<std::string>>(resp.args[0]);
+	return result;
+}
+
+Result<Item> CreateNewFolder(std::string name, Item parentFolder) {
+	auto& mqm = MessageQueueManager::getInstance();
+	Command cmd(CommandID::CreateNewFolder, CommandArgs{ name, parentFolder });
+	Response resp = mqm.sendAndReceive(cmd);
+
+	Result<Item> result = boost::get<Result<Item>>(resp.args[0]);
+	return result;
+}
+
+Result<null> SetItemCurrentTime(Item item, AETime time) {
+	auto& mqm = MessageQueueManager::getInstance();
+	Command cmd(CommandID::SetItemCurrentTime, CommandArgs{ item, time });
+	Response resp = mqm.sendAndReceive(cmd);
+
+	Result<null> result = boost::get<Result<null>>(resp.args[0]);
+	return result;
+}
+
+Result<null> SetItemComment(Item item, std::string comment) {
+	auto& mqm = MessageQueueManager::getInstance();
+	Command cmd(CommandID::SetItemComment, CommandArgs{ item, comment });
+	Response resp = mqm.sendAndReceive(cmd);
+
+	Result<null> result = boost::get<Result<null>>(resp.args[0]);
+	return result;
+}
+
+Result<LabelType> GetItemLabel(Item item) {
+	auto& mqm = MessageQueueManager::getInstance();
+	Command cmd(CommandID::GetItemLabel, CommandArgs{ item });
+	Response resp = mqm.sendAndReceive(cmd);
+
+	Result<LabelType> result = boost::get<Result<LabelType>>(resp.args[0]);
+	return result;
+}
+
+Result<null> SetItemLabel(Item item, LabelType label) {
+	auto& mqm = MessageQueueManager::getInstance();
+	Command cmd(CommandID::SetItemLabel, CommandArgs{ item, label });
+	Response resp = mqm.sendAndReceive(cmd);
+
+	Result<null> result = boost::get<Result<null>>(resp.args[0]);
+	return result;
+}

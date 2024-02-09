@@ -1,5 +1,22 @@
 #include "main.h"
 
+int createUUID() {
+    // Generate a UUID
+    boost::uuids::uuid uuid = boost::uuids::random_generator()();
+
+    // Convert UUID to a string
+    std::string uuidString = boost::uuids::to_string(uuid);
+
+    // Use a hash function to convert the UUID string to an integer
+    std::hash<std::string> hash_fn;
+    size_t hash = hash_fn(uuidString);
+
+    // Narrowing conversion, size_t to int (with potential overflow)
+    // This is just for demonstration and may not be suitable for all purposes
+    int uuidInt = static_cast<int>(hash);
+
+    return uuidInt;
+}
 
 std::string errToString(A_Err err) {
     switch (err) {

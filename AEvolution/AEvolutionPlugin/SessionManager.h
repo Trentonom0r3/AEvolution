@@ -59,7 +59,10 @@ public:
         return nullptr;
     }
 
-
+    void removeSession(int sessionID) {
+		std::lock_guard<std::mutex> lock(sessionListMutex);
+		sessions.erase(sessionID);
+	}
 
 protected:
     std::mutex sessionListMutex;

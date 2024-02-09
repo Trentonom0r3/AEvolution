@@ -4,15 +4,6 @@
 #include "SessionManager.h"
 #include "SuitesManager.h"
 
-#define REGISTER_COMMAND(ID, TYPE) \
-static bool _reg_##TYPE = []() -> bool { \
-    CommandFactory::get().registerCommand(ID, [](Command cmd) -> std::unique_ptr<CommandBase> { \
-        auto command = std::make_unique<TYPE>(std::move(cmd)); \
-        return command; \
-    }); \
-    return true; \
-}();
-
 class GetFirstProjItem : public CommandBase {
 public:
 	using CommandBase::CommandBase;
@@ -70,22 +61,21 @@ public:
 		//get the command arguments
 		Item item = boost::get<Item>(cmd.args[0]);
 		AEGP_ItemH itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-
+		Result<Item> result = Result<Item>(Item(), errToString(err));
 		// Get the suite handler
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 
 		// Perform the action
 		ERR(suites.ProjSuite6()->AEGP_GetProjectByIndex(1, &projectH));
 		ERR(suites.ItemSuite9()->AEGP_GetNextProjItem(projectH, itemH, &nextItemH));
-		ERR(suites.ItemSuite9()->AEGP_GetItemID(nextItemH, &itemID));
-
-		// Check err, if no error, add the session to the map
-		if (err == A_Err_NONE) {
+		// if the next item exists, add the session to the map
+		if (nextItemH) {
+			ERR(suites.ItemSuite9()->AEGP_GetItemID(nextItemH, &itemID));
 			SessionManager::GetInstance().addSession(nextItemH, itemID);
+			result = Result<Item>(Item(itemID), errToString(err));
 		}
 
-		// Create the result and response
-		Result<Item> result = Result<Item>(Item(itemID), errToString(err));
+		// Create the result and respons
 		Response resp(ResponseArgs{result});
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
@@ -112,20 +102,19 @@ public:
 		AEGP_ItemH itemH;
 		A_Err err = A_Err_NONE;
 		int itemID;
-
+		Result<Item> result = Result<Item>(Item(), errToString(err));
 		// Get the suite handler
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 
 		// Perform the action
 		ERR(suites.ItemSuite9()->AEGP_GetActiveItem(&itemH));
-		ERR(suites.ItemSuite9()->AEGP_GetItemID(itemH, &itemID));
-		// Check err, if no error, add the session to the map
-		if (err == A_Err_NONE) {
+
+		if (itemH) {
+			ERR(suites.ItemSuite9()->AEGP_GetItemID(itemH, &itemID));
 			SessionManager::GetInstance().addSession(itemH, itemID);
+			result = Result<Item>(Item(itemID), errToString(err));
 		}
 
-		// Create the result and response
-		Result<Item> result = Result<Item>(Item(itemID), errToString(err));
 		Response resp(ResponseArgs{result});
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
@@ -771,7 +760,7 @@ void execute() override {
 		//define the variables
 		A_Err err = A_Err_NONE;
 		AEGP_ItemH itemH;
-		A_Time time;
+		A_Time time = { 0, 0 };
 		//get the command arguments
 		Item item = boost::get<Item>(cmd.args[0]);
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
@@ -950,7 +939,6 @@ void execute() override {
 		labelID = static_cast<AEGP_LabelID>(label.type);
 		// Get the suite handler
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
 		// Perform the action
 		ERR(suites.ItemSuite9()->AEGP_SetItemLabel(itemH, labelID));
 
@@ -962,13 +950,3 @@ void execute() override {
 };
 REGISTER_COMMAND(CommandID::SetItemLabel, SetItemLabel);
 
-/*
-* Result<null> SetItemLabel(Item item, LabelType label) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::SetItemLabel, CommandArgs{item, label});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<null> result = boost::get<Result<null>>(resp.args[0]);
-	return result;
-}
-*/
