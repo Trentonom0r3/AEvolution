@@ -4,10 +4,11 @@
 # Run after git cloning (one time)
 ## Skip worktree
 - Add .vcxproj.personal files to skip. Similar to .gitignore but they were pushed once because they are default files
+```sh
 git update-index --skip-worktree Project/Main.vcxproj.personal
 git update-index --skip-worktree AEvolutionPlugin/Project/Win/Project.vcxproj.personal
 git update-index --skip-worktree AEvolutionBindsTEMPLATE/Project/Project.vcxproj.personal
-
+```
 # Terminology and naming conventions
 - Structure: F stands for File; D stands for Directory
 - Path: Please use `/` instead of `\` for paths as that's the international standard and `\` gets sometimes seen as an escape character
