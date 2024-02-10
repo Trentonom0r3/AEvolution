@@ -1,7 +1,13 @@
 #pragma once
-#include "main.h"
-#include "MessageQueueManager.h"
+#include "CommandFactory.h"
 #include <queue>
+
+typedef std::variant<AEGP_ItemH, AEGP_CompH, AEGP_FootageH, AEGP_LayerH, AEGP_ProjectH, AEGP_Collection2H, AEGP_CollectionItemV2,
+                     AEGP_LayerCollectionItem, AEGP_MaskCollectionItem, AEGP_EffectCollectionItem, AEGP_StreamCollectionItem,
+                     AEGP_MaskStreamCollectionItem, AEGP_LayerStreamCollectionItem, AEGP_EffectStreamCollectionItem,
+                     AEGP_KeyframeCollectionItem, AEGP_MaskVertexCollectionItem, AEGP_StreamRefH> SessionObject;
+
+typedef std::map<int, SessionObject> Sessions;
 
 class SessionManager {
 public:

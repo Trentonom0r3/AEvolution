@@ -1,8 +1,6 @@
 #pragma once
-#include "main.h"
-#include "MessageQueueManager.h"
+#include "CommandFactory.h"
 #include "SessionManager.h"
-#include "SuitesManager.h"
 
 class GetFirstProjItem : public CommandBase {
 public:
@@ -227,7 +225,7 @@ public:
 		AEGP_ItemType itemType;
 		//get the command arguments
 		Item item = boost::get<Item>(cmd.args[0]);
-		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
+		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
@@ -235,9 +233,7 @@ public:
 		// Perform the action
 		ERR(suites.ItemSuite9()->AEGP_GetItemType(itemH, &itemType));
 
-		// Create the result and response
-		ItemType type = ItemType(itemType);
-		Result<ItemType> result = Result<ItemType>(type, errToString(err));
+		Result<AEGP_ItemType> result = Result<AEGP_ItemType>(itemType, errToString(err));
 		Response resp(ResponseArgs{result});
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
@@ -245,8 +241,9 @@ public:
 };
 REGISTER_COMMAND(CommandID::GetItemType, GetItemType);
 
-/*
-* Result<AEGP_ItemType> GetItemType(Item item) {
+
+/* 
+	Result<AEGP_ItemType> GetItemType(Item item) {
 	auto& mqm = MessageQueueManager::getInstance();
 	Command cmd(CommandID::GetItemType, CommandArgs{item});
 	Response resp = mqm.sendAndReceive(cmd);
@@ -903,9 +900,8 @@ void execute() override {
 		// Perform the action
 		ERR(suites.ItemSuite9()->AEGP_GetItemLabel(itemH, &label));
 
-		LabelType labelType = LabelType(label);
 		// Create the result and response
-		Result<LabelType> result = Result<LabelType>(labelType, errToString(err));
+		Result<AEGP_LabelID> result = Result<AEGP_LabelID>(label, errToString(err));
 		Response resp(ResponseArgs{result});
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
@@ -913,12 +909,12 @@ void execute() override {
 REGISTER_COMMAND(CommandID::GetItemLabel, GetItemLabel);
 
 /*
-* Result<LabelType> GetItemLabel(Item item) {
+* Result<AEGP_LabelID> GetItemLabel(Item item) {
 	auto& mqm = MessageQueueManager::getInstance();
 	Command cmd(CommandID::GetItemLabel, CommandArgs{item});
 	Response resp = mqm.sendAndReceive(cmd);
 
-	Result<LabelType> result = boost::get<Result<LabelType>>(resp.args[0]);
+	Result<AEGP_LabelID> result = boost::get<Result<AEGP_LabelID>>(resp.args[0]);
 	return result;
 }
 */
@@ -934,9 +930,7 @@ void execute() override {
 		//get the command arguments
 		Item item = boost::get<Item>(cmd.args[0]);
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		LabelType label = boost::get<LabelType>(cmd.args[1]);
-		AEGP_LabelID labelID;
-		labelID = static_cast<AEGP_LabelID>(label.type);
+		AEGP_LabelID labelID = boost::get<AEGP_LabelID>(cmd.args[1]);
 		// Get the suite handler
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 		// Perform the action
@@ -950,3 +944,13 @@ void execute() override {
 };
 REGISTER_COMMAND(CommandID::SetItemLabel, SetItemLabel);
 
+/*
+* Result<null> SetItemLabel(Item item, AEGP_LabelID labelID) {
+	auto& mqm = MessageQueueManager::getInstance();
+	Command cmd(CommandID::SetItemLabel, CommandArgs{item, labelID});
+	Response resp = mqm.sendAndReceive(cmd);
+
+	Result<null> result = boost::get<Result<null>>(resp.args[0]);
+	return result;
+}
+*/

@@ -1,5 +1,3 @@
 #pragma once
-#include "main.h"
-#include "MessageQueueManager.h"
+#include "CommandFactory.h"
 #include "SessionManager.h"
-#include "SuitesManager.h"

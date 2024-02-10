@@ -191,11 +191,14 @@
     <ClInclude Include="$(MainSrcDir)Headers/PF_Masks.h" />
     <ClInclude Include="$(MainSrcDir)Headers/PR_Public.h" />
     <ClInclude Include="$(MainSrcDir)Util/String_Utils.h" />
+    <ClInclude Include="$(SrcDir)AEnums.h" />
     <ClInclude Include="$(SrcDir)CompCommands.h" />
+    <ClInclude Include="$(SrcDir)CommandFactory.h" />
     <ClInclude Include="$(SrcDir)FootageCommands.h" />
     <ClInclude Include="$(SrcDir)ItemCommands.h" />
     <ClInclude Include="$(SrcDir)LayerCommands.h" />
     <ClInclude Include="$(SrcDir)main.h" />
+    <ClInclude Include="$(SrcDir)MessageMain.h" />
     <ClInclude Include="$(SrcDir)MessageQueueManager.h" />
     <ClInclude Include="$(SrcDir)SessionManager.h" />
     <ClInclude Include="$(SrcDir)StreamCommands.h" />
@@ -219,6 +222,7 @@ cl /D "MSWindows" /EP $(IntDir)%(Filename).rrc &gt;               "$(IntDir)"\\"
     <ClCompile Include="$(MainSrcDir)Util/MissingSuiteError.cpp" />
     <ClCompile Include="$(SrcDir)AEvolution.cpp" />
     <ClCompile Include="$(SrcDir)main.cpp" />
+    <ClCompile Include="$(SrcDir)AEnums.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets"></ImportGroup>

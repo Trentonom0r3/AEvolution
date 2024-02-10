@@ -1,3 +1,4 @@
+#pragma once
 #include "pch.h"
 
 Result<Item> GetFirstProjItem();
@@ -10,7 +11,7 @@ Result<bool> IsItemSelected(Item item);
 
 Result<bool> SelectItem(Item item, bool select, bool deselectOthers);
 
-Result<ItemType> GetItemType(Item item);
+Result<AEGP_ItemType> GetItemType(Item item);
 
 Result<std::string> GetItemName(Item item);
 
@@ -42,6 +43,6 @@ Result<null> SetItemCurrentTime(Item item, AETime time);
 
 Result<null> SetItemComment(Item item, std::string comment);
 
-Result<LabelType> GetItemLabel(Item item);
+Result<AEGP_LabelID> GetItemLabel(Item item);
 
-Result<null> SetItemLabel(Item item, LabelType label);
+Result<null> SetItemLabel(Item item, AEGP_LabelID label);
