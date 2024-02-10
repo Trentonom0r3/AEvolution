@@ -140,7 +140,6 @@
     </ClCompile>
     <ClCompile Include="$(SrcDir)AEvolution.cpp" />
     <ClCompile Include="$(SrcDir)main.cpp" />
-    <ClCompile Include="$(SrcDir)AEnums.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="$(SrcDir)AEvolution_PiPL.r">

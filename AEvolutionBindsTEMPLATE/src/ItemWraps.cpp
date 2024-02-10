@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "ItemWraps.h"
 
 Result<Item> GetFirstProjItem() {
 	auto& mqm = MessageQueueManager::getInstance();

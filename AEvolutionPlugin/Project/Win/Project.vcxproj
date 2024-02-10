@@ -82,6 +82,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -136,6 +137,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -216,13 +218,12 @@
   <ItemGroup>
     <CustomBuild Include="$(SrcDir)AEvolution_PiPL.r">
       <Message>Compiling the PiPL</Message>
-      <Command>cl /I "$(MainSrcDir)Headers" /EP ".."\\"%(Filename).r" &gt; "$(IntDir)"\\"%(Filename).rr"
+      <Command>cl /I "$(MainSrcDir)Headers" /EP "$(SrcDir)%(Filename).r" &gt; "$(IntDir)"\\"%(Filename).rr"
 "$(MainSrcDir)Resources\PiPLTool" "$(IntDir)%(Filename).rr" "$(IntDir)%(Filename).rrc"
 cl /D "MSWindows" /EP $(IntDir)%(Filename).rrc &gt;               "$(IntDir)"\\"%(Filename)".rc
 </Command>
       <Outputs>$(IntDir)%(Filename).rc;%(Outputs)</Outputs>
     </CustomBuild>
-    <!-- This will throw on first build on clean dist, second build does work then. Fix this -->
     <ResourceCompile Include="$(IntDir)AEvolution_PiPL.rc" />
   </ItemGroup>
   <ItemGroup>
@@ -230,7 +231,6 @@ cl /D "MSWindows" /EP $(IntDir)%(Filename).rrc &gt;               "$(IntDir)"\\"
     <ClCompile Include="$(MainSrcDir)Util/MissingSuiteError.cpp" />
     <ClCompile Include="$(SrcDir)AEvolution.cpp" />
     <ClCompile Include="$(SrcDir)main.cpp" />
-    <ClCompile Include="$(SrcDir)AEnums.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

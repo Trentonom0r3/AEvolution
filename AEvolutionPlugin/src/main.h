@@ -570,7 +570,6 @@ struct Range {
 	}
 };
 
-
 /**
 * @brief struct to represent a null type.
 * Used for anything involving a null type.
