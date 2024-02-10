@@ -15,6 +15,8 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/iterator/counting_iterator.hpp>
+#include <boost/mp11.hpp>
+
 #include <iostream>
 #include <thread>
 #include <sstream>
