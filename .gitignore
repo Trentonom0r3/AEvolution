@@ -1,7 +1,5 @@
 ## Custom
 README_private.md
-# Used similarly to *.vcxproj.user without having to hijack a VS default file since it gets imported differently
-*.vcxproj.personal
 Project/intermediate
 
 ## Ignore Visual Studio temporary files, build results, and
