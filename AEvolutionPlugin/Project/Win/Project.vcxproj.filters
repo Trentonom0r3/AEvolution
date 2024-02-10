@@ -116,13 +116,13 @@
     <ClInclude Include="$(MainSrcDir)Headers/AEConfig.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\AEnums.h">
+    <ClInclude Include="$(SrcDir)AEnums.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\CommandFactory.h">
+    <ClInclude Include="$(SrcDir)CommandFactory.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\MessageMain.h">
+    <ClInclude Include="$(SrcDir)MessageMain.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -140,7 +140,7 @@
     </ClCompile>
     <ClCompile Include="$(SrcDir)AEvolution.cpp" />
     <ClCompile Include="$(SrcDir)main.cpp" />
-    <ClCompile Include="..\..\src\AEnums.cpp" />
+    <ClCompile Include="$(SrcDir)AEnums.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="$(SrcDir)AEvolution_PiPL.r">

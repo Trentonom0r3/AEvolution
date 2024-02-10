@@ -10,7 +10,7 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <Import Project="Project.vcxproj.settings"/>
+  <Import Project="Project.vcxproj.settings" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F92835DD-4FE4-4F57-A439-B7EA704933DF}</ProjectGuid>
@@ -25,7 +25,8 @@
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings"></ImportGroup>
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)/Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)/Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
@@ -33,9 +34,15 @@
   <PropertyGroup>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules/>
-    <CodeAnalysisRuleAssemblies/>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
     <TargetExt>$(TargetExt_)</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(MainSrcDir)Headers;$(MainSrcDir)Headers/SP;$(MainSrcDir)Resources;$(MainSrcDir)Util;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(MainSrcDir)Headers;$(MainSrcDir)Headers/SP;$(MainSrcDir)Resources;$(MainSrcDir)Util;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)'=='Debug'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
@@ -137,7 +144,8 @@
     <Link>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation></GenerateDebugInformation>
+      <GenerateDebugInformation>
+      </GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
       <SubSystem>
       </SubSystem>
@@ -225,5 +233,6 @@ cl /D "MSWindows" /EP $(IntDir)%(Filename).rrc &gt;               "$(IntDir)"\\"
     <ClCompile Include="$(SrcDir)AEnums.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets"></ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>

@@ -10,7 +10,7 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <Import Project="Project.vcxproj.settings"/>
+  <Import Project="Project.vcxproj.settings" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -44,10 +44,10 @@
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <LibraryPath>$(VcpkgDir)installed/x64-windows-static/debug/lib;$(OutDir);$(LibraryPath)</LibraryPath>
     <TargetExt>$(TargetExt_)</TargetExt>
-    <IncludePath>$(MainDir)AEvolutionPlugin;$(IncludePath)</IncludePath>
+    <IncludePath>$(MainDir)AEvolutionPlugin/src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <IncludePath>$(MainDir)AEvolutionPlugin;$(VcpkgDir)installed/x64-windows-static/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MainDir)AEvolutionPlugin/src;$(VcpkgDir)installed/x64-windows-static/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);C:/Program Files/Python312/libs;$(LibraryPath)</LibraryPath>
     <TargetExt>$(TargetExt_)</TargetExt>
   </PropertyGroup>
@@ -105,11 +105,13 @@
   <ItemGroup>
     <ClInclude Include="$(SrcDir)framework.h" />
     <ClInclude Include="$(SrcDir)ItemWraps.h" />
+    <ClInclude Include="$(SrcDir)CollectionWraps.h" />
     <ClInclude Include="$(SrcDir)MessageQueueManager.h" />
     <ClInclude Include="$(SrcDir)pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SrcDir)ItemWraps.cpp" />
+    <ClCompile Include="$(SrcDir)CollectionWraps.cpp" />
     <ClCompile Include="$(SrcDir)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
