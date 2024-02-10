@@ -2,7 +2,7 @@
 - This file contains helpful information about learning/extending this project
 
 # Run after git cloning (one time)
-## Skip worktree
+## Skip worktree (view this in an editor and not in a markdown viewer)
 - Add .vcxproj.personal files to skip. Similar to .gitignore but they were pushed once because they are default files
 git update-index --skip-worktree Project/Main.vcxproj.personal
 git update-index --skip-worktree AEvolutionPlugin/Project/Win/Project.vcxproj.personal
@@ -22,9 +22,12 @@ git update-index --skip-worktree AEvolutionBindsTEMPLATE/Project/Project.vcxproj
 - F `README.md`: Main readme used to explain what the whole project is for, from a non developer perspective
 - F `README_dev.md`: developer readme used to explain how it all works and how to contribute
 
-# Sub-project dependencies
-- `AEvolutionPlugin`: Depends on nothing (besides stuff in .vcxproj, obviously)
-- `AEvolutionBindsTEMPLATE`: Depends on nothing but is shadow-linked `AEvolutionPlugin`.aex (which needs to be inside AE's Plug-ins folder). Used to build specific language bindings
+# Sub-projects
+- `AEvolutionPlugin`:
+  - Depends on nothing (besides stuff in .vcxproj, obviously)
+- `AEvolutionBindsTEMPLATE`:
+  - Depends on nothing but is shadow-linked `AEvolutionPlugin`.aex (which needs to be inside AE's Plug-ins folder). Used to build specific language bindings
+  - Currently doesn't work yet
 
 # New sub-project
 When creating a Visual Studio Project these these steps are required to do. There is a `AEvolutionBindsTEMPLATE` sub-project which should be used to create new bindings
@@ -44,4 +47,4 @@ When creating a Visual Studio Project these these steps are required to do. Ther
   - F `main.*`: Expects this to be the main entry/build file, usually is main.cpp. (This is optional but recommended)
 
 # Todo
-- `AEvolutionPlugin`: Fix that one `'..\AEvolution_PiPL.r'` file not being built before being required or so resulting in first clean build to fail but not second (Error: C1083)
+- `AEvolutionPlugin`: Figure out why Release output file is still so huge at ~30mb while debug is ~40mb and the previous Release was ~1.5mb

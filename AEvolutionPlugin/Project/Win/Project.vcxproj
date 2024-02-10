@@ -38,10 +38,12 @@
     <TargetExt>$(TargetExt_)</TargetExt>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)'=='Debug'">
+    <VcpkgInstalledDir>$(VcpkgDir)/installed</VcpkgInstalledDir>
     <VcpkgUseStatic>true</VcpkgUseStatic>
     <VcpkgConfiguration>Debug</VcpkgConfiguration>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)'=='Release'">
+    <VcpkgInstalledDir>$(VcpkgDir)/installed</VcpkgInstalledDir>
     <VcpkgUseStatic>true</VcpkgUseStatic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -154,7 +156,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <!-- It's not possible to merge the Debug and Release configurations by only creating the differences in the Release Condition -->
-  <!-- Figure out why Release output file is still so huge at ~30mb while debug is ~40mb and the previous Release was ~1.5mb -->
   <!-- Actual differences between Debug and Release currently: -->
   <!-- <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
@@ -205,13 +206,12 @@
   <ItemGroup>
     <CustomBuild Include="$(SrcDir)AEvolution_PiPL.r">
       <Message>Compiling the PiPL</Message>
-      <Command>cl /I "$(MainSrcDir)Headers" /EP ".."\\"%(Filename).r" &gt; "$(IntDir)"\\"%(Filename).rr"
+      <Command>cl /I "$(MainSrcDir)Headers" /EP "$(SrcDir)%(Filename).r" &gt; "$(IntDir)"\\"%(Filename).rr"
 "$(MainSrcDir)Resources\PiPLTool" "$(IntDir)%(Filename).rr" "$(IntDir)%(Filename).rrc"
 cl /D "MSWindows" /EP $(IntDir)%(Filename).rrc &gt;               "$(IntDir)"\\"%(Filename)".rc
 </Command>
       <Outputs>$(IntDir)%(Filename).rc;%(Outputs)</Outputs>
     </CustomBuild>
-    <!-- This will throw on first build on clean dist, second build does work then. Fix this -->
     <ResourceCompile Include="$(IntDir)AEvolution_PiPL.rc" />
   </ItemGroup>
   <ItemGroup>
