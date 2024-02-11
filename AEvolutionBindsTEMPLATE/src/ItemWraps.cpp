@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "ItemWraps.h"
 
 Result<Item> GetFirstProjItem() {
 	auto& mqm = MessageQueueManager::getInstance();
@@ -9,6 +10,20 @@ Result<Item> GetFirstProjItem() {
 	Result<Item> result = boost::get<Result<Item>>(resp.args[0]);
 	return result;
 }
+/*
+AEGP_GetNewStreamValue
+
+Get value, at a time you specify, of stream. valueP must be disposed by the plug-in. The AEGP_LTimeMode indicates whether the time is in compositions or layer time.
+
+AEGP_GetNewStreamValue(
+  AEGP_PluginID      aegp_plugin_id,
+  AEGP_StreamRefH    streamH,
+  AEGP_LTimeMode     time_mode,
+  const A_Time       *timePT,
+  A_Boolean          pre_exprB,
+  AEGP_StreamValue2  *valueP);
+ */
+
 
 Result<Item> GetNextProjItem(Item item) {
 	auto& mqm = MessageQueueManager::getInstance();
@@ -46,12 +61,12 @@ Result<bool> SelectItem(Item item, bool select, bool deselectOthers) {
 	return result;
 }
 
-Result<ItemType> GetItemType(Item item) {
+Result<AEGP_ItemType> GetItemType(Item item) {
 	auto& mqm = MessageQueueManager::getInstance();
 	Command cmd(CommandID::GetItemType, CommandArgs{item});
 	Response resp = mqm.sendAndReceive(cmd);
 
-	Result<ItemType> result = boost::get<Result<ItemType>>(resp.args[0]);
+	Result<AEGP_ItemType> result = boost::get<Result<AEGP_ItemType>>(resp.args[0]);
 	return result;
 }
 
@@ -190,16 +205,16 @@ Result<null> SetItemComment(Item item, std::string comment) {
 	return result;
 }
 
-Result<LabelType> GetItemLabel(Item item) {
+Result<AEGP_LabelID> GetItemLabel(Item item) {
 	auto& mqm = MessageQueueManager::getInstance();
 	Command cmd(CommandID::GetItemLabel, CommandArgs{ item });
 	Response resp = mqm.sendAndReceive(cmd);
 
-	Result<LabelType> result = boost::get<Result<LabelType>>(resp.args[0]);
+	Result<AEGP_LabelID> result = boost::get<Result<AEGP_LabelID>>(resp.args[0]);
 	return result;
 }
 
-Result<null> SetItemLabel(Item item, LabelType label) {
+Result<null> SetItemLabel(Item item, AEGP_LabelID label) {
 	auto& mqm = MessageQueueManager::getInstance();
 	Command cmd(CommandID::SetItemLabel, CommandArgs{ item, label });
 	Response resp = mqm.sendAndReceive(cmd);

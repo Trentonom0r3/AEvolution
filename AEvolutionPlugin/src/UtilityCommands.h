@@ -1,9 +1,6 @@
 #pragma once
-#include "main.h"
-#include "MessageQueueManager.h"
+#include "CommandFactory.h"
 #include "SessionManager.h"
-#include "SuitesManager.h"
-
 
 class ReportInfoUnicode : public CommandBase {
 public:
@@ -565,7 +562,7 @@ REGISTER_COMMAND(CommandID::UpdateFontList, UpdateFontList);
 	return result;
 }
 */
-
+/*
 class GetPluginPaths : public CommandBase {
 public:
 	using CommandBase::CommandBase;
@@ -613,7 +610,7 @@ public:
 	}
 };
 REGISTER_COMMAND(CommandID::GetPluginPaths, GetPluginPaths);
-
+*/
 /*
 * Result<std::string> GetPluginPaths(PathType type) {
 	Command command(CommandType::GetPluginPaths, { type });

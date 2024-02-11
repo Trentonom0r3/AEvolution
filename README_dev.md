@@ -9,15 +9,17 @@
 - Path: `-` at the start means it inherits part(s) of a previously referenced path (ex: `Project.vcxproj`, `-.personal`)
 - Sub-projects: When creating bindings for a new language, name it `AEvolutionBinds*` where `*` is the language abbreviation in uppercase (ex: `Python` -> `PY`)
 
-
-# Setup (one time)
-## Skip worktree (view this in an editor and not in a markdown viewer)
+# Setup: Run after git cloning (one time)
+## Skip worktree
 - Add .vcxproj.personal files to skip. Similar to .gitignore but they were pushed once because they are default files
+```sh
 git update-index --skip-worktree Project/Main.vcxproj.personal
 git update-index --skip-worktree AEvolutionPlugin/Project/Win/Project.vcxproj.personal
 git update-index --skip-worktree AEvolutionBindsTEMPLATE/Project/Project.vcxproj.personal
+```
 
-- For merging branches
+### (not used for Setup) No skip worktree for merging branches
+- Used when merging branches:
 ```sh
 git update-index --no-skip-worktree Project/Main.vcxproj.personal
 git update-index --no-skip-worktree AEvolutionPlugin/Project/Win/Project.vcxproj.personal

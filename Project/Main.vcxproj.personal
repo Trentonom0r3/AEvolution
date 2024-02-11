@@ -2,6 +2,6 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="UserMacros">
     <MainDir>C:/Users/USER/source/repos/AEvolution/</MainDir>
-    <VcpkgDir>C:/path/to/vcpkg/</VcpkgDir>
+    <VcpkgDir>C:/Users/USER/vcpkg/</VcpkgDir>
   </PropertyGroup>
 </Project>

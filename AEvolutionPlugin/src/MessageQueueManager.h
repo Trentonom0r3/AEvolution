@@ -1,5 +1,5 @@
 #pragma once
-#include "main.h"
+#include "MessageMain.h"
 
 class MessageQueueManager {
 public:
