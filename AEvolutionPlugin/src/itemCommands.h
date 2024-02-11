@@ -762,8 +762,8 @@ void execute() override {
 		Item item = boost::get<Item>(cmd.args[0]);
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 		AETime aeTime = boost::get<AETime>(cmd.args[1]);
-		time.value = static_cast<A_long>(aeTime.value);
-		time.scale = static_cast<A_u_long>(aeTime.scale);
+		time.value = static_cast<A_long>(aeTime.x);
+		time.scale = static_cast<A_u_long>(aeTime.y);
 
 		// Get the suite handler
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();

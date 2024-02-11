@@ -4,11 +4,8 @@
 
 using null = NullType;
 
-typedef boost::variant<int, double, std::string, bool, Item, Comp,
-                       Layer, Project, Footage, Collection2H, CollectionItemV2,
-                       AEGP_ItemType, AEGP_LabelID, DownsampleFactor> CommandArg;
-
-using CommandArg = boost::mp11::mp_apply<boost::variant, commandTypes>;
+typedef boost::variant<int, double, std::string, bool, TwoDVal<double>, TwoDVal<int>, ThreeDVal<double>, FourDVal<double>, null,
+                       Item, CollectionItemV2, AEGP_ItemType, AEGP_LabelID, DownsampleFactor> CommandArg;
 
 typedef std::vector<CommandArg> CommandArgs;
 
@@ -30,8 +27,9 @@ struct Command {
     }
 };
 
-typedef boost::variant<Result<null>, Result<Collection2H>, Result<CollectionItemV2>, Result<int>, Result<double>, Result<std::string>, Result<bool>,
-                        Result<Item>, Result<Comp>, Result<Layer>, Result<Project>, Result<Footage>, Result<AEGP_ItemType>, Result<AEGP_LabelID>, Result<DownsampleFactor>> ResponseArg;
+typedef boost::variant<Result<int>, Result<double>, Result<std::string>, Result<bool>, Result<TwoDVal<double>>,
+                       Result<TwoDVal<int>>, Result<ThreeDVal<double>>, Result<FourDVal<double>>, Result<null>,
+                       Result<Item>, Result<CollectionItemV2>, Result<AEGP_ItemType>, Result<AEGP_LabelID>, Result<DownsampleFactor>> ResponseArg;
 
 typedef std::vector<ResponseArg> ResponseArgs;
 

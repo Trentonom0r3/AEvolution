@@ -80,12 +80,6 @@ std::vector<A_UTF16Char> convertUTF8ToUTF16(const std::string& utf8String) {
 }
 
 BOOST_CLASS_EXPORT(Item);
-BOOST_CLASS_EXPORT(Project);
-BOOST_CLASS_EXPORT(Comp);
-BOOST_CLASS_EXPORT(Layer);
-BOOST_CLASS_EXPORT(Footage);
-BOOST_CLASS_EXPORT(Collection2H);
-BOOST_CLASS_EXPORT(StreamRef);
 BOOST_CLASS_EXPORT(LayerCollectionItem);
 BOOST_CLASS_EXPORT(MaskCollectionItem);
 BOOST_CLASS_EXPORT(EffectCollectionItem);

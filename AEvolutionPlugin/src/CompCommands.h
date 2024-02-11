@@ -475,7 +475,7 @@ using CommandBase::CommandBase;
 
 		Comp comp = boost::get<Comp>(cmd.args[0]);
 		DownsampleFactor dsf = boost::get<DownsampleFactor>(cmd.args[1]);
-		AEGP_DownsampleFactor dsfH = dsf.toAEGP_DownSampleFactor();
+		AEGP_DownsampleFactor dsfH = dsf.toAEGP_DownsampleFactor();
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 		AEGP_CompH compH = std::get<AEGP_CompH>(SessionManager::GetInstance().getSession(comp.getSessionID()));
 
