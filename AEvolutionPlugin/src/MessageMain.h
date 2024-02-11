@@ -4,9 +4,9 @@
 
 using null = NullType;
 
-using commandTypes = boost::mp11::mp_list<int, double, std::string, bool, Size,
+typedef boost::variant<int, double, std::string, bool, Size,
     Position, Position3D, Color, AETime, Item, Comp, Range,
-    Layer, Project, Footage, null, Collection2H, CollectionItemV2, AEGP_ItemType, AEGP_LabelID>;
+    Layer, Project, Footage, null, Collection2H, CollectionItemV2, AEGP_ItemType, AEGP_LabelID> CommandArg;
 
 using CommandArg = boost::mp11::mp_apply<boost::variant, commandTypes>;
 
@@ -30,11 +30,9 @@ struct Command {
     }
 };
 
-using responseTypes = boost::mp11::mp_list<Result<null>, Result<Collection2H>, Result<CollectionItemV2>, Result<int>, Result<double>, Result<std::string>, Result<bool>,
+typedef boost::variant<Result<null>, Result<Collection2H>, Result<CollectionItemV2>, Result<int>, Result<double>, Result<std::string>, Result<bool>,
     Result<Size>, Result<Position>, Result<Position3D>, Result<Color>, Result<AETime>, Result<Item>, Result<Range>,
-    Result<Comp>, Result<Layer>, Result<Project>, Result<Footage>, Result<AEGP_ItemType>, Result<AEGP_LabelID>>;
-
-using ResponseArg = boost::mp11::mp_apply<boost::variant, responseTypes>;
+    Result<Comp>, Result<Layer>, Result<Project>, Result<Footage>, Result<AEGP_ItemType>, Result<AEGP_LabelID>> ResponseArg;
 
 typedef std::vector<ResponseArg> ResponseArgs;
 

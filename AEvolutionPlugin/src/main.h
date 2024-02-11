@@ -15,8 +15,6 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/iterator/counting_iterator.hpp>
-#include <boost/mp11.hpp>
-
 #include <iostream>
 #include <thread>
 #include <sstream>
@@ -521,6 +519,25 @@ struct Color {
                                  g(static_cast<double>(color.greenF)),
                                  b(static_cast<double>(color.blueF)),
 								 a(static_cast<double>(color.alphaF)) {}
+
+	AEGP_ColorVal toAEGP_ColorVal() {
+		AEGP_ColorVal colorVal;
+		colorVal.redF = static_cast<A_FpLong>(r);
+		colorVal.greenF = static_cast<A_FpLong>(g);
+		colorVal.blueF = static_cast<A_FpLong>(b);
+		colorVal.alphaF = static_cast<A_FpLong>(a);
+		return colorVal;
+	}
+
+	PF_Pixel toPF_Pixel() {
+		PF_Pixel pixel;
+		pixel.red = static_cast<A_u_char>(r);
+		pixel.green = static_cast<A_u_char>(g);
+		pixel.blue = static_cast<A_u_char>(b);
+		pixel.alpha = static_cast<A_u_char>(a);
+		return pixel;
+	}
+
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version)
     {
@@ -584,6 +601,25 @@ struct NullType {
     void serialize(Archive& ar, const unsigned int version) {
 	}
 };
+
+struct DownsampleFactor {
+	DownsampleFactor() {}
+	DownsampleFactor(AEGP_DownsampleFactor factor) : xS(factor.xS), yS(factor.yS) {}
+	double xS;
+	double yS;
+	AEGP_DownsampleFactor toAEGP_DownSampleFactor() {
+		AEGP_DownsampleFactor factor;
+		factor.xS = static_cast<A_short>(xS);
+		factor.yS = static_cast<A_short>(yS);
+		return factor;
+	}
+
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& xS;
+		ar& yS;
+	}
+};
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // vvvvvvv The Result Struct is used for responses, to simplify the process of returning a value or an error. vvvvvvv
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -618,4 +654,3 @@ struct Result {
     }
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
