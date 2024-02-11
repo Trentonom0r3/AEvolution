@@ -10,6 +10,7 @@ public:
     virtual ~CommandBase() = default;
 
     Command cmd;
+    A_Err err = A_Err_NONE;
 };
 
 class CommandFactory {
