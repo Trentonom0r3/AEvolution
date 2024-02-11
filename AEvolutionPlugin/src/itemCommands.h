@@ -833,7 +833,7 @@ void execute() override {
 REGISTER_COMMAND(CommandID::GetItemComment, GetItemComment);
 
 /*
-* Result<std::string> GetItemComment(Item item) {
+Result<std::string> GetItemComment(Item item) {
 	auto& mqm = MessageQueueManager::getInstance();
 	Command cmd(CommandID::GetItemComment, CommandArgs{item});
 	Response resp = mqm.sendAndReceive(cmd);

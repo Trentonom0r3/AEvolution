@@ -365,3 +365,196 @@ AEGP_SetCompDisplayDropFrame(
   A_long      index);
   */
 
+class GetCompFromItem : public CommandBase {
+public:
+	using CommandBase::CommandBase;
+
+	void execute() override {
+		A_Err err = A_Err_NONE;
+		AEGP_CompH compH;
+
+		Item item = boost::get<Item>(cmd.args[0]);
+		Comp comp;
+		int compID = createUUID();
+		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
+		AEGP_ItemH itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
+
+		ERR(suites.CompSuite11()->AEGP_GetCompFromItem(itemH, &compH));
+		if (compH) {
+			SessionManager::GetInstance().addSession(compH, compID);
+			comp = Comp(compID);
+		}
+		Result<Comp> result(comp, errToString(err));
+		Response response(result);
+		MessageQueueManager::getInstance().sendResponse(response);
+	}
+};
+REGISTER_COMMAND(CommandID::GetCompFromItem, GetCompFromItem)
+
+/*
+Result<Comp> getCompFromItem(Item item) {
+	Command cmd(CommandID::GetCompFromItem, { item });
+	Response response = MessageQueueManager::getInstance().sendAndReceive(cmd);
+	Result<Comp> result = boost::get<Result<Comp>>(response.result);
+	return result;
+}
+*/
+
+class GetItemFromComp : public CommandBase {
+public:
+using CommandBase::CommandBase;
+
+	void execute() override {
+		A_Err err = A_Err_NONE;
+		AEGP_ItemH itemH;
+
+		Comp comp = boost::get<Comp>(cmd.args[0]);
+		Item item;
+		int itemID;
+		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
+		AEGP_CompH compH = std::get<AEGP_CompH>(SessionManager::GetInstance().getSession(comp.getSessionID()));
+
+		ERR(suites.CompSuite11()->AEGP_GetItemFromComp(compH, &itemH));
+		if (itemH) {
+			ERR(suites.ItemSuite9()->AEGP_GetItemID(itemH, &itemID));
+			SessionManager::GetInstance().addSession(itemH, itemID);
+			item = Item(itemID);
+		}
+		Result<Item> result(item, errToString(err));
+		Response response(result);
+		MessageQueueManager::getInstance().sendResponse(response);
+	}
+};
+REGISTER_COMMAND(CommandID::GetItemFromComp, GetItemFromComp)
+
+/*
+Result<Item> getItemFromComp(Comp comp) {
+	Command cmd(CommandID::GetItemFromComp, { comp });
+	Response response = MessageQueueManager::getInstance().sendAndReceive(cmd);
+	Result<Item> result = boost::get<Result<Item>>(response.result);
+	return result;
+}
+*/
+
+class GetCompDownsampleFactor : public CommandBase {
+public:
+using CommandBase::CommandBase;
+
+	void execute() override {
+		A_Err err = A_Err_NONE;
+		AEGP_DownsampleFactor dsf;
+
+		Comp comp = boost::get<Comp>(cmd.args[0]);
+		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
+		AEGP_CompH compH = std::get<AEGP_CompH>(SessionManager::GetInstance().getSession(comp.getSessionID()));
+
+		ERR(suites.CompSuite11()->AEGP_GetCompDownsampleFactor(compH, &dsf));
+		DownsampleFactor downsampleFactor(dsf);
+		Result<DownsampleFactor> result(downsampleFactor, errToString(err));
+		Response response(result);
+		MessageQueueManager::getInstance().sendResponse(response);
+	}
+};
+REGISTER_COMMAND(CommandID::GetCompDownsampleFactor, GetCompDownsampleFactor)
+
+/*
+Result<AEGP_DownsampleFactor> getCompDownsampleFactor(Comp comp) {
+	Command cmd(CommandID::GetCompDownsampleFactor, { comp });
+	Response response = MessageQueueManager::getInstance().sendAndReceive(cmd);
+	Result<AEGP_DownsampleFactor> result = boost::get<Result<AEGP_DownsampleFactor>>(response.result);
+	return result;
+}
+*/
+
+class SetCompDownsampleFactor : public CommandBase {
+public:
+using CommandBase::CommandBase;
+
+	void execute() override {
+		A_Err err = A_Err_NONE;
+
+		Comp comp = boost::get<Comp>(cmd.args[0]);
+		DownsampleFactor dsf = boost::get<DownsampleFactor>(cmd.args[1]);
+		AEGP_DownsampleFactor dsfH = dsf.toAEGP_DownSampleFactor();
+		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
+		AEGP_CompH compH = std::get<AEGP_CompH>(SessionManager::GetInstance().getSession(comp.getSessionID()));
+
+		ERR(suites.CompSuite11()->AEGP_SetCompDownsampleFactor(compH, &dsfH));
+
+		Result<null> result(null(), errToString(err));
+		Response response(result);
+		MessageQueueManager::getInstance().sendResponse(response);
+	}
+};
+REGISTER_COMMAND(CommandID::SetCompDownsampleFactor, SetCompDownsampleFactor)
+
+/*
+Result<null> setCompDownsampleFactor(Comp comp, AEGP_DownsampleFactor dsf) {
+	Command cmd(CommandID::SetCompDownsampleFactor, { comp, dsf });
+	Response response = MessageQueueManager::getInstance().sendAndReceive(cmd);
+	Result<null> result = boost::get<Result<null>>(response.result);
+	return result;
+}
+*/
+
+class GetCompBGColor : public CommandBase {
+public:
+using CommandBase::CommandBase;
+
+	void execute() override {
+		A_Err err = A_Err_NONE;
+		AEGP_ColorVal bgColor;
+
+		Comp comp = boost::get<Comp>(cmd.args[0]);
+		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
+		AEGP_CompH compH = std::get<AEGP_CompH>(SessionManager::GetInstance().getSession(comp.getSessionID()));
+
+		ERR(suites.CompSuite11()->AEGP_GetCompBGColor(compH, &bgColor));
+
+		Color color(bgColor);
+		Result<Color> result(color, errToString(err));
+		Response response(result);
+		MessageQueueManager::getInstance().sendResponse(response);
+	}
+};
+REGISTER_COMMAND(CommandID::GetCompBGColor, GetCompBGColor)
+
+/*
+Result<Color> getCompBGColor(Comp comp) {
+	Command cmd(CommandID::GetCompBGColor, { comp });
+	Response response = MessageQueueManager::getInstance().sendAndReceive(cmd);
+	Result<Color> result = boost::get<Result<Color>>(response.result);
+	return result;
+}
+*/
+
+class SetCompBGColor : public CommandBase {
+public:
+using CommandBase::CommandBase;
+
+	void execute() override {
+		A_Err err = A_Err_NONE;
+
+		Comp comp = boost::get<Comp>(cmd.args[0]);
+		Color bgColor = boost::get<Color>(cmd.args[1]);
+		AEGP_ColorVal bgColorVal = bgColor.toAEGP_ColorVal();
+		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
+		AEGP_CompH compH = std::get<AEGP_CompH>(SessionManager::GetInstance().getSession(comp.getSessionID()));
+
+		ERR(suites.CompSuite11()->AEGP_SetCompBGColor(compH, &bgColorVal));
+
+		Result<null> result(null(), errToString(err));
+		Response response(result);
+		MessageQueueManager::getInstance().sendResponse(response);
+	}
+};
+REGISTER_COMMAND(CommandID::SetCompBGColor, SetCompBGColor)
+
+/*
+Result<null> setCompBGColor(Comp comp, Color bgColor) {
+	Command cmd(CommandID::SetCompBGColor, { comp, bgColor });
+	Response response = MessageQueueManager::getInstance().sendAndReceive(cmd);
+	Result<null> result = boost::get<Result<null>>(response.result);
+	return result;
+}
+*/
