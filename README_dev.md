@@ -17,6 +17,17 @@ git update-index --skip-worktree Project/Main.vcxproj.personal
 git update-index --skip-worktree AEvolutionPlugin/Project/Win/Project.vcxproj.personal
 git update-index --skip-worktree AEvolutionBindsTEMPLATE/Project/Project.vcxproj.personal
 
+- For merging branches
+```sh
+git update-index --no-skip-worktree Project/Main.vcxproj.personal
+git update-index --no-skip-worktree AEvolutionPlugin/Project/Win/Project.vcxproj.personal
+git update-index --no-skip-worktree AEvolutionBindsTEMPLATE/Project/Project.vcxproj.personal
+git stash save
+# DO MERGE STUFF HERE
+git stash pop
+```
+- Run the commands from `## Skip worktree` again to re-add those files
+
 ## Paths
 - Look into all `*.vcxproj.personal` files and update the values (currently only [Project/Main](Project/Main.vcxproj.personal))
 
