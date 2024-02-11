@@ -15,6 +15,8 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/iterator/counting_iterator.hpp>
+#include <boost/mp11.hpp>
+
 #include <iostream>
 #include <thread>
 #include <sstream>
@@ -105,113 +107,17 @@ private:
     }
 };
 
-/**
-* @brief Class representing a project in After Effects.
-* Used for anything involving an AEGP_ProjectH.
-*/
-class Project : public Base {
-public:
-    Project() : Base() {}
-    Project(int sessionID) : Base(sessionID) {}
+using Project = Item;
 
-private:
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-        ar& boost::serialization::base_object<Base>(*this);
-    }
-};
+using Comp = Item;
 
-/**
-* @brief Class representing a composition in After Effects.
-* Used for anything involving an AEGP_CompH.
-*/
-class Comp : public Base {
-public:
-    Comp() : Base() {}
-    Comp(int sessionID) : Base(sessionID) {}
+using Layer = Item;
 
-private:
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-        ar& boost::serialization::base_object<Base>(*this);
-    }
-};
+using Footage = Item;
 
-/**
-* @brief Class representing a layer in After Effects.
-* Used for anything involving an AEGP_LayerH.
-*/
-class Layer : public Base {
-public:
-    Layer() : Base() {}
-    Layer(int sessionID) : Base(sessionID) {}
+using Collection2H = Item;
 
-private:
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-        ar& boost::serialization::base_object<Base>(*this);
-    }
-};
-
-/**
-* @brief Class representing a footage in After Effects.
-* Used for anything involving an AEGP_FootageH.
-*/
-class Footage : public Base {
-public:
-    Footage() : Base() {}
-    Footage(int sessionID) : Base(sessionID) {}
-
-private:
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-        ar& boost::serialization::base_object<Base>(*this);
-    }
-};
-
-/**
-* @brief Class representing a collection in After Effects.
-* Used for anything involving an AEGP_Collection2H.
-*/
-class Collection2H : public Base {
-public:
-	Collection2H() : Base() {}
-	Collection2H(int sessionID) : Base(sessionID) {}
-
-private:
-    friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar& boost::serialization::base_object<Base>(*this);
-	}
-};
-
-/**
-* @brief Class representing a stream reference in After Effects.
-* Used for anything involving an AEGP_StreamRefH.
-*/
-class StreamRef : public Base {
-public:
-	StreamRef() : Base() {}
-	StreamRef(int sessionID) : Base(sessionID) {}
-
-private:
-friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar& boost::serialization::base_object<Base>(*this);
-	}
-};
+using StreamRef = Item;
 
 class LayerCollectionItem : public Base {
 public:
@@ -443,134 +349,6 @@ friend class boost::serialization::access;
 // vvvvvv The Structs below are for all the data types that will be used in the commands, to simplify things. vvvvvv
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
-* @brief struct to simplify transer of width/height.
-* Used for anything involving a float.
-*/
-struct Size {
-	double width;
-    double height;
-	Size() {}
-	Size(double width, double height) : width(width), height(height) {}
-    Size(A_long width, A_long height) : width(static_cast<float>(width)), height(static_cast<float>(height)) {}
-    template<class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-		ar& width;
-		ar& height;
-	}
-};
-
-/**
-* @brief struct to simplify transfer of x/y position.
-* Used for anything involving a float.
-*/
-struct Position {
-    double x;
-    double y;
-	Position() {}
-	Position(double x, double y) : x(x), y(y) {}
-    Position(AEGP_TwoDVal val) : x(static_cast<double>(val.x)), y(static_cast<double>(val.y)) {}
-    template<class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-		ar& x;
-		ar& y;
-	}
-};
-
-/**
-* @brief struct to simplify transfer of x/y/z position.
-* Used for anything involving a float.
-*/
-struct Position3D {
-    double x;
-    double y;
-    double z;
-    Position3D() {}
-    Position3D(double x, double y, double z) : x(x), y(y), z(z) {}
-    Position3D(AEGP_ThreeDVal val) : x(static_cast<double>(val.x)), y(static_cast<double>(val.y)), z(static_cast<double>(val.z)) {}
-    template<class Archive>
-    void serialize(Archive& ar, const unsigned int version) {
-        ar& x;
-        ar& y;
-        ar& z;
-    }
-};
-
-/**
-* @brief struct to simplify transfer of color.
-* Used for anything involving a float [0.0, 1.0].
-*/
-struct Color {
-    double r;
-    double g;
-    double b;
-    double a;
-
-    Color() {}
-    Color(double r, double g, double b, double a) : r(r), g(g), b(b), a(a) {}
-
-    Color(PF_Pixel pixel) : r(static_cast<double>(pixel.red)),
-                            g(static_cast<double>(pixel.green)),
-                            b(static_cast<double>(pixel.blue)),
-                            a(static_cast<double>(pixel.alpha)) {}
-
-    Color(AEGP_ColorVal color) : r(static_cast<double>(color.redF)),
-                                 g(static_cast<double>(color.greenF)),
-                                 b(static_cast<double>(color.blueF)),
-								 a(static_cast<double>(color.alphaF)) {}
-    template<class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-		ar& r;
-		ar& g;
-		ar& b;
-		ar& a;
-	}
-};
-
-/**
-* @brief struct to simplify transfer of AE's representation of time.
-* Used for anything involving a float.
-*/
-struct AETime {
-    double value;
-    double scale;
-    AETime() {}
-    AETime(double value, double scale) : value(value), scale(scale) {}
-    AETime(A_Time time) : value(static_cast<float>(time.value)), scale(static_cast<float>(time.scale)) {}
-    template<class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-        ar& value;
-        ar& scale;
-    }
-};
-
-struct Range {
-	int index_firstL;
-	int index_lastL;
-
-	// Default constructor
-	Range() : index_firstL(0), index_lastL(0) {}
-	// Constructor for a single index - sets both first and last to the same value, adjusted for exclusive range.
-	explicit Range(int index)
-		: index_firstL(index), index_lastL(index + 1) {}
-
-	// Constructor for a range - sets first to the start index and last to one past the end index, 
-	// considering the exclusive nature of the range.
-	Range(int first, int last)
-		: index_firstL(first), index_lastL(last) {}
-
-	// Serialization function
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& index_firstL;
-		ar& index_lastL;
-	}
-};
-
-/**
 * @brief struct to represent a null type.
 * Used for anything involving a null type.
 */
@@ -582,6 +360,102 @@ struct NullType {
     void serialize(Archive& ar, const unsigned int version) {
 	}
 };
+
+
+template <typename T>
+struct TwoDVal {
+	T x;
+	T y;
+	TwoDVal() {}
+	TwoDVal(T x, T y) : x(x), y(y) {}
+	TwoDVal(AEGP_DownsampleFactor factor) : x(factor.xS), y(factor.yS) {}
+	TwoDVal(AEGP_TwoDVal val) : x(val.x), y(val.y) {}
+	TwoDVal(A_Time time) : x(time.value), y(time.scale) {}
+	TwoDVal(int index_firstL) : x(index_firstL), y(index_firstL + 1) {}
+
+	AEGP_DownsampleFactor toAEGP_DownsampleFactor() const {
+		AEGP_DownsampleFactor factor;
+		factor.xS = static_cast<A_short>(x);
+		factor.yS = static_cast<A_short>(y);
+		return factor;
+	}
+
+	AEGP_TwoDVal toAEGP_TwoDVal() const {
+		AEGP_TwoDVal val;
+		val.x = x;
+		val.y = y;
+		return val;
+	}
+
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& x;
+		ar& y;
+	}
+};
+
+template <typename T>
+struct ThreeDVal {
+	T x;
+	T y;
+	T z;
+	ThreeDVal() {}
+	ThreeDVal(T x, T y, T z) : x(x), y(y), z(z) {}
+	ThreeDVal(AEGP_ThreeDVal val) : x(val.x), y(val.y), z(val.z) {}
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& x;
+		ar& y;
+		ar& z;
+	}
+};
+
+template <typename T>
+struct FourDVal {
+	T r;
+	T g;
+	T b;
+	T a;
+	FourDVal() {}
+	FourDVal(T r, T g, T b, T a) : r(r), g(g), b(b), a(a) {}
+	FourDVal(AEGP_ColorVal color) : r(color.redF), g(color.greenF), b(color.blueF), a(color.alphaF) {}
+	FourDVal(PF_Pixel pixel) : r(pixel.red), g(pixel.green), b(pixel.blue), a(pixel.alpha) {}
+
+	AEGP_ColorVal toAEGP_ColorVal() const {
+		AEGP_ColorVal color;
+		color.redF = r;
+		color.greenF = g;
+		color.blueF = b;
+		color.alphaF = a;
+		return color;
+	}
+
+	PF_Pixel toPF_Pixel() const {
+		PF_Pixel pixel;
+		pixel.red = r;
+		pixel.green = g;
+		pixel.blue = b;
+		pixel.alpha = a;
+		return pixel;
+	}
+
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& r;
+		ar& g;
+		ar& b;
+		ar& a;
+	}
+};
+
+using Range = TwoDVal<double>;
+using AETime = TwoDVal<double>;
+using Position = TwoDVal<double>;
+using Size = TwoDVal<double>;
+using DownsampleFactor = TwoDVal<double>;
+using Color = FourDVal<double>;
+using Position3D = ThreeDVal<double>;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // vvvvvvv The Result Struct is used for responses, to simplify the process of returning a value or an error. vvvvvvv
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -616,4 +490,3 @@ struct Result {
     }
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

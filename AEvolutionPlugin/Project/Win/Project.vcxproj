@@ -42,7 +42,7 @@
     <IncludePath>$(MainSrcDir)Headers;$(MainSrcDir)Headers/SP;$(MainSrcDir)Resources;$(MainSrcDir)Util;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(MainSrcDir)Headers;$(MainSrcDir)Headers/SP;$(MainSrcDir)Resources;$(MainSrcDir)Util;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\tjerf\vcpkg\installed\x64-windows-static\include;$(MainSrcDir)Headers;$(MainSrcDir)Headers/SP;$(MainSrcDir)Resources;$(MainSrcDir)Util;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)'=='Debug'">
     <VcpkgInstalledDir>$(VcpkgDir)/installed</VcpkgInstalledDir>
@@ -52,6 +52,9 @@
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)'=='Release'">
     <VcpkgInstalledDir>$(VcpkgDir)/installed</VcpkgInstalledDir>
     <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgInstalledDir>..\..\..\..\..\..\vcpkg\installed</VcpkgInstalledDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <Midl>
@@ -84,7 +87,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj /Zm200 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -132,7 +135,7 @@
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
-      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformation>false</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <SuppressStartupBanner>true</SuppressStartupBanner>
