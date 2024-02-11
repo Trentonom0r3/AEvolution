@@ -203,18 +203,18 @@
     <ClInclude Include="$(MainSrcDir)Headers/PR_Public.h" />
     <ClInclude Include="$(MainSrcDir)Util/String_Utils.h" />
     <ClInclude Include="$(SrcDir)AEnums.h" />
-    <ClInclude Include="$(SrcDir)CompCommands.h" />
     <ClInclude Include="$(SrcDir)CommandFactory.h" />
-    <ClInclude Include="$(SrcDir)FootageCommands.h" />
-    <ClInclude Include="$(SrcDir)ItemCommands.h" />
-    <ClInclude Include="$(SrcDir)LayerCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/CompCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/FootageCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/ItemCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/LayerCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/StreamCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/UtilityCommands.h" />
     <ClInclude Include="$(SrcDir)main.h" />
     <ClInclude Include="$(SrcDir)MessageMain.h" />
     <ClInclude Include="$(SrcDir)MessageQueueManager.h" />
     <ClInclude Include="$(SrcDir)SessionManager.h" />
-    <ClInclude Include="$(SrcDir)StreamCommands.h" />
     <ClInclude Include="$(SrcDir)SuitesManager.h" />
-    <ClInclude Include="$(SrcDir)UtilityCommands.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="$(SrcDir)AEvolution_PiPL.r">

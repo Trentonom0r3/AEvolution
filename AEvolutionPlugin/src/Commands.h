@@ -1,7 +1,7 @@
 #pragma once
-#include "ItemCommands.h"
-#include "UtilityCommands.h"
-#include "CompCommands.h"
-#include "FootageCommands.h"
-#include "LayerCommands.h"
-#include "StreamCommands.h"
+#include "commands/ItemCommands.h"
+#include "commands/UtilityCommands.h"
+#include "commands/CompCommands.h"
+#include "commands/FootageCommands.h"
+#include "commands/LayerCommands.h"
+#include "commands/StreamCommands.h"
