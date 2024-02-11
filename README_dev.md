@@ -1,7 +1,15 @@
 # AEvolution Developer readme
 - This file contains helpful information about learning/extending this project
 
-# Run after git cloning (one time)
+# Terminology and naming conventions
+- VS stands for Visual Studio (Community)
+- Structure: F stands for File; D stands for Directory
+- Path: Please use `/` instead of `\` for paths as that's the international standard and `\` gets sometimes seen as an escape character
+- Path: `*` is a placeholder for anything valid
+- Path: `-` at the start means it inherits part(s) of a previously referenced path (ex: `Project.vcxproj`, `-.personal`)
+- Sub-projects: When creating bindings for a new language, name it `AEvolutionBinds*` where `*` is the language abbreviation in uppercase (ex: `Python` -> `PY`)
+
+# Setup: Run after git cloning (one time)
 ## Skip worktree
 - Add .vcxproj.personal files to skip. Similar to .gitignore but they were pushed once because they are default files
 ```sh
@@ -9,12 +17,33 @@ git update-index --skip-worktree Project/Main.vcxproj.personal
 git update-index --skip-worktree AEvolutionPlugin/Project/Win/Project.vcxproj.personal
 git update-index --skip-worktree AEvolutionBindsTEMPLATE/Project/Project.vcxproj.personal
 ```
-# Terminology and naming conventions
-- Structure: F stands for File; D stands for Directory
-- Path: Please use `/` instead of `\` for paths as that's the international standard and `\` gets sometimes seen as an escape character
-- Path: `*` is a placeholder for anything valid
-- Path: `-` at the start means it inherits part(s) of a previously referenced path (ex: `Project.vcxproj`, `-.personal`)
-- Sub-projects: When creating bindings for a new language, name it `AEvolutionBinds*` where `*` is the language abbreviation in uppercase (ex: `Python` -> `PY`)
+
+### (not used for Setup) No skip worktree for merging branches
+- Used when merging branches:
+```sh
+git update-index --no-skip-worktree Project/Main.vcxproj.personal
+git update-index --no-skip-worktree AEvolutionPlugin/Project/Win/Project.vcxproj.personal
+git update-index --no-skip-worktree AEvolutionBindsTEMPLATE/Project/Project.vcxproj.personal
+git stash save
+# DO MERGE STUFF HERE
+git stash pop
+```
+- Run the commands from `## Skip worktree` again to re-add those files
+
+## Paths
+- Look into all `*.vcxproj.personal` files and update the values (currently only [Project/Main](Project/Main.vcxproj.personal))
+
+# Building
+## AEvolutionPlugin
+- Compile it by opening the file: `AEvolutionPlugin/Project/*/AEvolutionPlugin_*.sln` inside VS, selecting Release mode (near the top) and pressing SHIFT+CTRL+B
+- Move the `dist/Release/*.aex` file into your AE Plug-in folder (usually at: `PATH`)
+
+## AEvolutionBindsPY (not done yet)
+
+## Testing (not done yet)
+- App.reportInfo example...
+
+# Using (not done yet)
 
 # Structure 
 - D `AEvolutionNAME`: A sub-project where NAME is a placeholder
@@ -23,9 +52,12 @@ git update-index --skip-worktree AEvolutionBindsTEMPLATE/Project/Project.vcxproj
 - F `README.md`: Main readme used to explain what the whole project is for, from a non developer perspective
 - F `README_dev.md`: developer readme used to explain how it all works and how to contribute
 
-# Sub-project dependencies
-- `AEvolutionPlugin`: Depends on nothing (besides stuff in .vcxproj, obviously)
-- `AEvolutionBindsTEMPLATE`: Depends on nothing but is shadow-linked `AEvolutionPlugin`.aex (which needs to be inside AE's Plug-ins folder). Used to build specific language bindings
+# Sub-projects
+- `AEvolutionPlugin`:
+  - Depends on nothing (besides stuff in .vcxproj, obviously)
+- `AEvolutionBindsTEMPLATE`:
+  - Depends on nothing but is shadow-linked `AEvolutionPlugin`.aex (which needs to be inside AE's Plug-ins folder). Used to build specific language bindings
+  - Currently doesn't work yet
 
 # New sub-project
 When creating a Visual Studio Project these these steps are required to do. There is a `AEvolutionBindsTEMPLATE` sub-project which should be used to create new bindings
@@ -38,11 +70,11 @@ When creating a Visual Studio Project these these steps are required to do. Ther
     - The `<Import Project="PATH" />` path needs to be adjusted to load the [Main .settings](./Main.vcxproj.settings) file
     - The $(ProjectName) path-macro needs to be adjusted
     - The $(TargetExt) path-macro needs to be adjusted
-  - F `Project.vcxproj.personal`: Custom paths/changes that may change from user to user. `Project.vcxproj.settings` should have more info on top of the import line (see [Main .settings](./Main.vcxproj.settings)). These files should get commited to git once with default/placeholder values and then skipped with skip-worktree (see `## Skip worktree` above)
+  - F `Project.vcxproj.personal`: Custom paths/changes that may change from user to user. `Project.vcxproj.settings` should have more info on top of the import line (see [Main .settings](./Main.vcxproj.settings)). These files should get commited to git once with default/placeholder values and then skipped with skip-worktree (see `## Skip worktree` above) (not a default file by VS)
   - F `Project.vcxproj` (or -.anything else) are either created through VS or the project build step itself. Should always be the same no matter the directory/name (as long as above are taken care of)
   - D `.vs`: Auto-generated by Visual Studio
 - D `src`: Contains the source code
   - F `main.*`: Expects this to be the main entry/build file, usually is main.cpp. (This is optional but recommended)
 
 # Todo
-- `AEvolutionPlugin`: Fix that one `'..\AEvolution_PiPL.r'` file not being built before being required or so resulting in first clean build to fail but not second (Error: C1083)
+- `AEvolutionPlugin`: Figure out why Release output file is still so huge at ~30mb while debug is ~40mb and the previous Release was ~1.5mb

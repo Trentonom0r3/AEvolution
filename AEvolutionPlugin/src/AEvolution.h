@@ -31,7 +31,7 @@
 #include "String_Utils.h"
 #include "SuitesManager.h"
 #include "SessionManager.h"
-#include "commands.h"
+#include "Commands.h"
 
 #define AEGP_MAX_STREAM_DIM 4
 

@@ -5,7 +5,6 @@
     <TargetExt_>.aex</TargetExt_>
     <ProjectDir>../../</ProjectDir>
     <SrcDir>../../src/</SrcDir>
-    <MainSrcDir>../../../AEvolution/src/</MainSrcDir>
   </PropertyGroup>
   
   <Import Project="../../../Project/Main.vcxproj.settings"/>

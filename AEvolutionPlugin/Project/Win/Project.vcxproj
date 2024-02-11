@@ -45,10 +45,12 @@
     <IncludePath>C:\Users\tjerf\vcpkg\installed\x64-windows-static\include;$(MainSrcDir)Headers;$(MainSrcDir)Headers/SP;$(MainSrcDir)Resources;$(MainSrcDir)Util;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)'=='Debug'">
+    <VcpkgInstalledDir>$(VcpkgDir)/installed</VcpkgInstalledDir>
     <VcpkgUseStatic>true</VcpkgUseStatic>
     <VcpkgConfiguration>Debug</VcpkgConfiguration>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)'=='Release'">
+    <VcpkgInstalledDir>$(VcpkgDir)/installed</VcpkgInstalledDir>
     <VcpkgUseStatic>true</VcpkgUseStatic>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,7 +169,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <!-- It's not possible to merge the Debug and Release configurations by only creating the differences in the Release Condition -->
-  <!-- Figure out why Release output file is still so huge at ~30mb while debug is ~40mb and the previous Release was ~1.5mb -->
   <!-- Actual differences between Debug and Release currently: -->
   <!-- <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
@@ -205,18 +206,18 @@
     <ClInclude Include="$(MainSrcDir)Headers/PR_Public.h" />
     <ClInclude Include="$(MainSrcDir)Util/String_Utils.h" />
     <ClInclude Include="$(SrcDir)AEnums.h" />
-    <ClInclude Include="$(SrcDir)CompCommands.h" />
     <ClInclude Include="$(SrcDir)CommandFactory.h" />
-    <ClInclude Include="$(SrcDir)FootageCommands.h" />
-    <ClInclude Include="$(SrcDir)ItemCommands.h" />
-    <ClInclude Include="$(SrcDir)LayerCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/CompCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/FootageCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/ItemCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/LayerCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/StreamCommands.h" />
+    <ClInclude Include="$(SrcDir)commands/UtilityCommands.h" />
     <ClInclude Include="$(SrcDir)main.h" />
     <ClInclude Include="$(SrcDir)MessageMain.h" />
     <ClInclude Include="$(SrcDir)MessageQueueManager.h" />
     <ClInclude Include="$(SrcDir)SessionManager.h" />
-    <ClInclude Include="$(SrcDir)StreamCommands.h" />
     <ClInclude Include="$(SrcDir)SuitesManager.h" />
-    <ClInclude Include="$(SrcDir)UtilityCommands.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="$(SrcDir)AEvolution_PiPL.r">
