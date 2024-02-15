@@ -1,6 +1,6 @@
 #pragma once
-#include "CommandFactory.h"
-#include "SessionManager.h"
+#include "../CommandFactory.h"
+#include "../SessionManager.h"
 
 class GetFirstProjItem : public CommandBase {
 public:
@@ -27,8 +27,8 @@ public:
 		}
 
 		// Create the result and response
-		Result<Item> result = Result<Item>(Item(itemID), errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<baseobj> result(boost::make_shared<Item>(itemID), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
@@ -57,9 +57,9 @@ public:
 		A_Err err = A_Err_NONE;
 		int itemID;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		AEGP_ItemH itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		Result<Item> result = Result<Item>(Item(), errToString(err));
+		Result<baseobj> result(boost::make_shared<Item>(), errToString(err));
 		// Get the suite handler
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 
@@ -70,11 +70,11 @@ public:
 		if (nextItemH) {
 			ERR(suites.ItemSuite9()->AEGP_GetItemID(nextItemH, &itemID));
 			SessionManager::GetInstance().addSession(nextItemH, itemID);
-			result = Result<Item>(Item(itemID), errToString(err));
+			result = Result<baseobj>(boost::make_shared<Item>(itemID), errToString(err));
 		}
 
 		// Create the result and respons
-		Response resp(ResponseArgs{result});
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 
@@ -100,7 +100,7 @@ public:
 		AEGP_ItemH itemH;
 		A_Err err = A_Err_NONE;
 		int itemID;
-		Result<Item> result = Result<Item>(Item(), errToString(err));
+		Result<baseobj> result(boost::make_shared<Item>(), errToString(err));
 		// Get the suite handler
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 
@@ -110,10 +110,10 @@ public:
 		if (itemH) {
 			ERR(suites.ItemSuite9()->AEGP_GetItemID(itemH, &itemID));
 			SessionManager::GetInstance().addSession(itemH, itemID);
-			result = Result<Item>(Item(itemID), errToString(err));
+			result = Result<baseobj>(boost::make_shared<Item>(itemID), errToString(err));
 		}
 
-		Response resp(ResponseArgs{result});
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 
@@ -142,7 +142,7 @@ public:
 		A_Err err = A_Err_NONE;
 		A_Boolean selected;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -153,7 +153,7 @@ public:
 
 		// Create the result and response
 		Result<bool> result = Result<bool>(selected, errToString(err));
-		Response resp(ResponseArgs{result});
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 
@@ -182,7 +182,7 @@ public:
 		A_Err err = A_Err_NONE;
 		A_Boolean selected = FALSE;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 		bool select = boost::get<bool>(cmd.args[1]);
 		bool deselectOthers = boost::get<bool>(cmd.args[2]);
@@ -195,7 +195,7 @@ public:
 
 		// Create the result and response
 		Result<bool> result = Result<bool>(true, errToString(err));
-		Response resp(ResponseArgs{result});
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 
@@ -224,7 +224,7 @@ public:
 		A_Err err = A_Err_NONE;
 		AEGP_ItemType itemType;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -233,8 +233,8 @@ public:
 		// Perform the action
 		ERR(suites.ItemSuite9()->AEGP_GetItemType(itemH, &itemType));
 
-		Result<AEGP_ItemType> result = Result<AEGP_ItemType>(itemType, errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<AEGP_ItemType> result(itemType, errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 
@@ -265,7 +265,7 @@ public:
 		std::string name;
 		A_Err err = A_Err_NONE;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -289,7 +289,7 @@ public:
 
 		// Create the result and response
 		Result<std::string> result = Result<std::string>(name, errToString(err));
-		Response resp(ResponseArgs{result});
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
@@ -315,7 +315,7 @@ public:
 		AEGP_ItemH itemH;
 		A_Err err = A_Err_NONE;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 		std::string name = boost::get<std::string>(cmd.args[1]);
 
@@ -326,8 +326,8 @@ public:
 		// Perform the action
 		ERR(suites.ItemSuite9()->AEGP_SetItemName(itemH, utf16Name.data()));
 		// Create the result and response
-		Result<null> result = Result<null>(null(), errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 
@@ -355,7 +355,7 @@ public:
 		AEGP_ItemH itemH;
 		A_long itemID;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -366,7 +366,7 @@ public:
 
 		// Create the result and response
 		Result<int> result = Result<int>(static_cast<int>(itemID), errToString(err));
-		Response resp(ResponseArgs{result});
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 
@@ -397,7 +397,7 @@ using CommandBase::CommandBase;
 		A_Err err = A_Err_NONE;
 		AEGP_ItemH itemH;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 		bool useProxy = boost::get<bool>(cmd.args[1]);
 
@@ -408,8 +408,8 @@ using CommandBase::CommandBase;
 		ERR(suites.ItemSuite9()->AEGP_SetItemUseProxy(itemH, useProxy));
 
 		// Create the result and response
-		Result<null> result = Result<null>(null(), errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 
@@ -438,7 +438,7 @@ public:
 		AEGP_ItemH parentFolderH;
 		A_long parentFolderID;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -452,8 +452,8 @@ public:
 		}
 
 		// Create the result and response
-		Result<Item> result = Result<Item>(Item(static_cast<int>(parentFolderID)), errToString(err));
-		Response resp(ResponseArgs{ result });
+		Result<baseobj> result(boost::make_shared<Item>(parentFolderID), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
@@ -481,9 +481,9 @@ void execute() override {
 		AEGP_ItemH itemH;
 		AEGP_ItemH parentFolderH;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		Item parentFolder = boost::get<Item>(cmd.args[1]);
+		Item parentFolder = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[1]));
 		 parentFolderH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(parentFolder.getSessionID()));
 
 		// Get the suite handler
@@ -493,8 +493,8 @@ void execute() override {
 		ERR(suites.ItemSuite9()->AEGP_SetItemParentFolder(itemH, parentFolderH));
 
 		// Create the result and response
-		Result<null> result = Result<null>(null(), errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
@@ -521,7 +521,7 @@ public:
 		AEGP_ItemH itemH;
 		A_Time duration;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -531,20 +531,20 @@ public:
 		ERR(suites.ItemSuite9()->AEGP_GetItemDuration(itemH, &duration));
 
 		// Create the result and response
-		Result<AETime> result = Result<AETime>(AETime(duration), errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<baseobj> result(boost::make_shared<Time>(duration), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
 REGISTER_COMMAND(CommandID::GetItemDuration, GetItemDuration);
 
 /*
-* Result<AETime> GetItemDuration(Item item) {
+* Result<Time> GetItemDuration(Item item) {
 	auto& mqm = MessageQueueManager::getInstance();
 	Command cmd(CommandID::GetItemDuration, CommandArgs{item});
 	Response resp = mqm.sendAndReceive(cmd);
 
-	Result<AETime> result = boost::get<Result<AETime>>(resp.args[0]);
+	Result<Time> result = boost::get<Result<Time>>(resp.args[0]);
 	return result;
 }
 */
@@ -559,7 +559,7 @@ using CommandBase::CommandBase;
 		AEGP_ItemH itemH;
 		A_Time currentTime;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -569,9 +569,9 @@ using CommandBase::CommandBase;
 		ERR(suites.ItemSuite9()->AEGP_GetItemCurrentTime(itemH, &currentTime));
 
 		// Create the result and response
-		AETime time = AETime(currentTime);
-		Result<AETime> result = Result<AETime>(time, errToString(err));
-		Response resp(ResponseArgs{result});
+		Time time = Time(currentTime);
+		Result<baseobj> result(boost::make_shared<Time>(time), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
@@ -600,7 +600,7 @@ public:
 		A_long width;
 		A_long height;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -611,8 +611,8 @@ public:
 
 		// Create the result and response
 		Size size = Size(width, height);
-		Result<Size> result = Result<Size>(size, errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<baseobj> result(boost::make_shared<Size>(size), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 }; 
@@ -640,7 +640,7 @@ using CommandBase::CommandBase;
 		AEGP_ItemH itemH;
 		A_Ratio ratio;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -651,7 +651,7 @@ using CommandBase::CommandBase;
 		double aspectRatio = RATIO2DOUBLE(ratio);
 
 		Result<double> result = Result<double>(aspectRatio, errToString(err));
-		Response resp(ResponseArgs{result});
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
@@ -677,7 +677,7 @@ using CommandBase::CommandBase;
 		A_Err err = A_Err_NONE;
 		AEGP_ItemH itemH;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -687,8 +687,8 @@ using CommandBase::CommandBase;
 		ERR(suites.ItemSuite9()->AEGP_DeleteItem(itemH));
 
 		// Create the result and response
-		Result<null> result = Result<null>(null(), errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
@@ -717,22 +717,21 @@ using CommandBase::CommandBase;
 		//get the command arguments
 		std::string name = boost::get<std::string>(cmd.args[0]);
 		if (cmd.args.size() > 1) {
-			Item parentFolder = boost::get<Item>(cmd.args[1]);
+			Item parentFolder = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[1]));
 			parentFolderH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(parentFolder.getSessionID()));
 		}
 		// Get the suite handler
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
+		A_long newFolderID;
 		// Perform the action
 		ERR(suites.ItemSuite9()->AEGP_CreateNewFolder(convertUTF8ToUTF16(name).data(), parentFolderH, &newFolderH));
 		if (err == A_Err_NONE) {
-			A_long newFolderID;
 			ERR(suites.ItemSuite9()->AEGP_GetItemID(newFolderH, &newFolderID));
 			SessionManager::GetInstance().addSession(newFolderH, newFolderID);
 		}
 		// Create the result and response
-		Result<Item> result = Result<Item>(Item(), errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<baseobj> result(boost::make_shared<Item>(newFolderID), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
@@ -759,11 +758,11 @@ void execute() override {
 		AEGP_ItemH itemH;
 		A_Time time = { 0, 0 };
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		AETime aeTime = boost::get<AETime>(cmd.args[1]);
-		time.value = static_cast<A_long>(aeTime.x);
-		time.scale = static_cast<A_u_long>(aeTime.y);
+		Time timeH = *boost::dynamic_pointer_cast<Time>(boost::get<baseobj>(cmd.args[1]));
+		time.value = static_cast<A_long>(timeH.val);
+		time.scale = static_cast<A_u_long>(timeH.scale);
 
 		// Get the suite handler
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
@@ -772,15 +771,15 @@ void execute() override {
 		ERR(suites.ItemSuite9()->AEGP_SetItemCurrentTime(itemH, &time));
 
 		// Create the result and response
-		Result<null> result = Result<null>(null(), errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
 REGISTER_COMMAND(CommandID::SetItemCurrentTime, SetItemCurrentTime);
 
 /*
-* Result<null> SetItemCurrentTime(Item item, AETime time) {
+* Result<null> SetItemCurrentTime(Item item, Time time) {
 	auto& mqm = MessageQueueManager::getInstance();
 	Command cmd(CommandID::SetItemCurrentTime, CommandArgs{item, time});
 	Response resp = mqm.sendAndReceive(cmd);
@@ -802,7 +801,7 @@ void execute() override {
 		A_UTF16Char* unicode_nameP = NULL;
 		std::string comment;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -826,7 +825,7 @@ void execute() override {
 
 		// Create the result and response
 		Result<std::string> result = Result<std::string>(comment, errToString(err));
-		Response resp(ResponseArgs{result});
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
@@ -852,7 +851,7 @@ void execute() override {
 		A_Err err = A_Err_NONE;
 		AEGP_ItemH itemH;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 		std::string comment = boost::get<std::string>(cmd.args[1]);
 
@@ -863,8 +862,8 @@ void execute() override {
 		// Perform the action
 		ERR(suites.ItemSuite9()->AEGP_SetItemComment(itemH, utf16Comment.data()));
 		// Create the result and response
-		Result<null> result = Result<null>(null(), errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
@@ -891,7 +890,7 @@ void execute() override {
 		AEGP_ItemH itemH;
 		AEGP_LabelID label;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 
 		// Get the suite handler
@@ -902,7 +901,7 @@ void execute() override {
 
 		// Create the result and response
 		Result<AEGP_LabelID> result = Result<AEGP_LabelID>(label, errToString(err));
-		Response resp(ResponseArgs{result});
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };
@@ -928,7 +927,7 @@ void execute() override {
 		A_Err err = A_Err_NONE;
 		AEGP_ItemH itemH;
 		//get the command arguments
-		Item item = boost::get<Item>(cmd.args[0]);
+		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
 		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
 		AEGP_LabelID labelID = boost::get<AEGP_LabelID>(cmd.args[1]);
 		// Get the suite handler
@@ -937,8 +936,8 @@ void execute() override {
 		ERR(suites.ItemSuite9()->AEGP_SetItemLabel(itemH, labelID));
 
 		// Create the result and response
-		Result<null> result = Result<null>(null(), errToString(err));
-		Response resp(ResponseArgs{result});
+		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
+		Response resp(result);
 		MessageQueueManager::getInstance().sendResponse(resp);
 	}
 };

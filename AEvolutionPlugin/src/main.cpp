@@ -79,14 +79,24 @@ std::vector<A_UTF16Char> convertUTF8ToUTF16(const std::string& utf8String) {
     return std::vector<A_UTF16Char>(utf16Vector.begin(), utf16Vector.end());
 }
 
-BOOST_CLASS_EXPORT(Item);
-BOOST_CLASS_EXPORT(LayerCollectionItem);
-BOOST_CLASS_EXPORT(MaskCollectionItem);
-BOOST_CLASS_EXPORT(EffectCollectionItem);
-BOOST_CLASS_EXPORT(MaskStreamCollectionItem);
-BOOST_CLASS_EXPORT(EffectStreamCollectionItem);
-BOOST_CLASS_EXPORT(LayerStreamCollectionItem);
-BOOST_CLASS_EXPORT(StreamCollectionItem);
-BOOST_CLASS_EXPORT(MaskVertexCollectionItem);
-BOOST_CLASS_EXPORT(KeyframeCollectionItem);
-BOOST_CLASS_EXPORT(CollectionItemV2);
+
+BOOST_CLASS_EXPORT_GUID(Item, "Item");
+BOOST_CLASS_EXPORT_GUID(LayerCollectionItem, "LayerCollectionItem");
+BOOST_CLASS_EXPORT_GUID(MaskCollectionItem, "MaskCollectionItem");
+BOOST_CLASS_EXPORT_GUID(EffectCollectionItem, "EffectCollectionItem");
+BOOST_CLASS_EXPORT_GUID(MaskStreamCollectionItem, "MaskStreamCollectionItem");
+BOOST_CLASS_EXPORT_GUID(EffectStreamCollectionItem, "EffectStreamCollectionItem");
+BOOST_CLASS_EXPORT_GUID(LayerStreamCollectionItem, "LayerStreamCollectionItem");
+BOOST_CLASS_EXPORT_GUID(StreamCollectionItem, "StreamCollectionItem");
+BOOST_CLASS_EXPORT_GUID(MaskVertexCollectionItem, "MaskVertexCollectionItem");
+BOOST_CLASS_EXPORT_GUID(KeyframeCollectionItem, "KeyframeCollectionItem");
+BOOST_CLASS_EXPORT_GUID(CollectionItemV2, "CollectionItemV2");
+BOOST_CLASS_EXPORT_GUID(SoundDataFormat, "SoundDataFormat");
+BOOST_CLASS_EXPORT_GUID(FootageLayerKey, "FootageLayerKey");
+BOOST_CLASS_EXPORT_GUID(FileSequenceImportOptions, "FileSequenceImportOptions");
+BOOST_CLASS_EXPORT_GUID(NullType, "NullType");
+BOOST_CLASS_EXPORT_GUID(Range, "Range");
+BOOST_CLASS_EXPORT_GUID(Time, "Time");
+BOOST_CLASS_EXPORT_GUID(Position, "Position");
+BOOST_CLASS_EXPORT_GUID(Color, "Color");
+BOOST_CLASS_EXPORT_GUID(Position3D, "Position3D");

@@ -1,49 +1,40 @@
 #pragma once
+#include "../../AEvolutionPlugin/src/commands.h"
 #include "MessageQueueManager.h"
+#include <python.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/embed.h>  // for the embedded interpreter
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
+#include <pybind11/functional.h>
 
+namespace py = pybind11;
 
-Result<Item> GetFirstProjItem();
+using CommandH = boost::shared_ptr<Command>;
+using ResponseH = boost::shared_ptr<Response>;
 
-Result<Item> GetNextProjItem(Item item);
+inline void GetActiveItemCmd::execute() {};
+inline void GetItemTypeCmd::execute() {};
 
-Result<Item> GetActiveItem();
+AE_Item getactiveitem() {
+	CommandH cmd = boost::make_shared<GetActiveItemCmd>();
+	ResponseH resp = MessageQueueManager::getInstance().sendAndReceive(cmd);
+	auto respCast = boost::dynamic_pointer_cast<GetActiveItem>(resp);
+	if (respCast) {
+		return respCast->item;
+	}
+}
 
-Result<bool> IsItemSelected(Item item);
-
-Result<bool> SelectItem(Item item, bool select, bool deselectOthers);
-
-Result<AEGP_ItemType> GetItemType(Item item);
-
-Result<std::string> GetItemName(Item item);
-
-Result<null> SetItemName(Item item, std::string name);
-
-Result<int> GetItemID(Item item);
-
-Result<null> SetItemUseProxy(Item item, bool useProxy);
-
-Result<Item> GetItemParentFolder(Item item);
-
-Result<null> SetItemParentFolder(Item item, Item parentFolder);
-
-Result<AETime> GetItemDuration(Item item);
-
-Result<int> GetItemCurrentTime(Item item);
-
-Result<Size> GetItemDimensions(Item item);
-
-Result<double> GetItemPixelAspectRatio(Item item);
-
-Result<null> DeleteItem(Item item);
-
-Result<std::string> GetItemComment(Item item);
-
-Result<Item> CreateNewFolder(std::string name, Item parentFolder);
-
-Result<null> SetItemCurrentTime(Item item, AETime time);
-
-Result<null> SetItemComment(Item item, std::string comment);
-
-Result<AEGP_LabelID> GetItemLabel(Item item);
-
-Result<null> SetItemLabel(Item item, AEGP_LabelID label);
+AEGP_ItemType getitemtype(AE_Item item) {
+	try {
+	CommandH cmd = boost::make_shared<GetItemTypeCmd>(item);
+	ResponseH resp = MessageQueueManager::getInstance().sendAndReceive(cmd);
+	auto respCast = boost::dynamic_pointer_cast<GetItemType>(resp);
+	if (respCast) {
+		return respCast->type;
+	}
+	}
+	catch (std::exception e) {
+		std::cout << e.what() << std::endl;
+	}
+}

@@ -1,5 +1,5 @@
 #pragma once
-#include "MessageMain.h"
+#include "..\..\AEvolutionPlugin\src\MessageMain.h"
 
 class MessageQueueManager {
 public:
@@ -13,35 +13,36 @@ public:
         return instance;
     }
 
-    void sendCommand(Command command) {
+    void sendCommand(const boost::shared_ptr<Command>& command) {
         std::stringstream ss;
         boost::archive::text_oarchive oa(ss);
-        oa << command;
+        oa << command; // Serialize the boost::shared_ptr<Command>
         std::string serializedCommand = ss.str();
-        commandQueue->send(serializedCommand.c_str(), serializedCommand.size(), 0);
+        commandQueue->send(serializedCommand.data(), serializedCommand.size(), 0);
     }
 
-    bool tryReceiveResponse(Response& response) {
+
+    bool tryReceiveResponse(boost::shared_ptr<Response>& response) {
         boost::interprocess::message_queue::size_type recvd_size;
         unsigned int priority;
         std::size_t max_msg_size = responseQueue->get_max_msg_size();
         std::vector<char> buffer(max_msg_size);
         if (responseQueue->timed_receive(buffer.data(), buffer.size(), recvd_size, priority,
-            boost::posix_time::microsec_clock::universal_time() +
-            boost::posix_time::milliseconds(100))) {
+            boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(100))) {
             std::string serializedResponse(buffer.begin(), buffer.begin() + recvd_size);
             std::stringstream ss(serializedResponse);
             boost::archive::text_iarchive ia(ss);
-            ia >> response;
+            ia >> response; // Deserialize directly into a boost::shared_ptr<Response>
             return true;
         }
         return false;
     }
 
-    Response waitForResponse() {
-        const std::chrono::milliseconds timeoutDuration(5000); // 5 seconds timeout
+
+    boost::shared_ptr<Response> waitForResponse() {
+        const std::chrono::milliseconds timeoutDuration(5000); // 5-second timeout
         auto start = std::chrono::steady_clock::now();
-        Response resp;
+        boost::shared_ptr<Response> resp;
 
         while (!tryReceiveResponse(resp)) {
             if (std::chrono::steady_clock::now() - start > timeoutDuration) {
@@ -53,10 +54,12 @@ public:
         return resp;
     }
 
-    Response sendAndReceive(Command command) {
+
+    boost::shared_ptr<Response> sendAndReceive(const boost::shared_ptr<Command>& command) {
         sendCommand(command);
         return waitForResponse();
     }
+
 
 private:
     MessageQueueManager() {

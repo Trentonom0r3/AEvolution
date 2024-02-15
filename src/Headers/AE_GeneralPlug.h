@@ -351,7 +351,7 @@ typedef struct AEGP_SoundDataFormat {
 }AEGP_SoundDataFormat;
 
 
-enum {
+enum AEGP_ItemType : A_short {
 	AEGP_ItemType_NONE,
 	AEGP_ItemType_FOLDER,
 	AEGP_ItemType_COMP,
@@ -359,7 +359,6 @@ enum {
 	AEGP_ItemType_FOOTAGE,
 	AEGP_ItemType_NUM_TYPES1
 };
-typedef A_short AEGP_ItemType;
 
 
 enum {

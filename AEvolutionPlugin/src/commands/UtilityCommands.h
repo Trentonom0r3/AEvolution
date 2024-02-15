@@ -1,6 +1,6 @@
 #pragma once
-#include "CommandFactory.h"
-#include "SessionManager.h"
+#include "../CommandFactory.h"
+#include "../SessionManager.h"
 
 class ReportInfoUnicode : public CommandBase {
 public:
@@ -10,12 +10,13 @@ public:
 		std::vector<A_UTF16Char> info = convertUTF8ToUTF16(boost::get<std::string>(cmd.args[0]));
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 		AEGP_PluginID* pluginID = SuiteManager::GetInstance().GetPluginID();
+		A_Err err = A_Err_NONE;
 		if (pluginID) {
-			suites.UtilitySuite6()->AEGP_ReportInfoUnicode(*pluginID, info.data());
+			ERR(suites.UtilitySuite6()->AEGP_ReportInfoUnicode(*pluginID, info.data()));
 		}
 		null nullRet;
-		Result<null> result(nullRet);
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -71,8 +72,9 @@ using CommandBase::CommandBase;
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 		ERR(suites.UtilitySuite6()->AEGP_StartQuietErrors(&err_state));
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -97,8 +99,9 @@ using CommandBase::CommandBase;
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 		ERR(suites.UtilitySuite6()->AEGP_EndQuietErrors(endOrNot,&err_state));
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -121,8 +124,9 @@ using CommandBase::CommandBase;
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 		A_Err err = suites.UtilitySuite6()->AEGP_StartUndoGroup(reinterpret_cast<const A_char*>(undo_name.data()));
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -144,8 +148,9 @@ using CommandBase::CommandBase;
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 		A_Err err = suites.UtilitySuite6()->AEGP_EndUndoGroup();
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -169,8 +174,9 @@ using CommandBase::CommandBase;
 		bool include_tool_palB = boost::get<bool>(cmd.args[0]);
 		A_Err err = suites.UtilitySuite6()->AEGP_ShowHideAllFloaters(include_tool_palB);
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -194,8 +200,9 @@ using CommandBase::CommandBase;
 		AEGP_ColorVal fore_color;
 		A_Err err = suites.UtilitySuite6()->AEGP_PaintPalGetForeColor(&fore_color);
 		Color color(fore_color);
-		Result<Color> result(color, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<Color>(color), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -219,8 +226,9 @@ using CommandBase::CommandBase;
 		AEGP_ColorVal back_color;
 		A_Err err = suites.UtilitySuite6()->AEGP_PaintPalGetBackColor(&back_color);
 		Color color(back_color);
-		Result<Color> result(color, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<Color>(color), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -241,7 +249,7 @@ using CommandBase::CommandBase;
 
 	void execute() override {
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-		Color fore_color = boost::get<Color>(cmd.args[0]);
+		Color fore_color = *boost::dynamic_pointer_cast<Color>(boost::get<baseobj>(cmd.args[0]));
 		AEGP_ColorVal color = { 0, 0, 0, 0 };
 		color.redF = fore_color.r;
 		color.greenF = fore_color.g;
@@ -250,8 +258,9 @@ using CommandBase::CommandBase;
 
 		A_Err err = suites.UtilitySuite6()->AEGP_PaintPalSetForeColor(&color);
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -272,7 +281,7 @@ using CommandBase::CommandBase;
 
 	void execute() override {
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-		Color back_color = boost::get<Color>(cmd.args[0]);
+		Color back_color = *boost::dynamic_pointer_cast<Color>(boost::get<baseobj>(cmd.args[0]));
 		AEGP_ColorVal color = { 0, 0, 0, 0 };
 		color.redF = back_color.r;
 		color.greenF = back_color.g;
@@ -281,8 +290,9 @@ using CommandBase::CommandBase;
 
 		A_Err err = suites.UtilitySuite6()->AEGP_PaintPalSetBackColor(&color);
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -307,8 +317,9 @@ using CommandBase::CommandBase;
 		AEGP_ColorVal fill_color;
 		A_Err err = suites.UtilitySuite6()->AEGP_CharPalGetFillColor(&is_fcolor_definedPB, &fill_color);
 		Color color(fill_color);
-		Result<Color> result(color, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<Color>(color), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -333,8 +344,9 @@ void execute() override {
 		AEGP_ColorVal stroke_color;
 		A_Err err = suites.UtilitySuite6()->AEGP_CharPalGetStrokeColor(&is_scolor_definedPB, &stroke_color);
 		Color color(stroke_color);
-		Result<Color> result(color, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<Color>(color), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -355,7 +367,7 @@ public:
 
 	void execute() override {
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-		Color fill_color = boost::get<Color>(cmd.args[0]);
+		Color fill_color = *boost::dynamic_pointer_cast<Color>(boost::get<baseobj>(cmd.args[0]));
 		AEGP_ColorVal color = { 0, 0, 0, 0 };
 		color.redF = fill_color.r;
 		color.greenF = fill_color.g;
@@ -364,8 +376,9 @@ public:
 
 		A_Err err = suites.UtilitySuite6()->AEGP_CharPalSetFillColor(&color);
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -386,7 +399,7 @@ public:
 
 	void execute() override {
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-		Color stroke_color = boost::get<Color>(cmd.args[0]);
+		Color stroke_color = *boost::dynamic_pointer_cast<Color>(boost::get<baseobj>(cmd.args[0]));
 		AEGP_ColorVal color = { 0, 0, 0, 0 };
 		color.redF = stroke_color.r;
 		color.greenF = stroke_color.g;
@@ -395,8 +408,9 @@ public:
 
 		A_Err err = suites.UtilitySuite6()->AEGP_CharPalSetStrokeColor(&color);
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -421,7 +435,8 @@ public:
 		A_Err err = suites.UtilitySuite6()->AEGP_CharPalIsFillColorUIFrontmost(&is_fcolor_selectedPB);
 		bool is_fcolor_selected = is_fcolor_selectedPB;
 		Result<bool> result(is_fcolor_selected, errToString(err));
-		Response response(ResponseArg{ result });
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -446,7 +461,8 @@ public:
 		A_Err err = suites.UtilitySuite6()->AEGP_GetSuppressInteractiveUI(&ui_is_suppressedPB);
 		bool ui_is_suppressed = ui_is_suppressedPB;
 		Result<bool> result(ui_is_suppressed, errToString(err));
-		Response response(ResponseArg{ result });
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -470,8 +486,9 @@ public:
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 		A_Err err = suites.UtilitySuite6()->AEGP_WriteToOSConsole(reinterpret_cast<const A_char*>(text.data()));
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -497,8 +514,9 @@ public:
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 		A_Err err = suites.UtilitySuite6()->AEGP_WriteToDebugLog(reinterpret_cast<const A_char*>(subsystem.data()), reinterpret_cast<const A_char*>(event_type.data()), reinterpret_cast<const A_char*>(info.data()));
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -524,7 +542,8 @@ public:
 		A_Err err = suites.UtilitySuite6()->AEGP_HostIsActivated(&is_activatedPB);
 		bool is_activated = is_activatedPB;
 		Result<bool> result(is_activated, errToString(err));
-		Response response(ResponseArg{ result });
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };
@@ -547,8 +566,9 @@ public:
 		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
 		A_Err err = suites.UtilitySuite6()->AEGP_UpdateFontList();
 		null nullRet;
-		Result<null> result(nullRet, errToString(err));
-		Response response(ResponseArg{ result });
+		Result<baseobj> result(boost::make_shared<null>(nullRet), errToString(err));
+		Response response(result);
+
 		MessageQueueManager::getInstance().sendResponse(response);
 	}
 };

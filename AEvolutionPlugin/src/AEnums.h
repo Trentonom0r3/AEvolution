@@ -28,6 +28,9 @@ enum class CommandID : uint16_t {
     SetItemComment,
     GetItemLabel,
     SetItemLabel,
+    GetItemFlags,
+    GetItemCommentLength,
+
     // Utility Suites
     ReportInfoUnicode,
     GetDriverSpecVersion,
@@ -106,7 +109,29 @@ enum class CommandID : uint16_t {
     CreateVectorLayerInComp,
     GetNewCompMarkerStream,
     GetCompDisplayDropFrame,
-    SetCompDisplayDropFrame
+    SetCompDisplayDropFrame,
+
+    //Footage Suite
+    GetMainFootageFromItem,
+    GetProxyFootageFromItem,
+    GetFootageNumFiles,
+    GetFootagePath,
+    GetFootageSignature,
+    NewFootage,
+    AddFootageToProject,
+    SetItemProxyFootage,
+    ReplaceItemMainFootage,
+    DisposeFootage,
+    GetFootageLayerKey,
+    NewPlaceholderFootageWithPath,
+    NewSolidFootage,
+    GetSolidFootageColor,
+    SetSolidFootageColor,
+    SetSolidFootageDimensions,
+    GetFootageSoundDataFormat,
+    GetFootageSequenceImportOptions,
+
+
 
 };
 
