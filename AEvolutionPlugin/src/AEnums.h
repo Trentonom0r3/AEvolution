@@ -31,6 +31,22 @@ enum class CommandID : uint16_t {
     GetItemFlags,
     GetItemCommentLength,
 
+    // Project Suites
+    GetNumProjects, 
+    GetProjectByIndex,
+    GetProjectName,
+    GetProjectPath,
+    GetProjectRootFolder,
+    SaveProjectToPath,
+    GetProjectTimeDisplay,
+    SetProjectTimeDisplay,
+    ProjectIsDirty,
+    SaveProjectAs,
+    NewProject,
+    OpenProjectFromPath,
+    GetProjectBitDepth,
+    SetProjectBitDepth,
+
     // Utility Suites
     ReportInfoUnicode,
     GetDriverSpecVersion,
@@ -56,6 +72,7 @@ enum class CommandID : uint16_t {
     GetPluginPlatformRef,
     UpdateFontList,
     GetPluginPaths,
+    GetLastErrorMessage,
 
     //Collection Suites
     NewCollection,
@@ -130,6 +147,65 @@ enum class CommandID : uint16_t {
     SetSolidFootageDimensions,
     GetFootageSoundDataFormat,
     GetFootageSequenceImportOptions,
+    GetFootageInterpretation,
+    SetFootageInterpretation,
+    NewSequence,
+
+    // Layer Suites
+    GetCompNumLayers,
+    GetCompLayerByIndex,
+    GetActiveLayer,
+    GetLayerIndex,
+    GetLayerSourceItem,
+    GetLayerSourceItemID,
+    GetLayerParentComp,
+    GetLayerName,
+    GetLayerQuality,
+    SetLayerQuality,
+    GetLayerFlags,
+    SetLayerFlags,
+    SetLayerInPointAndDuration,
+    IsLayerVideoReallyOn,
+    IsLayerAudioReallyOn,
+    GetLayerCurrentTime,
+    GetLayerInPoint,
+    GetLayerDuration,
+    GetLayerOffset,
+    SetLayerOffset,
+    GetLayerStretch,
+    SetLayerStretch,
+    GetLayerTransferMode,
+    SetLayerTransferMode,
+    IsAddLayerValid,
+    AddLayer,
+    ReorderLayer,
+    GetLayerMaskedBounds,
+    GetLayerObjectType,
+    IsLayer3D,
+    IsLayer2D,
+    IsVideoActive,
+    IsLayerUsedAsTrackMatte,
+    DoesLayerHaveTrackMatte,
+    ConvertCompToLayerTime,
+    ConvertLayerToCompTime,
+    GetLayerDancingRandValue,
+    GetLayerID,
+    GetLayerToWorldXform,
+    GetLayerToWorldXformFromView,
+    SetLayerName,
+    GetLayerParent,
+    SetLayerParent,
+    DeleteLayer,
+    DuplicateLayer,
+    GetLayerFromLayerID,
+    GetLayerLabel,
+    SetLayerLabel,
+    GetLayerSamplingQuality,
+    SetLayerSamplingQuality,
+    GetTrackMatteLayer,
+    SetTrackMatte,
+    RemoveTrackMatte,
+
 
 
 
@@ -140,7 +216,7 @@ namespace boost {
     namespace serialization {
 
         template<class Archive>
-        void serialize(Archive& ar, CommandID& commandID, const unsigned int version) {
+        inline void serialize(Archive& ar, CommandID& commandID, const unsigned int version) {
             // Cast enum class to its underlying type for serialization
             typename std::underlying_type<CommandID>::type value = static_cast<typename std::underlying_type<CommandID>::type>(commandID);
             ar& value;

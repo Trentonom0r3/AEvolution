@@ -5,18 +5,7 @@
 #include <boost/serialization/export.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
-#include <boost/variant/variant.hpp>
-#include <boost/variant/get.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/variant.hpp>
-#include <boost/interprocess/sync/named_mutex.hpp>
-#include <boost/interprocess/sync/named_condition.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/iterator/counting_iterator.hpp>
-#include <boost/mp11.hpp>
 #include "AE_GeneralPlug.h"
 #include <type_traits>
 
@@ -36,7 +25,7 @@
  * @date 02/13/2024
  * @version 1.1.0
  * @section LICENSE
- * AEvolution is licensed under the AEGPL 3.0 License.
+ * AEvolution is licensed under the AGPL 3.0 License.
  *
  * @section USAGE
  * There is no usage! This file is simply a helper for serialization.
@@ -52,12 +41,12 @@ template<typename HandleType>
 struct AEHandleWrapper {
     HandleType handle; // Generic handle, can represent any AE handle type
 
-    AEHandleWrapper() : handle(nullptr) {} // Default constructor
+    AEHandleWrapper() : handle(NULL) {} // Default constructor
     explicit AEHandleWrapper(HandleType h) : handle(h) {} // Constructor for initialization with a handle
 
     template<class Archive>
-    void serialize(Archive& ar, const unsigned int version) {
-        bool isNull = (handle == nullptr);
+    inline void serialize(Archive& ar, const unsigned int version) {
+        bool isNull = (handle == NULL);
         uintptr_t handleValue = 0;
 
         if (Archive::is_saving::value) {
@@ -74,7 +63,7 @@ struct AEHandleWrapper {
                 handle = reinterpret_cast<HandleType>(handleValue);
             }
             else {
-                handle = nullptr; // Explicitly set to nullptr to avoid undefined behavior
+                handle = NULL; // Explicitly set to nullptr to avoid undefined behavior
             }
         }
     }
@@ -89,11 +78,10 @@ using AE_Layer = AEHandleWrapper<AEGP_LayerH>; // Wrapper for AEGP_LayerH
 using AE_EffectRef = AEHandleWrapper<AEGP_EffectRefH>; // Wrapper for AEGP_EffectRefH
 using AE_MaskRef = AEHandleWrapper<AEGP_MaskRefH>; // Wrapper for AEGP_MaskRefH
 using AE_StreamRef = AEHandleWrapper<AEGP_StreamRefH>; // Wrapper for AEGP_StreamRefH
+/*
 using AE_RenderLayerContext = AEHandleWrapper<AEGP_RenderLayerContextH>; // Wrapper for AEGP_RenderLayerContextH
 using AE_PersistentBlob = AEHandleWrapper<AEGP_PersistentBlobH>; // Wrapper for AEGP_PersistentBlobH
 using AE_MaskOutlineVal = AEHandleWrapper<AEGP_MaskOutlineValH>; // Wrapper for AEGP_MaskOutlineValH
-using AE_Collection = AEHandleWrapper<AEGP_CollectionH>; // Wrapper for AEGP_CollectionH
-using AE_Collection2 = AEHandleWrapper<AEGP_Collection2H>; // Wrapper for AEGP_Collection2H
 using AE_SoundData = AEHandleWrapper<AEGP_SoundDataH>; // Wrapper for AEGP_SoundDataH
 using AE_AddKeyframesInfo = AEHandleWrapper<AEGP_AddKeyframesInfoH>; // Wrapper for AEGP_AddKeyframesInfoH
 using AE_RenderReceipt = AEHandleWrapper<AEGP_RenderReceiptH>; // Wrapper for AEGP_RenderReceiptH
@@ -111,33 +99,44 @@ using AE_ColorProfile = AEHandleWrapper<AEGP_ColorProfileP>; // Wrapper for AEGP
 using AE_ConstColorProfile = AEHandleWrapper<AEGP_ConstColorProfileP>; // Wrapper for AEGP_ConstColorProfileP
 using AE_MarkerVal = AEHandleWrapper<AEGP_MarkerValP>; // Wrapper for AEGP_MarkerValP
 using AE_ConstMarkerVal = AEHandleWrapper<AEGP_ConstMarkerValP>; // Wrapper for AEGP_ConstMarkerValP
+*/
+
+extern template struct AEHandleWrapper<AEGP_ItemH>;
+extern template struct AEHandleWrapper<AEGP_LayerH>;
+extern template struct AEHandleWrapper<AEGP_ProjectH>;
+extern template struct AEHandleWrapper<AEGP_CompH>;
+extern template struct AEHandleWrapper<AEGP_FootageH>;
+extern template struct AEHandleWrapper<AEGP_EffectRefH>;
+extern template struct AEHandleWrapper<AEGP_MaskRefH>;
+extern template struct AEHandleWrapper<AEGP_StreamRefH>;
+
 
 namespace boost {
     namespace serialization {
         // Serialization function for A_Time
         template<class Archive>
-        void serialize(Archive& ar, A_Time& time, const unsigned int version) {
+        inline void serialize(Archive& ar, A_Time& time, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(time.value);
             ar& BOOST_SERIALIZATION_NVP(time.scale);
         }
 
         // Serialization function for A_Ratio
         template<class Archive>
-        void serialize(Archive& ar, A_Ratio& ratio, const unsigned int version) {
+        inline void serialize(Archive& ar, A_Ratio& ratio, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(ratio.num);
             ar& BOOST_SERIALIZATION_NVP(ratio.den);
         }
 
         // Serialization function for A_FloatPoint
         template<class Archive>
-        void serialize(Archive& ar, A_FloatPoint& point, const unsigned int version) {
+        inline void serialize(Archive& ar, A_FloatPoint& point, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(point.x);
             ar& BOOST_SERIALIZATION_NVP(point.y);
         }
 
         // Serialization function for A_FloatPoint3
         template<class Archive>
-        void serialize(Archive& ar, A_FloatPoint3& point, const unsigned int version) {
+        inline void serialize(Archive& ar, A_FloatPoint3& point, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(point.x);
             ar& BOOST_SERIALIZATION_NVP(point.y);
             ar& BOOST_SERIALIZATION_NVP(point.z);
@@ -145,16 +144,16 @@ namespace boost {
 
         // Serialization function for A_FloatRect
         template<class Archive>
-        void serialize(Archive& ar, A_FloatRect& rect, const unsigned int version) {
-            ar& rect.BOOST_SERIALIZATION_NVP(rect.left);
-            ar& rect.BOOST_SERIALIZATION_NVP(rect.top);
-            ar& rect.BOOST_SERIALIZATION_NVP(rect.right);
-            ar& rect.BOOST_SERIALIZATION_NVP(rect.bottom);
+        inline void serialize(Archive& ar, A_FloatRect& rect, const unsigned int version) {
+            ar& BOOST_SERIALIZATION_NVP(rect.left);
+            ar& BOOST_SERIALIZATION_NVP(rect.top);
+            ar& BOOST_SERIALIZATION_NVP(rect.right);
+            ar& BOOST_SERIALIZATION_NVP(rect.bottom);
         }
 
         // Serialization function for A_Matrix3
         template<class Archive>
-        void serialize(Archive& ar, A_Matrix3& matrix, const unsigned int version) {
+        inline void serialize(Archive& ar, A_Matrix3& matrix, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(matrix.mat[0][0]);
             ar& BOOST_SERIALIZATION_NVP(matrix.mat[0][1]);
             ar& BOOST_SERIALIZATION_NVP(matrix.mat[0][2]);
@@ -168,7 +167,7 @@ namespace boost {
 
         // Serialization function for A_Matrix4
         template<class Archive>
-        void serialize(Archive& ar, A_Matrix4& matrix, const unsigned int version) {
+        inline void serialize(Archive& ar, A_Matrix4& matrix, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(matrix.mat[0][0]);
             ar& BOOST_SERIALIZATION_NVP(matrix.mat[0][1]);
             ar& BOOST_SERIALIZATION_NVP(matrix.mat[0][2]);
@@ -189,7 +188,7 @@ namespace boost {
 
         // Serialization function for A_LegacyRect
         template<class Archive>
-        void serialize(Archive& ar, A_LegacyRect& rect, const unsigned int version) {
+        inline void serialize(Archive& ar, A_LegacyRect& rect, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(rect.top);
             ar& BOOST_SERIALIZATION_NVP(rect.left);
             ar& BOOST_SERIALIZATION_NVP(rect.bottom);
@@ -198,7 +197,7 @@ namespace boost {
 
         // Serialization function for A_LRect
         template<class Archive>
-        void serialize(Archive& ar, A_LRect& rect, const unsigned int version) {
+        inline void serialize(Archive& ar, A_LRect& rect, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(rect.left);
             ar& BOOST_SERIALIZATION_NVP(rect.top);
             ar& BOOST_SERIALIZATION_NVP(rect.right);
@@ -207,14 +206,14 @@ namespace boost {
 
         // Serialization function for A_LPoint
         template<class Archive>
-        void serialize(Archive& ar, A_LPoint& point, const unsigned int version) {
+        inline void serialize(Archive& ar, A_LPoint& point, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(point.x);
             ar& BOOST_SERIALIZATION_NVP(point.y);
         }
 
         // Serialization function for A_FloatPolar
         template<class Archive>
-        void serialize(Archive& ar, A_FloatPolar& polar, const unsigned int version) {
+        inline void serialize(Archive& ar, A_FloatPolar& polar, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(polar.radius);
             ar& BOOST_SERIALIZATION_NVP(polar.angle);
         }
@@ -230,7 +229,7 @@ namespace boost {
 
         // Serialization function for AEGP_ColorVal
         template<class Archive>
-        void serialize(Archive& ar, AEGP_ColorVal& color, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_ColorVal& color, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(color.alphaF);
             ar& BOOST_SERIALIZATION_NVP(color.redF);
             ar& BOOST_SERIALIZATION_NVP(color.greenF);
@@ -239,7 +238,7 @@ namespace boost {
 
         // Serialization function for AEGP_TimeDisplay2
         template<class Archive>
-        void serialize(Archive& ar, AEGP_TimeDisplay2& timeDisplay, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_TimeDisplay2& timeDisplay, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(timeDisplay.time_display_type);
             ar& BOOST_SERIALIZATION_NVP(timeDisplay.timebaseC);
             ar& BOOST_SERIALIZATION_NVP(timeDisplay.non_drop_30B);
@@ -250,7 +249,7 @@ namespace boost {
 
         // Serialization function for AEGP_TimeDisplay3
         template<class Archive>
-        void serialize(Archive& ar, AEGP_TimeDisplay3& timeDisplay, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_TimeDisplay3& timeDisplay, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(timeDisplay.display_mode);
             ar& BOOST_SERIALIZATION_NVP(timeDisplay.footage_display_mode);
             ar& BOOST_SERIALIZATION_NVP(timeDisplay.display_dropframeB);
@@ -262,14 +261,14 @@ namespace boost {
 
         // Serialization function for AEGP_DownsampleFactor
         template<class Archive>
-        void serialize(Archive& ar, AEGP_DownsampleFactor& factor, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_DownsampleFactor& factor, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(factor.xS);
             ar& BOOST_SERIALIZATION_NVP(factor.yS);
         }
 
         // Serialization function for AEGP_LayerTransferMode
         template<class Archive>
-        void serialize(Archive& ar, AEGP_LayerTransferMode& mode, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_LayerTransferMode& mode, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(mode.mode);
             ar& BOOST_SERIALIZATION_NVP(mode.flags);
             ar& BOOST_SERIALIZATION_NVP(mode.track_matte);
@@ -277,14 +276,14 @@ namespace boost {
 
         // Serialization function for AEGP_TwoDVal
         template<class Archive>
-        void serialize(Archive& ar, AEGP_TwoDVal& val, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_TwoDVal& val, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(val.x);
             ar& BOOST_SERIALIZATION_NVP(val.y);
         }
 
         // Serialization function for AEGP_ThreeDVal
         template<class Archive>
-        void serialize(Archive& ar, AEGP_ThreeDVal& val, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_ThreeDVal& val, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(val.x);
             ar& BOOST_SERIALIZATION_NVP(val.y);
             ar& BOOST_SERIALIZATION_NVP(val.z);
@@ -292,21 +291,21 @@ namespace boost {
 
         // Serialization function for AEGP_KeyframeEase
         template<class Archive>
-        void serialize(Archive& ar, AEGP_KeyframeEase& ease, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_KeyframeEase& ease, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(ease.speedF);
             ar& BOOST_SERIALIZATION_NVP(ease.influenceF);
         }
 
         // Serialization function for AEGP_StreamValue2
         template<class Archive>
-        void serialize(Archive& ar, AEGP_StreamValue2& value, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_StreamValue2& value, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(value.streamH);
             ar& BOOST_SERIALIZATION_NVP(value.val);
         }
 
         // Serialization function for AEGP_MaskFeather
         template<class Archive>
-        void serialize(Archive& ar, AEGP_MaskFeather& feather, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_MaskFeather& feather, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(feather.segment);
             ar& BOOST_SERIALIZATION_NVP(feather.segment_sF);
             ar& BOOST_SERIALIZATION_NVP(feather.radiusF);
@@ -318,7 +317,7 @@ namespace boost {
 
         // Serialization function for AEGP_AlphaLabel
         template<class Archive>
-        void serialize(Archive& ar, AEGP_AlphaLabel& label, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_AlphaLabel& label, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(label.flags);
             ar& BOOST_SERIALIZATION_NVP(label.redCu);
             ar& BOOST_SERIALIZATION_NVP(label.greenCu);
@@ -327,10 +326,62 @@ namespace boost {
 
         // Serialization function for AEGP_LoopBehavior
         template<class Archive>
-        void serialize(Archive& ar, AEGP_LoopBehavior& behavior, const unsigned int version) {
+        inline void serialize(Archive& ar, AEGP_LoopBehavior& behavior, const unsigned int version) {
             ar& BOOST_SERIALIZATION_NVP(behavior.loops);
             ar& BOOST_SERIALIZATION_NVP(behavior.reserved);
         }
+
+        // Serialization function for FIEL_Label
+        template<class Archive>
+        inline void serialize(Archive& ar, FIEL_Label& label, const unsigned int version) {
+        ar& BOOST_SERIALIZATION_NVP(label.signature);
+        ar& BOOST_SERIALIZATION_NVP(label.version);
+        ar& BOOST_SERIALIZATION_NVP(label.type);
+        ar& BOOST_SERIALIZATION_NVP(label.order);
+        ar& BOOST_SERIALIZATION_NVP(label.reserved);
+        }
+
+        // Serialization function for AEGP_FootageInterp
+        template<class Archive>
+        inline void serialize(Archive& ar, AEGP_FootageInterp& interp, const unsigned int version) {
+            ar& BOOST_SERIALIZATION_NVP(interp.il);
+            ar& BOOST_SERIALIZATION_NVP(interp.al);
+            ar& BOOST_SERIALIZATION_NVP(interp.pd);
+            ar& BOOST_SERIALIZATION_NVP(interp.loop);
+            ar& BOOST_SERIALIZATION_NVP(interp.pix_aspect_ratio);
+            ar& BOOST_SERIALIZATION_NVP(interp.native_fpsF);
+            ar& BOOST_SERIALIZATION_NVP(interp.conform_fpsF);
+            ar& BOOST_SERIALIZATION_NVP(interp.depthL);
+            ar& BOOST_SERIALIZATION_NVP(interp.motion_dB);
+        }
+
+        // Serialization function for AEGP_FootageLayerKey
+        template<class Archive>
+        inline void serialize(Archive& ar, AEGP_FootageLayerKey& key, const unsigned int version) {
+            ar& BOOST_SERIALIZATION_NVP(key.layer_idL);
+            ar& BOOST_SERIALIZATION_NVP(key.layer_indexL);
+            ar& BOOST_SERIALIZATION_NVP(key.nameAC);
+            ar& BOOST_SERIALIZATION_NVP(key.layer_draw_style);
+        }
+
+        // Serialization function for AEGP_FileSequenceImportOptions
+        template<class Archive>
+        inline void serialize(Archive& ar, AEGP_FileSequenceImportOptions& options, const unsigned int version) {
+            ar& BOOST_SERIALIZATION_NVP(options.all_in_folderB);
+            ar& BOOST_SERIALIZATION_NVP(options.force_alphabeticalB);
+            ar& BOOST_SERIALIZATION_NVP(options.start_frameL);
+            ar& BOOST_SERIALIZATION_NVP(options.end_frameL);
+        }
+
+        // Serialization function for AEGP_SoundDataFormat
+        template<class Archive>
+        inline void serialize(Archive& ar, AEGP_SoundDataFormat& format, const unsigned int version) {
+            ar& BOOST_SERIALIZATION_NVP(format.sample_rateF);
+            ar& BOOST_SERIALIZATION_NVP(format.encoding);
+            ar& BOOST_SERIALIZATION_NVP(format.bytes_per_sampleL);
+            ar& BOOST_SERIALIZATION_NVP(format.num_channelsL);
+        }
+
 
 
     } // namespace serialization

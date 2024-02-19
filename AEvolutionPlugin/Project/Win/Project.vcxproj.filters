@@ -18,6 +18,9 @@
     <Filter Include="Headers\commands">
       <UniqueIdentifier>{a46699c5-a3c7-45cf-8da8-10ef3223353c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headers\responses">
+      <UniqueIdentifier>{6829bddd-aa62-4226-88f5-db19d57adf46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SrcDir)AEvolution.h">
@@ -107,8 +110,41 @@
     <ClInclude Include="..\..\src\AE_GeneralWrap.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\commands\Items.h">
+    <ClInclude Include="..\..\src\commands\ItemCommands.h">
       <Filter>Headers\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\responses\ItemResponses.h">
+      <Filter>Headers\responses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\commands\CompCommands.h">
+      <Filter>Headers\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\commands\FootageCommands.h">
+      <Filter>Headers\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\commands\LayerCommands.h">
+      <Filter>Headers\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\commands\ProjectCommands.h">
+      <Filter>Headers\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\commands\UtilityCommands.h">
+      <Filter>Headers\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\responses\CompResponses.h">
+      <Filter>Headers\responses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\responses\FootageResponses.h">
+      <Filter>Headers\responses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\responses\LayerResponses.h">
+      <Filter>Headers\responses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\responses\ProjectResponses.h">
+      <Filter>Headers\responses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\responses\UtilityResponses.h">
+      <Filter>Headers\responses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -126,14 +162,17 @@
     <ClCompile Include="$(SrcDir)AEvolution.cpp" />
     <ClCompile Include="$(SrcDir)main.cpp" />
     <ClCompile Include="..\..\src\AE_GeneralWrap.cpp" />
-    <ClCompile Include="..\..\src\Items.cpp" />
+    <ClCompile Include="..\..\src\commands\CompCommands.cpp" />
+    <ClCompile Include="..\..\src\commands\FootageCommands.cpp" />
+    <ClCompile Include="..\..\src\commands\ItemCommands.cpp" />
+    <ClCompile Include="..\..\src\commands\LayerCommands.cpp" />
+    <ClCompile Include="..\..\src\commands\ProjectCommands.cpp" />
+    <ClCompile Include="..\..\src\commands\UtilityCommands.cpp" />
+    <ClCompile Include="..\..\src\Commands.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="$(SrcDir)AEvolution_PiPL.r">
       <Filter>Resources</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,9 @@
 #pragma once
 #include "..\..\AEvolutionPlugin\src\MessageMain.h"
 
+using CommandH = boost::shared_ptr<Command>;
+using ResponseH = boost::shared_ptr<Response>;
+
 class MessageQueueManager {
 public:
     // Deletes copy constructor and assignment operator

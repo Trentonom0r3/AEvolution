@@ -43,10 +43,10 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <LibraryPath>$(VcpkgDir)installed/x64-windows-static/debug/lib;$(OutDir);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(MainDir)AEvolutionPlugin/src;C:\Users\tjerf\source\repos\AEvolution\src\Headers\SP;C:\Users\tjerf\source\repos\AEvolution\src\Util;C:\Users\tjerf\source\repos\AEvolution\src\Resources;C:\Users\tjerf\source\repos\AEvolution\src\Headers;$(IncludePath)</IncludePath>
+    <IncludePath>$(MainDir)AEvolutionPlugin/src;$(MainSrcDir)Headers;$(MainSrcDir)Headers/SP;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <IncludePath>C:\Users\tjerf\source\repos\AEvolution\src\Headers\SP;C:\Users\tjerf\source\repos\AEvolution\src\Resources;C:\Users\tjerf\source\repos\AEvolution\src\Util;C:\Users\tjerf\source\repos\AEvolution\src\Headers;C:\Program Files\Python312\include;$(MainDir)AEvolutionPlugin/src;$(VcpkgDir)installed/x64-windows-static/include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\Python312\include;$(MainDir)AEvolutionPlugin/src;$(VcpkgDir)installed/x64-windows-static/include;$(MainSrcDir)Headers;$(MainSrcDir)Headers/SP;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);C:/Program Files/Python312/libs;$(LibraryPath)</LibraryPath>
     <TargetExt>$(TargetExt_)</TargetExt>
   </PropertyGroup>
@@ -118,6 +118,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(SrcDir)Source.cpp" />
+    <ClCompile Include="..\src\ItemWraps.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

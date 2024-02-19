@@ -2,9 +2,6 @@
 #include "AE_GeneralWrap.h"
 #include "AEnums.h"
 
-using null = NullType;
-
-
 struct Command {
     CommandID id;
     Command() = default;
@@ -15,7 +12,7 @@ struct Command {
                                 //Each command will have a unique response.
 
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version) {
+    inline void serialize(Archive& ar, const unsigned int version) {
         ar& id;
     }
 };
@@ -30,7 +27,7 @@ struct Response {
     Response(CommandID id, std::string error) : id(id), error(error) {};
     //serialize method
     template<class Archive>
-    void serialize(Archive& ar, const unsigned int version) {
+    inline void serialize(Archive& ar, const unsigned int version) {
     ar& id;
     }
 };      // Response to be sent to the client

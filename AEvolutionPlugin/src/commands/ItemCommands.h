@@ -1,955 +1,399 @@
 #pragma once
-#include "../CommandFactory.h"
-#include "../SessionManager.h"
+#include "../MessageMain.h"
+#include "../responses/ItemResponses.h"
 
-class GetFirstProjItem : public CommandBase {
+class GetFirstProjItemCmd : public Command {
 public:
-	using CommandBase::CommandBase;
+	AE_Project project; //AEGP_ProjectH, in a wrapper. In command, member variables are the args for the command,
+	GetFirstProjItemCmd() : Command(CommandID::GetFirstProjItem) {}
+	GetFirstProjItemCmd(AEGP_ProjectH project) : project(AE_Project(project)), Command(CommandID::GetFirstProjItem) {}
+	GetFirstProjItemCmd(AE_Project project) : project(project), Command(CommandID::GetFirstProjItem) {}
 
-	void execute() override {
-		//define the variables
-		AEGP_ItemH itemH;
-		AEGP_ProjectH projectH;
-		A_Err err = A_Err_NONE;
-		int itemID;
-		
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
+    void execute() override;
 
-		// Perform the action
-		ERR(suites.ProjSuite6()->AEGP_GetProjectByIndex(1, &projectH));
-		ERR(suites.ItemSuite9()->AEGP_GetFirstProjItem(projectH, &itemH));
-		ERR(suites.ItemSuite9()->AEGP_GetItemID(itemH, &itemID));
-
-		// Check err, if no error, add the session to the map
-		if (err == A_Err_NONE) {
-			SessionManager::GetInstance().addSession(itemH, itemID);
-		}
-
-		// Create the result and response
-		Result<baseobj> result(boost::make_shared<Item>(itemID), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& project;
 	}
 };
-// Register the command
-REGISTER_COMMAND(CommandID::GetFirstProjItem, GetFirstProjItem);
 
-/*
-Result<Item> GetFirstProjItem() {
-		auto& mqm = MessageQueueManager::getInstance();
-		Command cmd(CommandID::GetFirstProjItem, CommandArgs());
-		Response resp = mqm.sendAndReceive(cmd);
-
-		Result<Item> result = boost::get<Result<Item>>(resp.args[0]);
-		return result;
-}
-*/
-
-class GetNextProjItem : public CommandBase {
+class GetNextProjItemCmd : public Command {
 public:
-	using CommandBase::CommandBase;
+	AE_Project project; //AEGP_ProjectH, in a wrapper. In command, member variables are the args for the command,
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetNextProjItemCmd() : Command(CommandID::GetNextProjItem) {}
+	GetNextProjItemCmd(AEGP_ProjectH project, AEGP_ItemH item) : project(AE_Project(project)), item(AE_Item(item)), Command(CommandID::GetNextProjItem) {}
+	GetNextProjItemCmd(AE_Project project, AE_Item item) : project(project), item(item), Command(CommandID::GetNextProjItem) {}
 
-	void execute() override {
-		//define the variables
-		AEGP_ProjectH projectH;
-		AEGP_ItemH nextItemH;
-		A_Err err = A_Err_NONE;
-		int itemID;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		AEGP_ItemH itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		Result<baseobj> result(boost::make_shared<Item>(), errToString(err));
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
+	void execute() override;
 
-		// Perform the action
-		ERR(suites.ProjSuite6()->AEGP_GetProjectByIndex(1, &projectH));
-		ERR(suites.ItemSuite9()->AEGP_GetNextProjItem(projectH, itemH, &nextItemH));
-		// if the next item exists, add the session to the map
-		if (nextItemH) {
-			ERR(suites.ItemSuite9()->AEGP_GetItemID(nextItemH, &itemID));
-			SessionManager::GetInstance().addSession(nextItemH, itemID);
-			result = Result<baseobj>(boost::make_shared<Item>(itemID), errToString(err));
-		}
-
-		// Create the result and respons
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
-	}
-
-};
-REGISTER_COMMAND(CommandID::GetNextProjItem, GetNextProjItem);
-
-/*
-Result<Item> GetNextProjItem(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetNextProjItem, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<Item> result = boost::get<Result<Item>>(resp.args[0]);
-	return result;
-*/
-
-class GetActiveItem : public CommandBase {
-public:
-	using CommandBase::CommandBase;
-
-	void execute() override {
-		//define the variables
-		AEGP_ItemH itemH;
-		A_Err err = A_Err_NONE;
-		int itemID;
-		Result<baseobj> result(boost::make_shared<Item>(), errToString(err));
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_GetActiveItem(&itemH));
-
-		if (itemH) {
-			ERR(suites.ItemSuite9()->AEGP_GetItemID(itemH, &itemID));
-			SessionManager::GetInstance().addSession(itemH, itemID);
-			result = Result<baseobj>(boost::make_shared<Item>(itemID), errToString(err));
-		}
-
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
-	}
-
-};
-//
-REGISTER_COMMAND(CommandID::GetActiveItem, GetActiveItem);
-
-/*
-Result<Item> GetActiveItem() {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetActiveItem, CommandArgs());
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<Item> result = boost::get<Result<Item>>(resp.args[0]);
-	return result;
-}
-*/
-
-class IsItemSelected : public CommandBase {
-public:
-	using CommandBase::CommandBase;
-
-	void execute() override {
-		//define the variables
-		AEGP_ItemH itemH;
-		A_Err err = A_Err_NONE;
-		A_Boolean selected;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_IsItemSelected(itemH, &selected));
-
-		// Create the result and response
-		Result<bool> result = Result<bool>(selected, errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
-	}
-
-};
-REGISTER_COMMAND(CommandID::IsItemSelected, IsItemSelected);
-
-/*
-* 
-* Result<bool> IsItemSelected(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::IsItemSelected, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<bool> result = boost::get<Result<bool>>(resp.args[0]);
-	return result;
-}
-*/
-
-class SelectItem : public CommandBase {
-public:
-	using CommandBase::CommandBase;
-
-	void execute() override {
-		//define the variables
-		AEGP_ItemH itemH;
-		A_Err err = A_Err_NONE;
-		A_Boolean selected = FALSE;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		bool select = boost::get<bool>(cmd.args[1]);
-		bool deselectOthers = boost::get<bool>(cmd.args[2]);
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_SelectItem(itemH, select, deselectOthers));
-
-		// Create the result and response
-		Result<bool> result = Result<bool>(true, errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
-	}
-
-};
-REGISTER_COMMAND(CommandID::SelectItem, SelectItem);
-
-/*
-*	
-* Result<bool> SelectItem(Item item, bool select, bool deselectOthers) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::SelectItem, CommandArgs{item, select, deselectOthers});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<bool> result = boost::get<Result<bool>>(resp.args[0]);
-	return result;
-}
-*/
-
-class GetItemType : public CommandBase {
-public:
-	using CommandBase::CommandBase;
-
-	void execute() override {
-		//define the variables
-		AEGP_ItemH itemH;
-		A_Err err = A_Err_NONE;
-		AEGP_ItemType itemType;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_GetItemType(itemH, &itemType));
-
-		Result<AEGP_ItemType> result(itemType, errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
-	}
-
-};
-REGISTER_COMMAND(CommandID::GetItemType, GetItemType);
-
-
-/* 
-	Result<AEGP_ItemType> GetItemType(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetItemType, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<AEGP_ItemType> result = boost::get<Result<AEGP_ItemType>>(resp.args[0]);
-	return result;
-}
-*/
-
-class GetItemName : public CommandBase {
-public:
-	using CommandBase::CommandBase;
-
-	void execute() override {
-		//define the variables
-		AEGP_ItemH itemH;
-		AEGP_MemHandle unicode_nameMH = NULL;
-		A_UTF16Char* unicode_nameP = NULL;
-		std::string name;
-		A_Err err = A_Err_NONE;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		AEGP_PluginID* pluginIDPtr = SuiteManager::GetInstance().GetPluginID();
-		if (pluginIDPtr != nullptr) {
-			// Dereference the pointer to get the plugin ID
-			AEGP_PluginID pluginID = *pluginIDPtr;
-			// Replace ERR with PT_ETX macro to check and throw error if not A_Err_NONE
-			ERR(suites.ItemSuite9()->AEGP_GetItemName(pluginID, itemH, &unicode_nameMH));
-        }
-		if (unicode_nameMH) {
-			ERR(suites.MemorySuite1()->AEGP_LockMemHandle(unicode_nameMH, (void**)&unicode_nameP));
-			name = convertUTF16ToUTF8(unicode_nameP);
-			// Unlock and dispose of the memory handle
-			ERR(suites.MemorySuite1()->AEGP_UnlockMemHandle(unicode_nameMH));
-			ERR(suites.MemorySuite1()->AEGP_FreeMemHandle(unicode_nameMH));
-		}
-
-		// Create the result and response
-		Result<std::string> result = Result<std::string>(name, errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& project;
+		ar& item;
 	}
 };
-REGISTER_COMMAND(CommandID::GetItemName, GetItemName);
 
-/*
-* Result<std::string> GetItemName(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetItemName, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<std::string> result = boost::get<Result<std::string>>(resp.args[0]);
-	return result;
-}
-*/
-
-class SetItemName : public CommandBase {
+class GetActiveItemCmd : public Command {
 public:
-	using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetActiveItemCmd() : Command(CommandID::GetActiveItem) {}
+	GetActiveItemCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetActiveItem) {}
+	GetActiveItemCmd(AE_Item item) : item(item), Command(CommandID::GetActiveItem) {}
 
-	void execute() override {
-		//define the variables
-		AEGP_ItemH itemH;
-		A_Err err = A_Err_NONE;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		std::string name = boost::get<std::string>(cmd.args[1]);
+	void execute() override;
 
-		std::vector<A_UTF16Char> utf16Name = convertUTF8ToUTF16(name);
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_SetItemName(itemH, utf16Name.data()));
-		// Create the result and response
-		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
-	}
-
-};
-REGISTER_COMMAND(CommandID::SetItemName, SetItemName);
-
-/*
-* Result<null> SetItemName(Item item, std::string name) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::SetItemName, CommandArgs{item, name});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<null> result = boost::get<Result<bool>>(resp.args[0]);
-	return result;
-}
-*/
-
-class GetItemID : public CommandBase {
-public:
-	using CommandBase::CommandBase;
-
-	void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		A_long itemID;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_GetItemID(itemH, &itemID));
-
-		// Create the result and response
-		Result<int> result = Result<int>(static_cast<int>(itemID), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
-	}
-
-};
-REGISTER_COMMAND(CommandID::GetItemID, GetItemID);
-
-/*
-* Result<int> GetItemID(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetItemID, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<int> result = boost::get<Result<int>>(resp.args[0]);
-	return result;
-}
-*/
-
-
-class GetItemFlags : public CommandBase {
-};
-
-class SetItemUseProxy : public CommandBase {
-public:
-using CommandBase::CommandBase;
-
-	void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		bool useProxy = boost::get<bool>(cmd.args[1]);
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_SetItemUseProxy(itemH, useProxy));
-
-		// Create the result and response
-		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
-	}
-
-};
-REGISTER_COMMAND(CommandID::SetItemUseProxy, SetItemUseProxy);
-
-/*
-* Result<null> SetItemUseProxy(Item item, bool useProxy) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::SetItemUseProxy, CommandArgs{item, useProxy});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<null> result = boost::get<Result<null>>(resp.args[0]);
-	return result;
-}
-*/
-
-class GetItemParentFolder : public CommandBase {
-public:
-	using CommandBase::CommandBase;
-
-	void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		AEGP_ItemH parentFolderH;
-		A_long parentFolderID;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_GetItemParentFolder(itemH, &parentFolderH));
-		ERR(suites.ItemSuite9()->AEGP_GetItemID(parentFolderH, &parentFolderID));
-		if (err == A_Err_NONE) {
-			SessionManager::GetInstance().addSession(parentFolderH, parentFolderID);
-		}
-
-		// Create the result and response
-		Result<baseobj> result(boost::make_shared<Item>(parentFolderID), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
 	}
 };
-REGISTER_COMMAND(CommandID::GetItemParentFolder, GetItemParentFolder);
 
-
-/*
-* Result<Item> GetItemParentFolder(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetItemParentFolder, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<Item> result = boost::get<Result<Item>>(resp.args[0]);
-	return result;
-}
-*/
-
-class SetItemParentFolder : public CommandBase {
+class IsItemSelectedCmd : public Command {
 public:
-	using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	IsItemSelectedCmd() : Command(CommandID::IsItemSelected) {}
+	IsItemSelectedCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::IsItemSelected) {}
+	IsItemSelectedCmd(AE_Item item) : item(item), Command(CommandID::IsItemSelected) {}
 
-void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		AEGP_ItemH parentFolderH;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		Item parentFolder = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[1]));
-		 parentFolderH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(parentFolder.getSessionID()));
+	void execute() override;
 
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_SetItemParentFolder(itemH, parentFolderH));
-
-		// Create the result and response
-		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
 	}
 };
-REGISTER_COMMAND(CommandID::SetItemParentFolder, SetItemParentFolder);
 
-/*
-* Result<null> SetItemParentFolder(Item item, Item parentFolder) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::SetItemParentFolder, CommandArgs{item, parentFolder});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<null> result = boost::get<Result<null>>(resp.args[0]);
-	return result;
-}
-*/
-
-class GetItemDuration : public CommandBase {
+class SelectItemCmd : public Command {
 public:
-	using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	A_Boolean selectB;
+	A_Boolean deselect_othersB;
+	SelectItemCmd() : Command(CommandID::SelectItem) {}
+	SelectItemCmd(AEGP_ItemH item, A_Boolean selectB, A_Boolean deselect_othersB) : item(AE_Item(item)), selectB(selectB), deselect_othersB(deselect_othersB), Command(CommandID::SelectItem) {}
+	SelectItemCmd(AE_Item item, A_Boolean selectB, A_Boolean deselect_othersB) : item(item), selectB(selectB), deselect_othersB(deselect_othersB), Command(CommandID::SelectItem) {}
 
-	void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		A_Time duration;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
+	void execute() override;
 
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_GetItemDuration(itemH, &duration));
-
-		// Create the result and response
-		Result<baseobj> result(boost::make_shared<Time>(duration), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+		ar& selectB;
+		ar& deselect_othersB;
 	}
 };
-REGISTER_COMMAND(CommandID::GetItemDuration, GetItemDuration);
 
-/*
-* Result<Time> GetItemDuration(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetItemDuration, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<Time> result = boost::get<Result<Time>>(resp.args[0]);
-	return result;
-}
-*/
-
-class GetItemCurrentTime : public CommandBase {
+class GetItemTypeCmd : public Command {
 public:
-using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetItemTypeCmd() : Command(CommandID::GetItemType) {}
+	GetItemTypeCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetItemType) {}
+	GetItemTypeCmd(AE_Item item) : item(item), Command(CommandID::GetItemType) {}
 
-	void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		A_Time currentTime;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		 itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
+	void execute() override;
 
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_GetItemCurrentTime(itemH, &currentTime));
-
-		// Create the result and response
-		Time time = Time(currentTime);
-		Result<baseobj> result(boost::make_shared<Time>(time), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
 	}
 };
-REGISTER_COMMAND(CommandID::GetItemCurrentTime, GetItemCurrentTime);
 
-
-/*
-* Result<int> GetItemCurrentTime(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetItemCurrentTime, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<int> result = boost::get<Result<int>>(resp.args[0]);
-	return result;
-}
-*/
-
-class GetItemDimensions : public CommandBase {
+class GetItemNameCmd : public Command {
 public:
-	using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetItemNameCmd() : Command(CommandID::GetItemName) {}
+	GetItemNameCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetItemName) {}
+	GetItemNameCmd(AE_Item item) : item(item), Command(CommandID::GetItemName) {}
+	
+	void execute() override;
 
-	void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		A_long width;
-		A_long height;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_GetItemDimensions(itemH, &width, &height));
-
-		// Create the result and response
-		Size size = Size(width, height);
-		Result<baseobj> result(boost::make_shared<Size>(size), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
-	}
-}; 
-REGISTER_COMMAND(CommandID::GetItemDimensions, GetItemDimensions);
-
-/*
-* Result<Size> GetItemDimensions(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetItemDimensions, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<Size> result = boost::get<Result<Size>>(resp.args[0]);
-	return result;
-}
-*/
-
-
-class GetItemPixelAspectRatio : public CommandBase {
-public:
-using CommandBase::CommandBase;
-
-	void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		A_Ratio ratio;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_GetItemPixelAspectRatio(itemH, &ratio));
-		double aspectRatio = RATIO2DOUBLE(ratio);
-
-		Result<double> result = Result<double>(aspectRatio, errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
 	}
 };
-REGISTER_COMMAND(CommandID::GetItemPixelAspectRatio, GetItemPixelAspectRatio);
 
-/*
-* Result<double> GetItemPixelAspectRatio(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetItemPixelAspectRatio, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<double> result = boost::get<Result<double>>(resp.args[0]);
-	return result;
-}
-*/
-
-class DeleteItem : public CommandBase {
+class SetItemNameCmd : public Command {
 public:
-using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	std::string nameZ;
+	SetItemNameCmd() : Command(CommandID::SetItemName) {}
+	SetItemNameCmd(AEGP_ItemH item, std::string nameZ) : item(AE_Item(item)), nameZ(nameZ), Command(CommandID::SetItemName) {}
+	SetItemNameCmd(AE_Item item, std::string nameZ) : item(item), nameZ(nameZ), Command(CommandID::SetItemName) {}
+	void execute() override;
 
-	void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_DeleteItem(itemH));
-
-		// Create the result and response
-		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+		ar& nameZ;
 	}
 };
-REGISTER_COMMAND(CommandID::DeleteItem, DeleteItem);
 
-/*
-* Result<null> DeleteItem(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::DeleteItem, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<null> result = boost::get<Result<null>>(resp.args[0]);
-	return result;
-}
-*/
-
-class CreateNewFolder : public CommandBase {
+class GetItemIDCmd : public Command {
 public:
-using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetItemIDCmd() : Command(CommandID::GetItemID) {}
+	GetItemIDCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetItemID) {}
+	GetItemIDCmd(AE_Item item) : item(item), Command(CommandID::GetItemID) {}
+	void execute() override;
 
-	void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH newFolderH;
-		AEGP_ItemH parentFolderH = NULL;
-		//get the command arguments
-		std::string name = boost::get<std::string>(cmd.args[0]);
-		if (cmd.args.size() > 1) {
-			Item parentFolder = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[1]));
-			parentFolderH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(parentFolder.getSessionID()));
-		}
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-		A_long newFolderID;
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_CreateNewFolder(convertUTF8ToUTF16(name).data(), parentFolderH, &newFolderH));
-		if (err == A_Err_NONE) {
-			ERR(suites.ItemSuite9()->AEGP_GetItemID(newFolderH, &newFolderID));
-			SessionManager::GetInstance().addSession(newFolderH, newFolderID);
-		}
-		// Create the result and response
-		Result<baseobj> result(boost::make_shared<Item>(newFolderID), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
 	}
 };
-REGISTER_COMMAND(CommandID::CreateNewFolder, CreateNewFolder);
 
-/*
-* Result<Item> CreateNewFolder(std::string name, Item parentFolder) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::CreateNewFolder, CommandArgs{name, parentFolder});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<Item> result = boost::get<Result<Item>>(resp.args[0]);
-	return result;
-}
-*/
-
-class SetItemCurrentTime : public CommandBase {
+class GetItemFlagsCmd : public Command {
 public:
-	using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetItemFlagsCmd() : Command(CommandID::GetItemFlags) {}
+	GetItemFlagsCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetItemFlags) {}
+	GetItemFlagsCmd(AE_Item item) : item(item), Command(CommandID::GetItemFlags) {}
+	void execute() override;
 
-void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		A_Time time = { 0, 0 };
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		Time timeH = *boost::dynamic_pointer_cast<Time>(boost::get<baseobj>(cmd.args[1]));
-		time.value = static_cast<A_long>(timeH.val);
-		time.scale = static_cast<A_u_long>(timeH.scale);
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_SetItemCurrentTime(itemH, &time));
-
-		// Create the result and response
-		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
 	}
 };
-REGISTER_COMMAND(CommandID::SetItemCurrentTime, SetItemCurrentTime);
 
-/*
-* Result<null> SetItemCurrentTime(Item item, Time time) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::SetItemCurrentTime, CommandArgs{item, time});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<null> result = boost::get<Result<null>>(resp.args[0]);
-	return result;
-}
-*/
-
-class GetItemComment : public CommandBase {
+class SetItemUseProxyCmd : public Command {
 public:
-	using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	A_Boolean use_proxyB;
+	SetItemUseProxyCmd() : Command(CommandID::SetItemUseProxy) {}
+	SetItemUseProxyCmd(AEGP_ItemH item, A_Boolean use_proxyB) : item(AE_Item(item)), use_proxyB(use_proxyB), Command(CommandID::SetItemUseProxy) {}
+	SetItemUseProxyCmd(AE_Item item, A_Boolean use_proxyB) : item(item), use_proxyB(use_proxyB), Command(CommandID::SetItemUseProxy) {}
+	void execute() override;
 
-void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		AEGP_MemHandle unicode_nameMH = NULL;
-		A_UTF16Char* unicode_nameP = NULL;
-		std::string comment;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		AEGP_PluginID* pluginIDPtr = SuiteManager::GetInstance().GetPluginID();
-		if (pluginIDPtr != nullptr) {
-			// Dereference the pointer to get the plugin ID
-			AEGP_PluginID pluginID = *pluginIDPtr;
-			// Replace ERR with PT_ETX macro to check and throw error if not A_Err_NONE
-			ERR(suites.ItemSuite9()->AEGP_GetItemComment(itemH, &unicode_nameMH));
-		}
-		if (unicode_nameMH) {
-			ERR(suites.MemorySuite1()->AEGP_LockMemHandle(unicode_nameMH, (void**)&unicode_nameP));
-			comment = convertUTF16ToUTF8(unicode_nameP);
-			// Unlock and dispose of the memory handle
-			ERR(suites.MemorySuite1()->AEGP_UnlockMemHandle(unicode_nameMH));
-			ERR(suites.MemorySuite1()->AEGP_FreeMemHandle(unicode_nameMH));
-		}
-
-		// Create the result and response
-		Result<std::string> result = Result<std::string>(comment, errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+		ar& use_proxyB;
 	}
 };
-REGISTER_COMMAND(CommandID::GetItemComment, GetItemComment);
 
-/*
-Result<std::string> GetItemComment(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetItemComment, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<std::string> result = boost::get<Result<std::string>>(resp.args[0]);
-	return result;
-}
-*/
-
-class SetItemComment : public CommandBase {
+class GetItemParentFolderCmd : public Command {
 public:
-	using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetItemParentFolderCmd() : Command(CommandID::GetItemParentFolder) {}
+	GetItemParentFolderCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetItemParentFolder) {}
+	GetItemParentFolderCmd(AE_Item item) : item(item), Command(CommandID::GetItemParentFolder) {}
+	void execute() override;
 
-void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		std::string comment = boost::get<std::string>(cmd.args[1]);
-
-		std::vector<A_UTF16Char> utf16Comment = convertUTF8ToUTF16(comment);
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_SetItemComment(itemH, utf16Comment.data()));
-		// Create the result and response
-		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
 	}
 };
-REGISTER_COMMAND(CommandID::SetItemComment, SetItemComment);
 
-/*
-* Result<null> SetItemComment(Item item, std::string comment) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::SetItemComment, CommandArgs{item, comment});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<null> result = boost::get<Result<null>>(resp.args[0]);
-	return result;
-}
-*/
-
-class GetItemLabel : public CommandBase {
+class SetItemParentFolderCmd : public Command {
 public:
-	using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	AE_Item parent_folder; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	SetItemParentFolderCmd() : Command(CommandID::SetItemParentFolder) {}
+	SetItemParentFolderCmd(AEGP_ItemH item, AEGP_ItemH parent_folder) : item(AE_Item(item)), parent_folder(AE_Item(parent_folder)), Command(CommandID::SetItemParentFolder) {}
+	SetItemParentFolderCmd(AE_Item item, AE_Item parent_folder) : item(item), parent_folder(parent_folder), Command(CommandID::SetItemParentFolder) {}
+	void execute() override;
 
-void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		AEGP_LabelID label;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_GetItemLabel(itemH, &label));
-
-		// Create the result and response
-		Result<AEGP_LabelID> result = Result<AEGP_LabelID>(label, errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+		ar& parent_folder;
 	}
 };
-REGISTER_COMMAND(CommandID::GetItemLabel, GetItemLabel);
 
-/*
-* Result<AEGP_LabelID> GetItemLabel(Item item) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::GetItemLabel, CommandArgs{item});
-	Response resp = mqm.sendAndReceive(cmd);
-
-	Result<AEGP_LabelID> result = boost::get<Result<AEGP_LabelID>>(resp.args[0]);
-	return result;
-}
-*/
-
-class SetItemLabel : public CommandBase {
+class GetItemDurationCmd : public Command {
 public:
-	using CommandBase::CommandBase;
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetItemDurationCmd() : Command(CommandID::GetItemDuration) {}
+	GetItemDurationCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetItemDuration) {}
+	GetItemDurationCmd(AE_Item item) : item(item), Command(CommandID::GetItemDuration) {}
+	void execute() override;
 
-void execute() override {
-		//define the variables
-		A_Err err = A_Err_NONE;
-		AEGP_ItemH itemH;
-		//get the command arguments
-		Item item = *boost::dynamic_pointer_cast<Item>(boost::get<baseobj>(cmd.args[0]));
-		itemH = std::get<AEGP_ItemH>(SessionManager::GetInstance().getSession(item.getSessionID()));
-		AEGP_LabelID labelID = boost::get<AEGP_LabelID>(cmd.args[1]);
-		// Get the suite handler
-		AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-		// Perform the action
-		ERR(suites.ItemSuite9()->AEGP_SetItemLabel(itemH, labelID));
-
-		// Create the result and response
-		Result<baseobj> result(boost::make_shared<null>(), errToString(err));
-		Response resp(result);
-		MessageQueueManager::getInstance().sendResponse(resp);
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
 	}
 };
-REGISTER_COMMAND(CommandID::SetItemLabel, SetItemLabel);
 
-/*
-* Result<null> SetItemLabel(Item item, AEGP_LabelID labelID) {
-	auto& mqm = MessageQueueManager::getInstance();
-	Command cmd(CommandID::SetItemLabel, CommandArgs{item, labelID});
-	Response resp = mqm.sendAndReceive(cmd);
+class GetItemCurrentTimeCmd : public Command {
+public:
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetItemCurrentTimeCmd() : Command(CommandID::GetItemCurrentTime) {}
+	GetItemCurrentTimeCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetItemCurrentTime) {}
+	GetItemCurrentTimeCmd(AE_Item item) : item(item), Command(CommandID::GetItemCurrentTime) {}
 
-	Result<null> result = boost::get<Result<null>>(resp.args[0]);
-	return result;
-}
-*/
+	void execute() override;
+
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+	}
+};
+
+class GetItemDimensionsCmd : public Command {
+public:
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetItemDimensionsCmd() : Command(CommandID::GetItemDimensions) {}
+	GetItemDimensionsCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetItemDimensions) {}
+	GetItemDimensionsCmd(AE_Item item) : item(item), Command(CommandID::GetItemDimensions) {}
+
+	void execute() override;
+
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+	}
+};
+
+class GetItemPixelAspectRatioCmd : public Command {
+public:
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetItemPixelAspectRatioCmd() : Command(CommandID::GetItemPixelAspectRatio) {}
+	GetItemPixelAspectRatioCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetItemPixelAspectRatio) {}
+	GetItemPixelAspectRatioCmd(AE_Item item) : item(item), Command(CommandID::GetItemPixelAspectRatio) {}
+
+	void execute() override;
+
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+	}
+};
+
+class DeleteItemCmd : public Command {
+public:
+AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	DeleteItemCmd() : Command(CommandID::DeleteItem) {}
+	DeleteItemCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::DeleteItem) {}
+	DeleteItemCmd(AE_Item item) : item(item), Command(CommandID::DeleteItem) {}
+
+	void execute() override;
+
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+	}
+};
+
+class CreateNewFolderCmd : public Command {
+public:
+	AE_Item parent_folder; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	std::string nameZ;
+	CreateNewFolderCmd() : Command(CommandID::CreateNewFolder) {}
+	CreateNewFolderCmd(AEGP_ItemH parent_folder, std::string nameZ) : parent_folder(AE_Item(parent_folder)), nameZ(nameZ), Command(CommandID::CreateNewFolder) {}
+	CreateNewFolderCmd(AE_Item parent_folder, std::string nameZ) : parent_folder(parent_folder), nameZ(nameZ), Command(CommandID::CreateNewFolder) {}
+
+	void execute() override;
+
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& parent_folder;
+		ar& nameZ;
+	}
+};
+
+class SetItemCurrentTimeCmd : public Command {
+public:
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	A_Time new_timePT;
+	SetItemCurrentTimeCmd() : Command(CommandID::SetItemCurrentTime) {}
+	SetItemCurrentTimeCmd(AEGP_ItemH item, A_Time new_timePT) : item(AE_Item(item)), new_timePT(new_timePT), Command(CommandID::SetItemCurrentTime) {}
+	SetItemCurrentTimeCmd(AE_Item item, A_Time new_timePT) : item(item), new_timePT(new_timePT), Command(CommandID::SetItemCurrentTime) {}
+
+	void execute() override;
+
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+		ar& new_timePT;
+	}
+};
+
+class GetItemCommentCmd : public Command {
+public:
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetItemCommentCmd() : Command(CommandID::GetItemComment) {}
+	GetItemCommentCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetItemComment) {}
+	GetItemCommentCmd(AE_Item item) : item(item), Command(CommandID::GetItemComment) {}
+
+	void execute() override;
+
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+	}
+};
+
+class SetItemCommentCmd : public Command {
+public:
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	std::string commentZ;
+	SetItemCommentCmd() : Command(CommandID::SetItemComment) {}
+	SetItemCommentCmd(AEGP_ItemH item, std::string commentZ) : item(AE_Item(item)), commentZ(commentZ), Command(CommandID::SetItemComment) {}
+	SetItemCommentCmd(AE_Item item, std::string commentZ) : item(item), commentZ(commentZ), Command(CommandID::SetItemComment) {}
+
+	void execute() override;
+
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+		ar& commentZ;
+	}
+};
+
+class GetItemLabelCmd : public Command {
+public:
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	GetItemLabelCmd() : Command(CommandID::GetItemLabel) {}
+	GetItemLabelCmd(AEGP_ItemH item) : item(AE_Item(item)), Command(CommandID::GetItemLabel) {}
+	GetItemLabelCmd(AE_Item item) : item(item), Command(CommandID::GetItemLabel) {}
+
+	void execute() override;
+
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+	}
+};
+
+class SetItemLabelCmd : public Command {
+public:
+	AE_Item item; //AEGP_ItemH, in a wrapper. In command, member variables are the args for the command,
+	AEGP_LabelID label;
+	SetItemLabelCmd() : Command(CommandID::SetItemLabel) {}
+	SetItemLabelCmd(AEGP_ItemH item, AEGP_LabelID label) : item(AE_Item(item)), label(label), Command(CommandID::SetItemLabel) {}
+	SetItemLabelCmd(AE_Item item, AEGP_LabelID label) : item(item), label(label), Command(CommandID::SetItemLabel) {}
+	void execute() override;
+
+	template <class Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<Command>(*this);
+		ar& item;
+		ar& label;
+	}
+};
