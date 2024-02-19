@@ -1,13 +1,8 @@
 #pragma once
-#include "CommandFactory.h"
+#include "MessageQueueManager.h"
+#include "commands.h"
 #include <queue>
 
-typedef std::variant<AEGP_ItemH, AEGP_CompH, AEGP_FootageH, AEGP_LayerH, AEGP_ProjectH, AEGP_Collection2H, AEGP_CollectionItemV2,
-                     AEGP_LayerCollectionItem, AEGP_MaskCollectionItem, AEGP_EffectCollectionItem, AEGP_StreamCollectionItem,
-                     AEGP_MaskStreamCollectionItem, AEGP_LayerStreamCollectionItem, AEGP_EffectStreamCollectionItem,
-                     AEGP_KeyframeCollectionItem, AEGP_MaskVertexCollectionItem, AEGP_StreamRefH> SessionObject;
-
-typedef std::map<int, SessionObject> Sessions;
 
 class SessionManager {
 public:
@@ -17,7 +12,7 @@ public:
     }
 
     SessionManager() {
-        sessions.clear();
+        //commandQueue.empty();
         std::thread t(&SessionManager::handleMessageQueue, this);
         t.detach();
     }
@@ -25,25 +20,9 @@ public:
     SessionManager(const SessionManager&) = delete;
     void operator=(const SessionManager&) = delete;
 
-    void addSession(SessionObject session, int sessionID) {
-        std::lock_guard<std::mutex> lock(sessionListMutex);
-        //make sure the sessionID is unique, if it isn't return early
-        for (auto& s : sessions) {
-            if (s.first == sessionID) {
-				return;
-			}
-		}
-        sessions[sessionID] = std::move(session);
-    }
-
-    SessionObject getSession(int sessionID) {
-        std::lock_guard<std::mutex> lock(sessionListMutex);
-		return sessions[sessionID];
-    }
-
     void cleanAll() {
-        std::lock_guard<std::mutex> lock(sessionListMutex);
-        sessions.clear();
+        std::lock_guard<std::mutex> lock(commandQueueMutex);
+        //commandQueue.empty();
     }
 
     bool areCommandsAvailable() {
@@ -55,48 +34,31 @@ public:
 	}
 
     // Adjust popCommand to match the new queue type
-    std::unique_ptr<CommandBase> popCommand() {
+    boost::shared_ptr<Command> popCommand() {
         std::lock_guard<std::mutex> lock(commandQueueMutex);
         if (!commandQueue.empty()) {
-            std::unique_ptr<CommandBase> cmd = std::move(commandQueue.front()); // Explicit type instead of auto
+            boost::shared_ptr<Command> cmd = std::move(commandQueue.front()); // Explicit type instead of auto
             commandQueue.pop();
             return cmd;
         }
         return nullptr;
     }
 
-    void removeSession(int sessionID) {
-		std::lock_guard<std::mutex> lock(sessionListMutex);
-		sessions.erase(sessionID);
-	}
-
 protected:
-    std::mutex sessionListMutex;
-    Sessions sessions;
     std::mutex commandQueueMutex;
-    std::queue<std::unique_ptr<CommandBase>> commandQueue;
+    std::queue<boost::shared_ptr<Command>> commandQueue;
 
 
     void handleMessageQueue() {
         auto& mqm = MessageQueueManager::getInstance();
-        auto& factory = CommandFactory::get();
 
         while (true) {
-            Command receivedCmd;
+            boost::shared_ptr<Command> receivedCmd;
             if (mqm.tryReceiveCommand(receivedCmd)) {
-                // Try to create the command object from the received command name
-                auto cmd = factory.createCommand(receivedCmd.id, receivedCmd);
-                if (cmd) {
-                    std::lock_guard<std::mutex> lock(commandQueueMutex);
-                    // Queue the created command object for execution
-                    commandQueue.push(std::move(cmd));
-
-                    AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
-                    suites.UtilitySuite6()->AEGP_CauseIdleRoutinesToBeCalled();
-                }
-                else {
-                    std::cout << "Command not found: " << std::endl;
-                }
+                std::lock_guard<std::mutex> lock(commandQueueMutex);
+                commandQueue.push(std::move(receivedCmd));
+                AEGP_SuiteHandler& suites = SuiteManager::GetInstance().GetSuiteHandler();
+                suites.UtilitySuite6()->AEGP_CauseIdleRoutinesToBeCalled();
             }
             else {
                 // No command received, sleep for a bit

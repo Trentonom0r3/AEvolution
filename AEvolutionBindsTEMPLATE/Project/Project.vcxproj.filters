@@ -24,10 +24,10 @@
     <ClInclude Include="$(SrcDir)ItemWraps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SrcDir)MessageQueueManager.h">
+    <ClInclude Include="$(SrcDir)CollectionWraps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SrcDir)CollectionWraps.h">
+    <ClInclude Include="..\src\MessageQueueManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,10 +38,7 @@
     <ClCompile Include="$(SrcDir)Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SrcDir)ItemWraps.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(SrcDir)CollectionWraps.cpp">
+    <ClCompile Include="..\src\ItemWraps.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

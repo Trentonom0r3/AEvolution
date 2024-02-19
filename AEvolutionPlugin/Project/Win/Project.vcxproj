@@ -40,6 +40,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(MainSrcDir)Headers;$(MainSrcDir)Headers/SP;$(MainSrcDir)Resources;$(MainSrcDir)Util;$(IncludePath)</IncludePath>
+    <OutDir>..\..\..\..\..\..\..\..\Program Files\Adobe\Adobe After Effects 2023\Support Files\Plug-ins\Effects</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\tjerf\vcpkg\installed\x64-windows-static\include;$(MainSrcDir)Headers;$(MainSrcDir)Headers/SP;$(MainSrcDir)Resources;$(MainSrcDir)Util;$(IncludePath)</IncludePath>
@@ -80,7 +81,7 @@
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
-      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformation>false</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -182,7 +183,6 @@
     <GenerateDebugInformation />
   </ItemDefinitionGroup> -->
   <ItemGroup>
-    <ClInclude Include="$(SrcDir)CollectionCommands.h" />
     <ClInclude Include="$(SrcDir)commands.h" />
     <ClInclude Include="$(SrcDir)AEvolution.h" />
     <ClInclude Include="$(MainSrcDir)Headers/A.h" />
@@ -206,18 +206,24 @@
     <ClInclude Include="$(MainSrcDir)Headers/PR_Public.h" />
     <ClInclude Include="$(MainSrcDir)Util/String_Utils.h" />
     <ClInclude Include="$(SrcDir)AEnums.h" />
-    <ClInclude Include="$(SrcDir)CommandFactory.h" />
-    <ClInclude Include="$(SrcDir)commands/CompCommands.h" />
-    <ClInclude Include="$(SrcDir)commands/FootageCommands.h" />
-    <ClInclude Include="$(SrcDir)commands/ItemCommands.h" />
-    <ClInclude Include="$(SrcDir)commands/LayerCommands.h" />
-    <ClInclude Include="$(SrcDir)commands/StreamCommands.h" />
-    <ClInclude Include="$(SrcDir)commands/UtilityCommands.h" />
     <ClInclude Include="$(SrcDir)main.h" />
     <ClInclude Include="$(SrcDir)MessageMain.h" />
     <ClInclude Include="$(SrcDir)MessageQueueManager.h" />
     <ClInclude Include="$(SrcDir)SessionManager.h" />
     <ClInclude Include="$(SrcDir)SuitesManager.h" />
+    <ClInclude Include="..\..\src\AE_GeneralWrap.h" />
+    <ClInclude Include="..\..\src\commands\CompCommands.h" />
+    <ClInclude Include="..\..\src\commands\FootageCommands.h" />
+    <ClInclude Include="..\..\src\commands\ItemCommands.h" />
+    <ClInclude Include="..\..\src\commands\LayerCommands.h" />
+    <ClInclude Include="..\..\src\commands\ProjectCommands.h" />
+    <ClInclude Include="..\..\src\commands\UtilityCommands.h" />
+    <ClInclude Include="..\..\src\responses\CompResponses.h" />
+    <ClInclude Include="..\..\src\responses\FootageResponses.h" />
+    <ClInclude Include="..\..\src\responses\ItemResponses.h" />
+    <ClInclude Include="..\..\src\responses\LayerResponses.h" />
+    <ClInclude Include="..\..\src\responses\ProjectResponses.h" />
+    <ClInclude Include="..\..\src\responses\UtilityResponses.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="$(SrcDir)AEvolution_PiPL.r">
@@ -235,6 +241,14 @@ cl /D "MSWindows" /EP $(IntDir)%(Filename).rrc &gt;               "$(IntDir)"\\"
     <ClCompile Include="$(MainSrcDir)Util/MissingSuiteError.cpp" />
     <ClCompile Include="$(SrcDir)AEvolution.cpp" />
     <ClCompile Include="$(SrcDir)main.cpp" />
+    <ClCompile Include="..\..\src\AE_GeneralWrap.cpp" />
+    <ClCompile Include="..\..\src\Commands.cpp" />
+    <ClCompile Include="..\..\src\commands\CompCommands.cpp" />
+    <ClCompile Include="..\..\src\commands\FootageCommands.cpp" />
+    <ClCompile Include="..\..\src\commands\ItemCommands.cpp" />
+    <ClCompile Include="..\..\src\commands\LayerCommands.cpp" />
+    <ClCompile Include="..\..\src\commands\ProjectCommands.cpp" />
+    <ClCompile Include="..\..\src\commands\UtilityCommands.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

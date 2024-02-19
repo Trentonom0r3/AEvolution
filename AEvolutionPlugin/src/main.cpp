@@ -78,15 +78,3 @@ std::vector<A_UTF16Char> convertUTF8ToUTF16(const std::string& utf8String) {
     auto utf16Vector = convertUTF8ToUTF16UnSafe(utf8String);
     return std::vector<A_UTF16Char>(utf16Vector.begin(), utf16Vector.end());
 }
-
-BOOST_CLASS_EXPORT(Item);
-BOOST_CLASS_EXPORT(LayerCollectionItem);
-BOOST_CLASS_EXPORT(MaskCollectionItem);
-BOOST_CLASS_EXPORT(EffectCollectionItem);
-BOOST_CLASS_EXPORT(MaskStreamCollectionItem);
-BOOST_CLASS_EXPORT(EffectStreamCollectionItem);
-BOOST_CLASS_EXPORT(LayerStreamCollectionItem);
-BOOST_CLASS_EXPORT(StreamCollectionItem);
-BOOST_CLASS_EXPORT(MaskVertexCollectionItem);
-BOOST_CLASS_EXPORT(KeyframeCollectionItem);
-BOOST_CLASS_EXPORT(CollectionItemV2);
